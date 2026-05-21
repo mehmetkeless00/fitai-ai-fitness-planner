@@ -3,17 +3,38 @@
 import { useState } from 'react';
 import Button from '../../ui/Button';
 
+const STEP_MOTIVATION = {
+  0: {
+    title: "Let's build your personalized plan",
+    description: 'We need to know a bit about you first',
+  },
+  1: {
+    title: 'Your fitness goals matter',
+    description: 'The AI will tailor everything based on your objectives',
+  },
+  2: {
+    title: 'Almost there!',
+    description: 'A few final preferences before we generate your plan',
+  },
+};
+
 export default function FormStepper({ steps, onComplete, isLoading }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleNext = (stepData) => {
     console.log('[FormStepper] Step data received:', stepData);
     const merged = { ...formData, ...stepData };
     console.log('[FormStepper] Merged data:', merged);
     setFormData(merged);
+
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentStep(currentStep + 1);
+        setIsTransitioning(false);
+      }, 300);
     } else {
       console.log('[FormStepper] Final submission:', merged);
       onComplete(merged);
@@ -22,51 +43,92 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
 
   const handlePrev = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentStep(currentStep - 1);
+        setIsTransitioning(false);
+      }, 300);
     }
   };
 
   const StepComponent = steps[currentStep].component;
+  const motivation = STEP_MOTIVATION[currentStep] || {};
+  const completedSteps = currentStep;
+  const totalSteps = steps.length;
+  const stepProgress = ((completedSteps) / totalSteps) * 100;
 
   return (
     <div className="w-full">
-      <div className="mb-8">
-        <div className="flex justify-between">
+      {/* Progress section with motivation */}
+      <div className="mb-10">
+        {/* Step counter and progress */}
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm font-medium text-slate-400">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+          <span className="text-xs text-slate-500">{Math.round(stepProgress)}% complete</span>
+        </div>
+
+        {/* Animated progress bar */}
+        <div className="relative h-1.5 bg-dark-border rounded-full overflow-hidden mb-6">
+          <div
+            className="h-full bg-gradient-to-r from-sky-500 to-sky-400 rounded-full transition-all duration-700 ease-out"
+            style={{ width: `${stepProgress}%` }}
+          />
+        </div>
+
+        {/* Step indicators with animation */}
+        <div className="flex justify-between gap-2 mb-8">
           {steps.map((step, idx) => (
-            <div key={idx} className="flex items-center flex-1">
+            <div key={idx} className="flex flex-col items-center flex-1">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold
-                  ${idx <= currentStep ? 'bg-sky-500 text-white' : 'bg-dark-surface text-slate-400'}
-                  transition-all`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-500 relative
+                  ${
+                    idx < currentStep
+                      ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
+                      : idx === currentStep
+                        ? 'bg-sky-500 text-white border border-sky-500 shadow-lg shadow-sky-500/50'
+                        : 'bg-dark-surface text-slate-400 border border-dark-border'
+                  }
+                `}
               >
-                {idx + 1}
+                {idx < currentStep ? '✓' : idx + 1}
+                {idx === currentStep && (
+                  <span className="absolute inset-0 rounded-full bg-sky-500 animate-pulse opacity-20" />
+                )}
               </div>
-              {idx < steps.length - 1 && (
-                <div
-                  className={`flex-1 h-1 mx-2 rounded-full
-                    ${idx < currentStep ? 'bg-sky-500' : 'bg-dark-border'}
-                    transition-all`}
-                />
-              )}
+              <span className="text-xs text-slate-500 mt-2 text-center leading-tight">{step.title}</span>
             </div>
           ))}
         </div>
+
+        {/* Motivational copy */}
+        <div className="bg-gradient-to-r from-sky-500/5 to-purple-500/5 border border-sky-500/20 rounded-lg p-4 step-motivation">
+          <h3 className="text-lg font-semibold text-white mb-1">{motivation.title}</h3>
+          <p className="text-sm text-slate-400">{motivation.description}</p>
+        </div>
       </div>
 
-      <div className="min-h-64">
-        <StepComponent
-          onNext={handleNext}
-          formData={formData}
-          isLastStep={currentStep === steps.length - 1}
-        />
+      {/* Form content with smooth transition */}
+      <div className="min-h-80">
+        <div
+          className={`transition-all duration-300 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+        >
+          <StepComponent
+            onNext={handleNext}
+            formData={formData}
+            isLastStep={currentStep === steps.length - 1}
+          />
+        </div>
       </div>
 
-      <div className="flex gap-4 mt-8">
+      {/* Navigation buttons */}
+      <div className="flex gap-4 mt-10">
         <Button
           variant="secondary"
           onClick={handlePrev}
-          disabled={currentStep === 0 || isLoading}
-          className="disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={currentStep === 0 || isLoading || isTransitioning}
+          className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
         >
           ← Previous
         </Button>
@@ -76,12 +138,37 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
             const stepData = StepComponent.defaultProps?.initialData || {};
             handleNext(stepData);
           }}
-          disabled={isLoading}
-          className="disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading || isTransitioning}
+          className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
         >
-          {currentStep === steps.length - 1 ? 'Generate Plan' : 'Next →'}
+          {isLoading ? (
+            <span className="flex items-center gap-2">
+              <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Generating...
+            </span>
+          ) : currentStep === steps.length - 1 ? (
+            '✨ Generate Plan'
+          ) : (
+            'Next →'
+          )}
         </Button>
       </div>
+
+      <style jsx>{`
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .step-motivation {
+          animation: slideUp 0.5s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

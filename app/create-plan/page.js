@@ -10,7 +10,7 @@ import FormStepper from '@/components/features/form/FormStepper';
 import PersonalInfoForm from '@/components/features/form/PersonalInfoForm';
 import GoalsForm from '@/components/features/form/GoalsForm';
 import PreferencesForm from '@/components/features/form/PreferencesForm';
-import LoadingScreen from '@/components/ui/LoadingScreen';
+import PremiumLoadingScreen from '@/components/ui/PremiumLoadingScreen';
 
 export default function CreatePlan() {
   const router = useRouter();
@@ -83,12 +83,12 @@ export default function CreatePlan() {
     <>
       <Navigation />
       <main className="min-h-screen pt-20 pb-20">
-        {isGenerating && <LoadingScreen />}
+        {isGenerating && <PremiumLoadingScreen />}
 
         <Container>
           <PageHeader
             title="Create Your Plan"
-            description="Answer a few questions and we'll generate your personalized fitness and nutrition plan"
+            description="AI is analyzing your goals and will create a personalized fitness and nutrition plan"
           />
 
           {error && (
