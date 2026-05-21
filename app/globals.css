@@ -11,6 +11,14 @@
   --color-border: 51 65 85;
 }
 
+html.light {
+  --color-text: 30 41 59;
+  --color-text-secondary: 100 116 139;
+  --color-bg: 248 250 252;
+  --color-surface: 241 245 250;
+  --color-border: 226 232 240;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -29,11 +37,6 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.light body {
-  background-color: #f8fafc;
-  color: #1e293b;
 }
 
 a {

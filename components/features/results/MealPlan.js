@@ -40,28 +40,28 @@ export default function MealPlan({ plan }) {
           onClick={() => setExpandedDay(expandedDay === dayIdx ? -1 : dayIdx)}
         >
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <span className="text-2xl">🥗</span>
               {dayPlan.day}
             </h3>
             {expandedDay === dayIdx && <span className="text-xl text-sky-400">▲</span>}
-            {expandedDay !== dayIdx && <span className="text-xl text-slate-500">▼</span>}
+            {expandedDay !== dayIdx && <span className="text-xl text-gray-400 dark:text-slate-500">▼</span>}
           </div>
 
           {expandedDay === dayIdx && (
-            <div className="space-y-4 pt-4 border-t border-dark-border">
+            <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-dark-border">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {dayPlan.meals && Object.entries(dayPlan.meals).map(([mealType, meal]) => (
                   <div
                     key={mealType}
-                    className="bg-dark-surface/50 border border-dark-border rounded-lg p-3 space-y-2"
+                    className="bg-white dark:bg-dark-surface/50 border border-gray-200 dark:border-dark-border rounded-lg p-3 space-y-2"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <p className="text-xs uppercase tracking-wide text-sky-400 font-semibold mb-1">
+                        <p className="text-xs uppercase tracking-wide text-sky-600 dark:text-sky-400 font-semibold mb-1">
                           {getMealIcon(mealType)} {mealType}
                         </p>
-                        <p className="font-semibold text-white text-sm">{meal.name}</p>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{meal.name}</p>
                       </div>
                       {meal.calories && (
                         <span className={`text-lg font-bold ${getCalorieColor(meal.calories, mealType === 'snack')}`}>
@@ -71,16 +71,16 @@ export default function MealPlan({ plan }) {
                     </div>
 
                     {meal.macros && (
-                      <div className="bg-dark-bg/50 rounded p-2 space-y-1">
+                      <div className="bg-gray-50 dark:bg-dark-bg/50 rounded p-2 space-y-1">
                         <div className="flex justify-between text-xs">
-                          <span className="text-slate-400">P</span>
-                          <span className="font-medium text-red-400">{meal.macros.protein}g</span>
-                          <span className="text-slate-400">C</span>
-                          <span className="font-medium text-yellow-400">{meal.macros.carbs}g</span>
-                          <span className="text-slate-400">F</span>
-                          <span className="font-medium text-green-400">{meal.macros.fat}g</span>
+                          <span className="text-gray-600 dark:text-slate-400">P</span>
+                          <span className="font-medium text-red-600 dark:text-red-400">{meal.macros.protein}g</span>
+                          <span className="text-gray-600 dark:text-slate-400">C</span>
+                          <span className="font-medium text-yellow-600 dark:text-yellow-400">{meal.macros.carbs}g</span>
+                          <span className="text-gray-600 dark:text-slate-400">F</span>
+                          <span className="font-medium text-green-600 dark:text-green-400">{meal.macros.fat}g</span>
                         </div>
-                        <div className="w-full bg-dark-border rounded-full h-1 overflow-hidden flex gap-0.5">
+                        <div className="w-full bg-gray-200 dark:bg-dark-border rounded-full h-1 overflow-hidden flex gap-0.5">
                           <div
                             className="bg-red-500"
                             style={{
@@ -103,19 +103,19 @@ export default function MealPlan({ plan }) {
                       </div>
                     )}
 
-                    <p className="text-xs text-slate-400">{meal.description}</p>
+                    <p className="text-xs text-gray-600 dark:text-slate-400">{meal.description}</p>
 
                     <div className="flex flex-wrap gap-1 text-xs">
-                      {meal.timing && <span className="text-slate-400">⏰ {meal.timing}</span>}
-                      {meal.prepTime && <span className="text-slate-400">⏱ {meal.prepTime}</span>}
+                      {meal.timing && <span className="text-gray-600 dark:text-slate-400">⏰ {meal.timing}</span>}
+                      {meal.prepTime && <span className="text-gray-600 dark:text-slate-400">⏱ {meal.prepTime}</span>}
                       {meal.difficulty && (
                         <span
                           className={`px-1.5 py-0.5 rounded ${
                             meal.difficulty === 'Easy'
-                              ? 'bg-green-500/20 text-green-300'
+                              ? 'bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300'
                               : meal.difficulty === 'Medium'
-                                ? 'bg-yellow-500/20 text-yellow-300'
-                                : 'bg-red-500/20 text-red-300'
+                                ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300'
+                                : 'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300'
                           }`}
                         >
                           {meal.difficulty}
@@ -130,15 +130,15 @@ export default function MealPlan({ plan }) {
                             e.stopPropagation();
                             toggleAlternatives(dayIdx, mealType);
                           }}
-                          className="text-xs text-sky-400 hover:text-sky-300 transition-colors"
+                          className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
                         >
                           {expandedAlternatives[`${dayIdx}-${mealType}`] ? '▼ Hide alternatives' : '▶ Alternatives'}
                         </button>
                         {expandedAlternatives[`${dayIdx}-${mealType}`] && (
-                          <ul className="mt-1 space-y-1 ml-2 text-xs text-slate-400">
+                          <ul className="mt-1 space-y-1 ml-2 text-xs text-gray-600 dark:text-slate-400">
                             {meal.alternatives.map((alt, altIdx) => (
                               <li key={altIdx} className="flex items-start gap-2">
-                                <span className="text-sky-400">•</span>
+                                <span className="text-sky-600 dark:text-sky-400">•</span>
                                 <span>{alt}</span>
                               </li>
                             ))}
@@ -151,12 +151,12 @@ export default function MealPlan({ plan }) {
               </div>
 
               {dayPlan.hydrationReminders && dayPlan.hydrationReminders.length > 0 && (
-                <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
-                  <h4 className="text-sm font-semibold text-blue-400 mb-2">💧 Hydration Reminders</h4>
+                <div className="bg-blue-50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-2">💧 Hydration Reminders</h4>
                   <ul className="space-y-1">
                     {dayPlan.hydrationReminders.map((reminder, idx) => (
-                      <li key={idx} className="text-sm text-slate-400 flex items-start gap-2">
-                        <span className="text-blue-400 mt-0.5">•</span>
+                      <li key={idx} className="text-sm text-gray-700 dark:text-slate-400 flex items-start gap-2">
+                        <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
                         <span>{reminder}</span>
                       </li>
                     ))}

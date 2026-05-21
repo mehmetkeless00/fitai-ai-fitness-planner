@@ -37,7 +37,7 @@ export default function Features() {
   ];
 
   return (
-    <section className="py-20">
+    <section id="features-section" className="py-20">
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold text-white mb-4">Why Choose FitAI?</h2>
         <p className="text-slate-400 max-w-2xl mx-auto">

@@ -4,6 +4,13 @@ import Link from 'next/link';
 import Button from '../../ui/Button';
 
 export default function Hero() {
+  const handleLearnMore = () => {
+    const featuresSection = document.getElementById('features-section');
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="text-center py-20 md:py-32">
       <div className="inline-block mb-4 px-4 py-2 bg-sky-500/10 border border-sky-500/20 rounded-full">
@@ -26,10 +33,11 @@ export default function Hero() {
         <Link href="/create-plan">
           <Button size="lg">Start Creating Your Plan →</Button>
         </Link>
-        <Button variant="secondary" size="lg">
+        <Button variant="secondary" size="lg" onClick={handleLearnMore}>
           Learn More
         </Button>
       </div>
     </div>
   );
 }
+

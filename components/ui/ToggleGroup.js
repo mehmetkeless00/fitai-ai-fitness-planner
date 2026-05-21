@@ -4,9 +4,9 @@ export default function ToggleGroup({ options = [], value, onChange, label, requ
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-white mb-3">
+        <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">
           {label}
-          {required && <span className="text-red-400 ml-1">*</span>}
+          {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
         </label>
       )}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -18,7 +18,7 @@ export default function ToggleGroup({ options = [], value, onChange, label, requ
               ${
                 value === opt.value
                   ? 'bg-sky-500 border-sky-500 text-white shadow-lg'
-                  : 'bg-dark-surface border-dark-border text-slate-300 hover:border-sky-400'
+                  : 'bg-gray-100 dark:bg-dark-surface border-gray-300 dark:border-dark-border text-gray-700 dark:text-slate-300 hover:border-sky-400 hover:bg-gray-50 dark:hover:bg-dark-surface/80'
               }`}
           >
             {opt.label}
