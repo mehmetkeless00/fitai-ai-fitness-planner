@@ -51,7 +51,7 @@ export default function PremiumLoadingScreen() {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-dark-bg via-dark-surface to-dark-bg flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gradient-to-br from-white via-slate-50 dark:from-dark-bg dark:via-dark-surface to-slate-100 dark:to-dark-bg flex items-center justify-center z-50">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-sky-500/10 rounded-full blur-3xl animate-pulse" />
@@ -63,19 +63,19 @@ export default function PremiumLoadingScreen() {
         {/* Logo and title */}
         <div className="text-center mb-12">
           <div className="text-5xl mb-3">🤖</div>
-          <h1 className="text-3xl font-bold text-white mb-2">FitAI Coach</h1>
-          <p className="text-slate-400 text-sm">Building your personalized plan</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">FitAI Coach</h1>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">Building your personalized plan</p>
         </div>
 
         {/* Progress bar */}
         <div className="mb-8">
-          <div className="relative h-1 bg-dark-border rounded-full overflow-hidden">
+          <div className="relative h-1 bg-slate-300 dark:bg-dark-border rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-sky-500 to-purple-500 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-xs text-slate-500 mt-2 text-center">{Math.round(progress)}%</p>
+          <p className="text-xs text-slate-500 dark:text-slate-500 mt-2 text-center">{Math.round(progress)}%</p>
         </div>
 
         {/* Current stage with icon and text */}
@@ -86,16 +86,16 @@ export default function PremiumLoadingScreen() {
             </div>
           </div>
           <div className="relative h-12 flex items-center justify-center">
-            <p key={currentStage} className="text-white font-medium text-sm animate-fade-in">
+            <p key={currentStage} className="text-slate-900 dark:text-white font-medium text-sm animate-fade-in">
               {LOADING_STAGES[currentStage].stage}
             </p>
           </div>
         </div>
 
         {/* AI Tips carousel */}
-        <div className="bg-dark-surface border border-dark-border rounded-lg p-4 mb-6">
+        <div className="bg-slate-100 dark:bg-dark-surface border border-slate-200 dark:border-dark-border rounded-lg p-4 mb-6">
           <div className="relative h-16 flex items-center">
-            <p key={currentTip} className="text-slate-300 text-sm animate-fade-in">
+            <p key={currentTip} className="text-slate-700 dark:text-slate-300 text-sm animate-fade-in">
               {AI_TIPS[currentTip]}
             </p>
           </div>
@@ -107,7 +107,7 @@ export default function PremiumLoadingScreen() {
             <div
               key={idx}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                idx <= currentStage ? 'bg-sky-500 w-4' : 'bg-dark-border w-1.5'
+                idx <= currentStage ? 'bg-sky-500 w-4' : 'bg-slate-300 dark:bg-dark-border w-1.5'
               }`}
             />
           ))}

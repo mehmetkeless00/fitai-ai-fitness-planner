@@ -85,7 +85,7 @@ export default function Result() {
                   ${
                     activeTab === tab
                       ? 'bg-sky-500 text-white'
-                      : 'bg-gray-100 dark:bg-dark-surface text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:text-white'
+                      : 'bg-slate-100 dark:bg-dark-surface text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-dark-surface/80 dark:hover:text-white'
                   }`}
               >
                 {tab === 'advice' ? '💡 Coach Advice' : tab}
@@ -96,28 +96,28 @@ export default function Result() {
           {activeTab === 'overview' && (
             <div className="space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">📊 Nutrition Overview</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">📊 Nutrition Overview</h2>
                 <NutritionSummary plan={planData} />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Your Profile</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Your Profile</h2>
                 <Card>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div>
-                      <p className="text-gray-600 dark:text-slate-400 text-sm">Age</p>
-                      <p className="text-xl font-semibold text-gray-900 dark:text-white">{planData.age}</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">Age</p>
+                      <p className="text-xl font-semibold text-slate-900 dark:text-white">{planData.age}</p>
                     </div>
                     <div>
-                      <p className="text-gray-600 dark:text-slate-400 text-sm">Height</p>
-                      <p className="text-xl font-semibold text-gray-900 dark:text-white">{planData.height}cm</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">Height</p>
+                      <p className="text-xl font-semibold text-slate-900 dark:text-white">{planData.height}cm</p>
                     </div>
                     <div>
-                      <p className="text-gray-600 dark:text-slate-400 text-sm">Weight</p>
-                      <p className="text-xl font-semibold text-gray-900 dark:text-white">{planData.weight}kg</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">Weight</p>
+                      <p className="text-xl font-semibold text-slate-900 dark:text-white">{planData.weight}kg</p>
                     </div>
                     <div>
-                      <p className="text-gray-600 dark:text-slate-400 text-sm">Goal</p>
-                      <p className="text-xl font-semibold text-gray-900 dark:text-white capitalize">
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">Goal</p>
+                      <p className="text-xl font-semibold text-slate-900 dark:text-white capitalize">
                         {planData.fitnessGoal?.replace(/-/g, ' ')}
                       </p>
                     </div>
@@ -129,25 +129,25 @@ export default function Result() {
 
           {activeTab === 'workout' && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">💪 Workout Plan</h2>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">💪 Workout Plan</h2>
               <WorkoutPlan plan={planData} />
             </div>
           )}
 
           {activeTab === 'meals' && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">🥗 Meal Plan</h2>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">🥗 Meal Plan</h2>
               <MealPlan plan={planData} />
             </div>
           )}
 
           {activeTab === 'advice' && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">💡 AI Coach Advice</h2>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">💡 AI Coach Advice</h2>
               <Card className="bg-gradient-to-r from-sky-50 dark:from-sky-500/10 to-blue-50 dark:to-blue-500/10 border-sky-200 dark:border-sky-500/20">
                 <div className="text-center md:text-left">
                   <div className="text-5xl mb-4 text-center">🎯</div>
-                  <p className="text-lg text-gray-700 dark:text-slate-200 leading-relaxed">
+                  <p className="text-lg text-slate-700 dark:text-slate-200 leading-relaxed">
                     {planData.advice || 'Your personalized coaching advice will appear here.'}
                   </p>
                 </div>

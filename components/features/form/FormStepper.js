@@ -63,14 +63,14 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
       <div className="mb-10">
         {/* Step counter and progress */}
         <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-medium text-slate-400">
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
             Step {currentStep + 1} of {steps.length}
           </span>
           <span className="text-xs text-slate-500">{Math.round(stepProgress)}% complete</span>
         </div>
 
         {/* Animated progress bar */}
-        <div className="relative h-1.5 bg-dark-border rounded-full overflow-hidden mb-6">
+        <div className="relative h-1.5 bg-slate-300 dark:bg-dark-border rounded-full overflow-hidden mb-6">
           <div
             className="h-full bg-gradient-to-r from-sky-500 to-sky-400 rounded-full transition-all duration-700 ease-out"
             style={{ width: `${stepProgress}%` }}
@@ -85,10 +85,10 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-500 relative
                   ${
                     idx < currentStep
-                      ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
+                      ? 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30'
                       : idx === currentStep
                         ? 'bg-sky-500 text-white border border-sky-500 shadow-lg shadow-sky-500/50'
-                        : 'bg-dark-surface text-slate-400 border border-dark-border'
+                        : 'bg-slate-100 dark:bg-dark-surface text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-dark-border'
                   }
                 `}
               >
@@ -97,15 +97,15 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
                   <span className="absolute inset-0 rounded-full bg-sky-500 animate-pulse opacity-20" />
                 )}
               </div>
-              <span className="text-xs text-slate-500 mt-2 text-center leading-tight">{step.title}</span>
+              <span className="text-xs text-slate-600 dark:text-slate-500 mt-2 text-center leading-tight">{step.title}</span>
             </div>
           ))}
         </div>
 
         {/* Motivational copy */}
         <div className="bg-gradient-to-r from-sky-500/5 to-purple-500/5 border border-sky-500/20 rounded-lg p-4 step-motivation">
-          <h3 className="text-lg font-semibold text-white mb-1">{motivation.title}</h3>
-          <p className="text-sm text-slate-400">{motivation.description}</p>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">{motivation.title}</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{motivation.description}</p>
         </div>
       </div>
 

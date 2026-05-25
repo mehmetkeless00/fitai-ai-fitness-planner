@@ -18,8 +18,8 @@ export default function Home() {
         </Container>
       </main>
 
-      <footer className="bg-dark-surface border-t border-dark-border py-8 mt-20">
-        <Container className="text-center text-slate-400 text-sm">
+      <footer className="bg-slate-50 dark:bg-dark-surface border-t border-slate-200 dark:border-dark-border py-8 mt-20">
+        <Container className="text-center text-slate-600 dark:text-slate-400 text-sm">
           <p>© 2024 FitAI. All rights reserved. Built with 💪 and ❤️</p>
         </Container>
       </footer>

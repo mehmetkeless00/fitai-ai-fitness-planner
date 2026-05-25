@@ -17,7 +17,7 @@ export default function Hero() {
         <p className="text-sky-400 text-sm font-medium">🎯 AI-Powered Fitness Planning</p>
       </div>
 
-      <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+      <h1 className="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
         Your Personal AI
         <br />
         <span className="bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
@@ -25,7 +25,7 @@ export default function Hero() {
         </span>
       </h1>
 
-      <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-8">
+      <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">
         Get AI-generated personalized workout and meal plans tailored to your goals, experience level, and preferences.
       </p>
 

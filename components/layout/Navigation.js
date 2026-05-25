@@ -9,10 +9,10 @@ export default function Navigation() {
 
   if (!themeContext) {
     return (
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-dark-bg/80 backdrop-blur-md border-b border-dark-border">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-dark-bg/80 backdrop-blur-md border-b border-slate-200 dark:border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl text-white">
+            <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white">
               <div className="w-8 h-8 bg-gradient-to-br from-sky-400 to-blue-600 rounded-lg flex items-center justify-center">
                 💪
               </div>
@@ -22,13 +22,13 @@ export default function Navigation() {
             <div className="flex items-center gap-4">
               <Link
                 href="/"
-                className="text-white hover:text-sky-400 transition-colors text-sm font-medium"
+                className="text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
               >
                 Home
               </Link>
               <Link
                 href="/create-plan"
-                className="text-white hover:text-sky-400 transition-colors text-sm font-medium"
+                className="text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
               >
                 Create Plan
               </Link>
@@ -43,10 +43,10 @@ export default function Navigation() {
   }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-dark-bg/80 backdrop-blur-md border-b border-dark-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-dark-bg/80 backdrop-blur-md border-b border-slate-200 dark:border-dark-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl text-white">
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white">
             <div className="w-8 h-8 bg-gradient-to-br from-sky-400 to-blue-600 rounded-lg flex items-center justify-center">
               💪
             </div>
@@ -56,13 +56,13 @@ export default function Navigation() {
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="text-white hover:text-sky-400 transition-colors text-sm font-medium"
+              className="text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
             >
               Home
             </Link>
             <Link
               href="/create-plan"
-              className="text-white hover:text-sky-400 transition-colors text-sm font-medium"
+              className="text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
             >
               Create Plan
             </Link>

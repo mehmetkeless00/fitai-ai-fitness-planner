@@ -23,7 +23,7 @@ export default function ExerciseDemo({ exerciseName, muscleGroups = [], exercise
   return (
     <div className="space-y-3">
       <div
-        className="h-32 rounded-lg border border-gray-300 dark:border-gray-700 flex items-center justify-center"
+        className="h-32 rounded-lg border border-slate-300 dark:border-slate-700 flex items-center justify-center"
         style={{
           background: `linear-gradient(135deg, ${displayDemo.color}08 0%, ${displayDemo.color}12 100%)`,
           borderColor: displayDemo.color + '30',
@@ -31,7 +31,7 @@ export default function ExerciseDemo({ exerciseName, muscleGroups = [], exercise
       >
         <div className="text-center">
           <div className="text-5xl mb-2">{categoryEmoji}</div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{categoryLabel}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{categoryLabel}</p>
         </div>
       </div>
 

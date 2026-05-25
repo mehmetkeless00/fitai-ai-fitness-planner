@@ -39,8 +39,8 @@ export default function Features() {
   return (
     <section id="features-section" className="py-20">
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-white mb-4">Why Choose FitAI?</h2>
-        <p className="text-slate-400 max-w-2xl mx-auto">
+        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Why Choose FitAI?</h2>
+        <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
           Everything you need to transform your fitness journey
         </p>
       </div>
@@ -52,8 +52,8 @@ export default function Features() {
             className="text-center hover:border-sky-500/30 transition-all hover:-translate-y-1"
           >
             <div className="text-5xl mb-4">{feature.emoji}</div>
-            <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-            <p className="text-slate-400">{feature.description}</p>
+            <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
+            <p className="text-slate-600 dark:text-slate-400">{feature.description}</p>
           </Card>
         ))}
       </div>

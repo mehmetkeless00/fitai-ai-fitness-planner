@@ -40,28 +40,28 @@ export default function MealPlan({ plan }) {
           onClick={() => setExpandedDay(expandedDay === dayIdx ? -1 : dayIdx)}
         >
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="text-2xl">🥗</span>
               {dayPlan.day}
             </h3>
             {expandedDay === dayIdx && <span className="text-xl text-sky-400">▲</span>}
-            {expandedDay !== dayIdx && <span className="text-xl text-gray-400 dark:text-slate-500">▼</span>}
+            {expandedDay !== dayIdx && <span className="text-xl text-slate-400 dark:text-slate-500">▼</span>}
           </div>
 
           {expandedDay === dayIdx && (
-            <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-dark-border">
+            <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-dark-border">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {dayPlan.meals && Object.entries(dayPlan.meals).map(([mealType, meal]) => (
                   <div
                     key={mealType}
-                    className="bg-white dark:bg-dark-surface/50 border border-gray-200 dark:border-dark-border rounded-lg p-3 space-y-2"
+                    className="bg-white dark:bg-dark-surface/50 border border-slate-200 dark:border-dark-border rounded-lg p-3 space-y-2"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <p className="text-xs uppercase tracking-wide text-sky-600 dark:text-sky-400 font-semibold mb-1">
                           {getMealIcon(mealType)} {mealType}
                         </p>
-                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{meal.name}</p>
+                        <p className="font-semibold text-slate-900 dark:text-white text-sm">{meal.name}</p>
                       </div>
                       {meal.calories && (
                         <span className={`text-lg font-bold ${getCalorieColor(meal.calories, mealType === 'snack')}`}>
@@ -71,13 +71,13 @@ export default function MealPlan({ plan }) {
                     </div>
 
                     {meal.macros && (
-                      <div className="bg-gray-50 dark:bg-dark-bg/50 rounded p-2 space-y-1">
+                      <div className="bg-slate-100 dark:bg-dark-bg/50 rounded p-2 space-y-1">
                         <div className="flex justify-between text-xs">
-                          <span className="text-gray-600 dark:text-slate-400">P</span>
+                          <span className="text-slate-600 dark:text-slate-400">P</span>
                           <span className="font-medium text-red-600 dark:text-red-400">{meal.macros.protein}g</span>
-                          <span className="text-gray-600 dark:text-slate-400">C</span>
+                          <span className="text-slate-600 dark:text-slate-400">C</span>
                           <span className="font-medium text-yellow-600 dark:text-yellow-400">{meal.macros.carbs}g</span>
-                          <span className="text-gray-600 dark:text-slate-400">F</span>
+                          <span className="text-slate-600 dark:text-slate-400">F</span>
                           <span className="font-medium text-green-600 dark:text-green-400">{meal.macros.fat}g</span>
                         </div>
                         <div className="w-full bg-gray-200 dark:bg-dark-border rounded-full h-1 overflow-hidden flex gap-0.5">

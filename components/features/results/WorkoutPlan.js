@@ -31,7 +31,7 @@ export default function WorkoutPlan({ plan }) {
         >
           <div className="flex justify-between items-start mb-4">
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                 <span className="text-2xl">💪</span>
                 {dayPlan.day}
                 {dayPlan.focus && (
@@ -41,17 +41,17 @@ export default function WorkoutPlan({ plan }) {
                 )}
               </h3>
               {dayPlan.totalEstimatedTime && (
-                <p className="text-sm text-gray-600 dark:text-slate-400">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
                   ⏱ Est. {dayPlan.totalEstimatedTime} mins | {dayPlan.exercises?.length || 0} exercises
                 </p>
               )}
             </div>
             {expandedDay === dayIdx && <span className="text-xl text-sky-400">▲</span>}
-            {expandedDay !== dayIdx && <span className="text-xl text-gray-400 dark:text-slate-500">▼</span>}
+            {expandedDay !== dayIdx && <span className="text-xl text-slate-400 dark:text-slate-500">▼</span>}
           </div>
 
           {expandedDay === dayIdx && (
-            <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-dark-border">
+            <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-dark-border">
               {dayPlan.warmupExercises && dayPlan.warmupExercises.length > 0 && (
                 <div className="bg-blue-50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20 rounded-lg p-3">
                   <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-2">
@@ -59,7 +59,7 @@ export default function WorkoutPlan({ plan }) {
                   </h4>
                   <ul className="space-y-1">
                     {dayPlan.warmupExercises.map((ex, idx) => (
-                      <li key={idx} className="text-sm text-gray-700 dark:text-slate-400 flex items-start gap-2">
+                      <li key={idx} className="text-sm text-slate-700 dark:text-slate-400 flex items-start gap-2">
                         <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
                         <span>{ex}</span>
                       </li>
@@ -73,14 +73,14 @@ export default function WorkoutPlan({ plan }) {
                   dayPlan.exercises.map((exercise, exIdx) => (
                     <div
                       key={exIdx}
-                      className="bg-gray-50 dark:bg-dark-surface/50 border border-gray-200 dark:border-dark-border rounded-lg p-3"
+                      className="bg-slate-50 dark:bg-dark-surface/50 border border-slate-200 dark:border-dark-border rounded-lg p-3"
                     >
                       <div className="flex flex-col lg:flex-row gap-4">
                         {/* Exercise details - left side on desktop, full width on mobile */}
                         <div className="flex-1 space-y-2">
                           <div className="flex justify-between items-start gap-2">
                             <div className="flex-1">
-                              <p className="font-semibold text-gray-900 dark:text-white text-sm">{exercise.name}</p>
+                              <p className="font-semibold text-slate-900 dark:text-white text-sm">{exercise.name}</p>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {exercise.muscleGroups && exercise.muscleGroups.length > 0 && (
                                   <span className="text-xs bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded">
@@ -112,28 +112,28 @@ export default function WorkoutPlan({ plan }) {
                           </div>
 
                           <div className="text-sm space-y-1">
-                            <p className="text-gray-700 dark:text-slate-400">
-                              <span className="font-medium text-gray-900 dark:text-white">{exercise.sets}x{exercise.reps}</span>
+                            <p className="text-slate-700 dark:text-slate-400">
+                              <span className="font-medium text-slate-900 dark:text-white">{exercise.sets}x{exercise.reps}</span>
                               {exercise.restTime && (
                                 <>
                                   {' | Rest: '}
-                                  <span className="font-medium text-gray-600 dark:text-slate-300">{exercise.restTime}s</span>
+                                  <span className="font-medium text-slate-600 dark:text-slate-300">{exercise.restTime}s</span>
                                 </>
                               )}
                               {exercise.rpe && (
                                 <>
                                   {' | '}
-                                  <span className="font-medium text-gray-600 dark:text-slate-300">{exercise.rpe}</span>
+                                  <span className="font-medium text-slate-600 dark:text-slate-300">{exercise.rpe}</span>
                                 </>
                               )}
                             </p>
 
                             {exercise.estimatedDuration && (
-                              <p className="text-gray-700 dark:text-slate-400">⏱ {exercise.estimatedDuration} mins</p>
+                              <p className="text-slate-700 dark:text-slate-400">⏱ {exercise.estimatedDuration} mins</p>
                             )}
 
                             {exercise.warmupSets && exercise.warmupSets.length > 0 && (
-                              <p className="text-gray-700 dark:text-slate-400 text-xs">
+                              <p className="text-slate-700 dark:text-slate-400 text-xs">
                                 Warmup: {exercise.warmupSets.map((w) => `${w.reps}x${w.weight}`).join(', ')}
                               </p>
                             )}
@@ -154,7 +154,7 @@ export default function WorkoutPlan({ plan }) {
                                 {expandedAlternatives[`${dayIdx}-${exIdx}`] && (
                                   <ul className="mt-1 space-y-1 ml-2">
                                     {exercise.alternatives.map((alt, altIdx) => (
-                                      <li key={altIdx} className="text-xs text-gray-700 dark:text-slate-400 flex items-start gap-2">
+                                      <li key={altIdx} className="text-xs text-slate-700 dark:text-slate-400 flex items-start gap-2">
                                         <span className="text-sky-600 dark:text-sky-400">•</span>
                                         <span>{alt}</span>
                                       </li>
@@ -178,7 +178,7 @@ export default function WorkoutPlan({ plan }) {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-700 dark:text-slate-400 text-sm">Rest day</p>
+                  <p className="text-slate-700 dark:text-slate-400 text-sm">Rest day</p>
                 )}
               </div>
 
@@ -187,7 +187,7 @@ export default function WorkoutPlan({ plan }) {
                   <h4 className="text-sm font-semibold text-green-700 dark:text-green-400 mb-2">🧘 Cool-down</h4>
                   <ul className="space-y-1">
                     {dayPlan.cooldownExercises.map((ex, idx) => (
-                      <li key={idx} className="text-sm text-gray-700 dark:text-slate-400 flex items-start gap-2">
+                      <li key={idx} className="text-sm text-slate-700 dark:text-slate-400 flex items-start gap-2">
                         <span className="text-green-600 dark:text-green-400 mt-0.5">•</span>
                         <span>
                           {ex.name} ({ex.duration} mins)
