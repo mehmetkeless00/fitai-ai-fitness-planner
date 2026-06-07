@@ -11,25 +11,18 @@ import PersonalInfoForm from '@/components/features/form/PersonalInfoForm';
 import GoalsForm from '@/components/features/form/GoalsForm';
 import PreferencesForm from '@/components/features/form/PreferencesForm';
 import PremiumLoadingScreen from '@/components/ui/PremiumLoadingScreen';
+import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function CreatePlan() {
   const router = useRouter();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState(null);
+  const { t, lang } = useLanguage();
 
   const steps = [
-    {
-      title: 'Personal Info',
-      component: PersonalInfoForm,
-    },
-    {
-      title: 'Goals & Experience',
-      component: GoalsForm,
-    },
-    {
-      title: 'Preferences',
-      component: PreferencesForm,
-    },
+    { title: t.createPlan.steps[0], component: PersonalInfoForm },
+    { title: t.createPlan.steps[1], component: GoalsForm },
+    { title: t.createPlan.steps[2], component: PreferencesForm },
   ];
 
   const handleGeneratePlan = async (formData) => {
@@ -42,7 +35,7 @@ export default function CreatePlan() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, lang }),
       });
 
       if (!response.ok) {
@@ -78,8 +71,8 @@ export default function CreatePlan() {
 
         <Container>
           <PageHeader
-            title="Create Your Plan"
-            description="AI is analyzing your goals and will create a personalized fitness and nutrition plan"
+            title={t.createPlan.pageTitle}
+            description={t.createPlan.pageDescription}
           />
 
           {error && (
@@ -89,7 +82,7 @@ export default function CreatePlan() {
                 onClick={() => setError(null)}
                 className="text-sm text-red-400 hover:text-red-300 mt-2 underline"
               >
-                Dismiss
+                {t.createPlan.errorDismiss}
               </button>
             </div>
           )}

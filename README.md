@@ -1,6 +1,6 @@
-# FitAI — AI Fitness Planner
+# FitFlow — Fitness Planner
 
-FitAI is a modern AI-powered fitness planner web application that generates personalized workout and nutrition plans based on user goals, experience level, and lifestyle preferences.
+FitFlow is a modern fitness planner web application that generates personalized workout and nutrition plans based on user goals, experience level, and lifestyle preferences.
 
 Built with Next.js, Tailwind CSS, and OpenAI integration.
 
@@ -35,7 +35,7 @@ Built with Next.js, Tailwind CSS, and OpenAI integration.
 * Mobile responsive layout
 * Interactive dashboard
 * PDF export support
-* AI coach insights
+* Coach insights
 * Clean card-based architecture
 
 ---

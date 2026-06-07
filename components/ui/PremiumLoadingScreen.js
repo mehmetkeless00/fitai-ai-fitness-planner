@@ -63,7 +63,7 @@ export default function PremiumLoadingScreen() {
         {/* Logo and title */}
         <div className="text-center mb-12">
           <div className="text-5xl mb-3">🤖</div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">FitAI Coach</h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">FitFlow Coach</h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm">Building your personalized plan</p>
         </div>
 

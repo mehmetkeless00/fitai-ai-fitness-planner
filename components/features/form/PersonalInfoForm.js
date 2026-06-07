@@ -5,10 +5,13 @@ import Input from '../../ui/Input';
 import Select from '../../ui/Select';
 import FormGroup from '../../ui/FormGroup';
 import Button from '../../ui/Button';
+import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function PersonalInfoForm({ onNext, formData }) {
   const [data, setData] = useState(formData || {});
   const [errors, setErrors] = useState({});
+  const { t } = useLanguage();
+  const s = t.createPlan.personalInfo;
 
   const validate = () => {
     const newErrors = {};
@@ -17,16 +20,16 @@ export default function PersonalInfoForm({ onNext, formData }) {
     const weight = parseInt(data.weight);
 
     if (!data.age || isNaN(age) || age < 13 || age > 100) {
-      newErrors.age = 'Age must be between 13 and 100';
+      newErrors.age = s.errors.age;
     }
     if (!data.gender) {
-      newErrors.gender = 'Gender is required';
+      newErrors.gender = s.errors.gender;
     }
     if (!data.height || isNaN(height) || height < 100 || height > 250) {
-      newErrors.height = 'Height must be between 100 and 250 cm';
+      newErrors.height = s.errors.height;
     }
     if (!data.weight || isNaN(weight) || weight < 30 || weight > 300) {
-      newErrors.weight = 'Weight must be between 30 and 300 kg';
+      newErrors.weight = s.errors.weight;
     }
 
     setErrors(newErrors);
@@ -62,11 +65,11 @@ export default function PersonalInfoForm({ onNext, formData }) {
         .form-field:nth-child(4) { animation-delay: 0.2s; }
       `}</style>
 
-      <FormGroup label="Your Profile" description="Tell us about yourself so we can create a personalized plan">
+      <FormGroup label={s.groupLabel} description={s.groupDesc}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="form-field">
             <Input
-              label="Age"
+              label={s.age}
               type="number"
               min="13"
               max="120"
@@ -79,12 +82,8 @@ export default function PersonalInfoForm({ onNext, formData }) {
 
           <div className="form-field">
             <Select
-              label="Gender"
-              options={[
-                { value: 'male', label: 'Male' },
-                { value: 'female', label: 'Female' },
-                { value: 'other', label: 'Other' },
-              ]}
+              label={s.gender}
+              options={s.genderOptions}
               value={data.gender || ''}
               onChange={(e) => setData({ ...data, gender: e.target.value })}
               error={errors.gender}
@@ -94,7 +93,7 @@ export default function PersonalInfoForm({ onNext, formData }) {
 
           <div className="form-field">
             <Input
-              label="Height (cm)"
+              label={s.height}
               type="number"
               min="100"
               max="250"
@@ -107,7 +106,7 @@ export default function PersonalInfoForm({ onNext, formData }) {
 
           <div className="form-field">
             <Input
-              label="Weight (kg)"
+              label={s.weight}
               type="number"
               min="30"
               max="300"
@@ -121,7 +120,7 @@ export default function PersonalInfoForm({ onNext, formData }) {
       </FormGroup>
 
       <Button type="submit" className="w-full" style={{ animation: 'slideUp 0.5s ease-out forwards 0.25s both' }}>
-        Continue →
+        {s.continueBtn}
       </Button>
     </form>
   );

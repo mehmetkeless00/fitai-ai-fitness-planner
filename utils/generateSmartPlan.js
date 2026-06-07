@@ -4,6 +4,8 @@
  * Supports all fitness goals, experience levels, and dietary preferences
  */
 
+import { getPlanStrings } from './planStrings.js';
+
 export function generateSmartPlan(userProfile) {
   const {
     age,
@@ -15,6 +17,7 @@ export function generateSmartPlan(userProfile) {
     frequency,
     dietaryPreference,
     allergies = '',
+    lang = 'en',
   } = userProfile;
 
   const bmr = calculateBMR(age, gender, height, weight);
@@ -24,7 +27,7 @@ export function generateSmartPlan(userProfile) {
   const macros = calculateMacros(dailyCalories, fitnessGoal, weight);
 
   const workoutPlan = generateWorkoutPlan(experience, frequency, fitnessGoal);
-  const mealPlan = generateMealPlan(dailyCalories, macros, dietaryPreference, allergies, frequency);
+  const mealPlan = generateMealPlan(dailyCalories, macros, dietaryPreference, allergies, frequency, lang);
   const hydration = generateHydrationRecommendation(weight, age, frequency);
 
   const recoveryScore = generateRecoveryScore(frequency, age, fitnessGoal, dailyCalories, tdee);
@@ -32,7 +35,7 @@ export function generateSmartPlan(userProfile) {
   const riskFlags = generateRiskFlags(frequency, dailyCalories, tdee, age, fitnessGoal);
   const groceryList = generateGroceryList(mealPlan);
 
-  const advice = generatePersonalizedAdvice(fitnessGoal, experience, age, gender);
+  const advice = generatePersonalizedAdvice(fitnessGoal, experience, age, gender, lang);
 
   return {
     dailyCalories,
@@ -1142,7 +1145,7 @@ function generatePerformancePlan(experience, frequency) {
 // MEAL GENERATION
 // ============================================
 
-function generateMealPlan(dailyCalories, macros, dietaryPreference, allergies, frequency) {
+function generateMealPlan(dailyCalories, macros, dietaryPreference, allergies, frequency, lang = 'en') {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const isHighProtein = macros.protein.percentage >= 35;
 
@@ -1157,9 +1160,10 @@ function generateMealPlan(dailyCalories, macros, dietaryPreference, allergies, f
         dietaryPreference,
         allergies,
         isWorkoutDay,
-        0.25
+        0.25,
+        lang
       ),
-      lunch: generateMealForTimeOfDay('lunch', dailyCalories, macros, dietaryPreference, allergies, isWorkoutDay, 0.35),
+      lunch: generateMealForTimeOfDay('lunch', dailyCalories, macros, dietaryPreference, allergies, isWorkoutDay, 0.35, lang),
       dinner: generateMealForTimeOfDay(
         'dinner',
         dailyCalories,
@@ -1167,9 +1171,10 @@ function generateMealPlan(dailyCalories, macros, dietaryPreference, allergies, f
         dietaryPreference,
         allergies,
         isWorkoutDay,
-        0.3
+        0.3,
+        lang
       ),
-      snack: generateMealForTimeOfDay('snack', dailyCalories, macros, dietaryPreference, allergies, isWorkoutDay, 0.1),
+      snack: generateMealForTimeOfDay('snack', dailyCalories, macros, dietaryPreference, allergies, isWorkoutDay, 0.1, lang),
     };
 
     return {
@@ -1188,9 +1193,9 @@ function generateMealPlan(dailyCalories, macros, dietaryPreference, allergies, f
   });
 }
 
-function generateMealForTimeOfDay(timeOfDay, dailyCalories, macros, preference, allergies, isWorkoutDay, caloriePercent) {
+function generateMealForTimeOfDay(timeOfDay, dailyCalories, macros, preference, allergies, isWorkoutDay, caloriePercent, lang = 'en') {
   const mealCalories = Math.round(dailyCalories * caloriePercent);
-  const meals = getMealOptions(preference, allergies);
+  const meals = getMealOptions(preference, allergies, lang);
   const mealList = meals[timeOfDay] || [];
 
   if (mealList.length === 0) {
@@ -1199,7 +1204,7 @@ function generateMealForTimeOfDay(timeOfDay, dailyCalories, macros, preference, 
       description: 'Unable to generate meal',
       calories: mealCalories,
       macros: { protein: 0, carbs: 0, fat: 0 },
-      timing: getTiming(timeOfDay),
+      timing: getTiming(timeOfDay, false, lang),
       prepTime: '15 minutes',
       difficulty: 'Easy',
       alternatives: [],
@@ -1218,7 +1223,7 @@ function generateMealForTimeOfDay(timeOfDay, dailyCalories, macros, preference, 
       carbs: Math.round((mealCalories * macroSplit.carbs) / 4),
       fat: Math.round((mealCalories * macroSplit.fat) / 9),
     },
-    timing: getTiming(timeOfDay, isWorkoutDay),
+    timing: getTiming(timeOfDay, isWorkoutDay, lang),
     prepTime: selectedMeal.prepTime || '15 minutes',
     difficulty: selectedMeal.difficulty || 'Easy',
     alternatives: selectedMeal.alternatives || [],
@@ -1232,892 +1237,21 @@ function getMacroSplitForMeal(timeOfDay, isWorkoutDay) {
   return { protein: 0.4, carbs: 0.4, fat: 0.2 };
 }
 
-function getTiming(timeOfDay, isWorkoutDay) {
+function getTiming(timeOfDay, isWorkoutDay, lang = 'en') {
+  const t = getPlanStrings(lang).timing;
   const timings = {
-    breakfast: 'Within 1 hour of waking',
-    lunch: 'Around midday (12-1pm)',
-    dinner: 'Evening (6-8pm)',
-    snack: isWorkoutDay ? 'Pre or post-workout' : 'Mid-afternoon or evening',
+    breakfast: t.breakfast,
+    lunch: t.lunch,
+    dinner: t.dinner,
+    snack: isWorkoutDay ? t.snackWorkout : t.snackRest,
   };
-  return timings[timeOfDay] || 'As needed';
+  return timings[timeOfDay] || t.asNeeded;
 }
 
-function getMealOptions(preference, allergies) {
-  const omnivoreMeals = {
-    breakfast: [
-      {
-        name: 'Scrambled Eggs with Avocado Toast',
-        description: '3 large eggs, 2 slices whole wheat toast, 1/2 avocado, 1 orange',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Oatmeal with berries and nuts', 'Greek yogurt with granola'],
-      },
-      {
-        name: 'Oatmeal with Berries & Almonds',
-        description: '1 cup oats, 1 banana, 1/2 cup blueberries, 1/4 cup almonds, honey',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Pancakes with lean bacon', 'Smoothie with protein powder'],
-      },
-      {
-        name: 'Greek Yogurt Parfait',
-        description: '1.5 cups Greek yogurt, 1/2 cup granola, 1/2 cup mixed berries, honey drizzle',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Cottage cheese with fruit', 'Protein smoothie'],
-      },
-      {
-        name: 'Chicken Sausage Breakfast',
-        description: '2 chicken sausages, 2 slices whole wheat toast, 1 tbsp almond butter, berries',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Bacon and eggs', 'Turkey sausage'],
-      },
-    ],
-    lunch: [
-      {
-        name: 'Grilled Chicken Breast with Rice & Broccoli',
-        description: '150g grilled chicken breast, 150g brown rice, 150g steamed broccoli, olive oil',
-        prepTime: '20 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Turkey with sweet potato', 'Salmon with rice'],
-      },
-      {
-        name: 'Turkey & Veggie Wrap',
-        description: 'Whole wheat wrap, 100g sliced turkey, lettuce, tomato, hummus, avocado',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Chicken wrap', 'Tuna wrap'],
-      },
-      {
-        name: 'Salmon with Sweet Potato & Asparagus',
-        description: '150g baked salmon, 150g sweet potato, 150g steamed asparagus, lemon',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Cod with potatoes', 'Halibut with vegetables'],
-      },
-      {
-        name: 'Lean Beef with Pasta & Tomato Sauce',
-        description: '120g lean ground beef, 1.5 cups whole wheat pasta, tomato sauce, vegetables',
-        prepTime: '20 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Turkey meatballs', 'Chicken pasta'],
-      },
-    ],
-    dinner: [
-      {
-        name: 'Grilled Steak with Roasted Vegetables',
-        description: '150g grilled steak (lean cut), roasted broccoli and carrots, sweet potato',
-        prepTime: '30 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Grilled chicken', 'Baked fish'],
-      },
-      {
-        name: 'Baked Chicken with Quinoa & Green Beans',
-        description: '150g baked chicken breast, 150g quinoa, 150g steamed green beans, olive oil',
-        prepTime: '30 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Turkey breast', 'Baked fish'],
-      },
-      {
-        name: 'Fish Tacos with Cabbage Slaw',
-        description: '150g baked white fish, 2 whole grain tortillas, cabbage slaw, lime, cilantro',
-        prepTime: '20 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Chicken tacos', 'Shrimp tacos'],
-      },
-      {
-        name: 'Pork Tenderloin with Roasted Root Vegetables',
-        description: '150g baked pork tenderloin, roasted sweet potato and brussels sprouts',
-        prepTime: '35 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Beef tenderloin', 'Chicken breast'],
-      },
-    ],
-    snack: [
-      {
-        name: 'Protein Shake',
-        description: 'Protein powder, banana, 1 tbsp peanut butter, almond milk, ice',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Greek yogurt', 'Protein bar'],
-      },
-      {
-        name: 'Almonds & Dried Fruit Mix',
-        description: '1/4 cup almonds, 2 tbsp dried cranberries, 2 tbsp raisins',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Mixed nuts', 'Trail mix'],
-      },
-      {
-        name: 'Cottage Cheese with Berries',
-        description: '150g low-fat cottage cheese, 1/2 cup mixed berries, 1 tbsp honey',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Greek yogurt', 'Protein pudding'],
-      },
-      {
-        name: 'Apple with Almond Butter',
-        description: '1 medium apple, 2 tbsp almond butter',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Banana with peanut butter', 'Rice cakes with butter'],
-      },
-    ],
-  };
-
-  const vegetarianMeals = {
-    breakfast: [
-      {
-        name: 'Scrambled Eggs with Avocado Toast',
-        description: '3 large eggs, 2 slices whole wheat toast, 1/2 avocado, 1 orange',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Oatmeal with protein powder', 'Greek yogurt with granola'],
-      },
-      {
-        name: 'Tofu Scramble with Mushrooms',
-        description: '150g firm tofu, mushrooms, spinach, onions, 2 slices toast, olive oil',
-        prepTime: '15 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Vegetable frittata', 'Chickpea scramble'],
-      },
-      {
-        name: 'Greek Yogurt Parfait',
-        description: '1.5 cups Greek yogurt, 1/2 cup granola, 1/2 cup berries, honey',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Cottage cheese parfait', 'Plant-based yogurt'],
-      },
-      {
-        name: 'Cottage Cheese Pancakes',
-        description: '1 cup cottage cheese blended with eggs, whole grain flour, berries on top',
-        prepTime: '15 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Oatmeal pancakes', 'Protein pancakes'],
-      },
-    ],
-    lunch: [
-      {
-        name: 'Chickpea & Quinoa Salad',
-        description: '1 cup cooked chickpeas, 1 cup quinoa, vegetables, tahini dressing, lemon',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Lentil salad', 'Bean & grain bowl'],
-      },
-      {
-        name: 'Vegetable Burger with Sweet Potato Fries',
-        description: 'Veggie burger (store-bought), whole grain bun, sweet potato fries, veggies',
-        prepTime: '20 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Black bean burger', 'Falafel wrap'],
-      },
-      {
-        name: 'Lentil Soup with Whole Grain Bread',
-        description: '1 serving lentil soup, 1 slice whole grain bread with hummus, side salad',
-        prepTime: '10 minutes (if prepared)',
-        difficulty: 'Easy',
-        alternatives: ['Bean soup', 'Vegetable soup'],
-      },
-      {
-        name: 'Greek Salad with Chickpeas & Feta',
-        description: 'Mixed greens, chickpeas, feta cheese, olives, cucumber, tomato, olive oil',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Caprese salad', 'Mediterranean salad'],
-      },
-    ],
-    dinner: [
-      {
-        name: 'Baked Tofu with Roasted Vegetables & Rice',
-        description: '200g marinated baked tofu, roasted broccoli and carrots, 1 cup brown rice',
-        prepTime: '30 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Tempeh stir-fry', 'Seitan with vegetables'],
-      },
-      {
-        name: 'Lentil & Vegetable Curry with Rice',
-        description: '1.5 cups cooked lentils, curry sauce, vegetables, 1 cup brown rice',
-        prepTime: '30 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Chickpea curry', 'Bean curry'],
-      },
-      {
-        name: 'Vegetable Stir-Fry with Cashews & Quinoa',
-        description: 'Mixed vegetables, 1/4 cup cashews, 1 cup quinoa, soy-ginger sauce',
-        prepTime: '20 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Tofu stir-fry', 'Tempeh stir-fry'],
-      },
-      {
-        name: 'Chickpea Pasta with Marinara & Greens',
-        description: '1.5 cups whole wheat pasta, chickpea-based pasta, marinara, spinach',
-        prepTime: '20 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Lentil pasta', 'Bean pasta'],
-      },
-    ],
-    snack: [
-      {
-        name: 'Protein Shake',
-        description: 'Plant-based protein powder, banana, almond butter, almond milk',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Plant-based yogurt', 'Protein bar'],
-      },
-      {
-        name: 'Mixed Nuts & Seeds',
-        description: '1/4 cup almonds, cashews, pumpkin seeds, sunflower seeds',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Trail mix', 'Nut butter on crackers'],
-      },
-      {
-        name: 'Hummus with Vegetable Sticks',
-        description: '1/4 cup hummus, carrots, celery, bell peppers',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Guacamole with veggies', 'Tahini dip'],
-      },
-      {
-        name: 'Greek Yogurt with Granola',
-        description: '150g Greek yogurt, 1/4 cup granola, berries',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Cottage cheese', 'Plant-based yogurt'],
-      },
-    ],
-  };
-
-  const veganMeals = {
-    breakfast: [
-      {
-        name: 'Oatmeal with Plant Protein & Berries',
-        description: '1 cup oats, plant-based protein powder, mixed berries, almond milk, honey',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Smoothie bowl', 'Tofu scramble'],
-      },
-      {
-        name: 'Tofu Scramble with Mushrooms & Toast',
-        description: '150g firm tofu, mushrooms, spinach, 2 slices whole grain toast, olive oil',
-        prepTime: '15 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Chickpea scramble', 'Tempeh scramble'],
-      },
-      {
-        name: 'Smoothie Bowl',
-        description: 'Blended banana, berries, plant milk, topped with granola, coconut, seeds',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Acai bowl', 'Green smoothie bowl'],
-      },
-      {
-        name: 'Chia Seed Pudding with Fruit',
-        description: 'Chia seeds, almond milk, maple syrup, fresh fruit, granola topping',
-        prepTime: '5 minutes (+ overnight)',
-        difficulty: 'Very Easy',
-        alternatives: ['Hemp seed pudding', 'Flax seed pudding'],
-      },
-    ],
-    lunch: [
-      {
-        name: 'Chickpea & Vegetable Curry with Rice',
-        description: '1 cup cooked chickpeas, curry sauce, vegetables, 1 cup brown rice',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Lentil curry', 'Tofu curry'],
-      },
-      {
-        name: 'Lentil & Walnut Tacos',
-        description: 'Seasoned cooked lentils, walnuts, whole grain tortillas, salsa, lettuce',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Black bean tacos', 'Tofu tacos'],
-      },
-      {
-        name: 'Tempeh & Vegetable Stir-Fry with Quinoa',
-        description: '150g marinated tempeh, mixed vegetables, quinoa, soy-ginger sauce',
-        prepTime: '20 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Tofu stir-fry', 'Seitan stir-fry'],
-      },
-      {
-        name: 'Hummus Wrap with Roasted Vegetables',
-        description: 'Whole grain wrap, hummus, roasted vegetables, tahini sauce',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Falafel wrap', 'Tofu wrap'],
-      },
-    ],
-    dinner: [
-      {
-        name: 'Baked Tofu with Roasted Vegetables & Farro',
-        description: '200g marinated baked tofu, roasted broccoli, farro, lemon-herb dressing',
-        prepTime: '30 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Tempeh', 'Seitan'],
-      },
-      {
-        name: 'Lentil Bolognese with Whole Wheat Pasta',
-        description: '1.5 cups cooked lentils, marinara, 1.5 cups pasta, steamed spinach',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Mushroom bolognese', 'Chickpea bolognese'],
-      },
-      {
-        name: 'Vegetable & Black Bean Enchiladas',
-        description: 'Whole grain tortillas, black beans, vegetables, salsa, cashew cream sauce',
-        prepTime: '30 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Chickpea enchiladas', 'Bean enchiladas'],
-      },
-      {
-        name: 'Chickpea & Spinach Curry with Coconut Rice',
-        description: '1 cup chickpeas, spinach, coconut curry, coconut rice',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Tofu curry', 'Lentil curry'],
-      },
-    ],
-    snack: [
-      {
-        name: 'Vegan Protein Shake',
-        description: 'Plant-based protein powder, banana, almond butter, almond milk, ice',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Smoothie with nuts', 'Plant yogurt'],
-      },
-      {
-        name: 'Mixed Nuts & Seeds',
-        description: '1/4 cup almonds, cashews, pumpkin seeds, sunflower seeds',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Trail mix', 'Nut butter with fruit'],
-      },
-      {
-        name: 'Coconut Yogurt with Berries',
-        description: '150g coconut yogurt, 1/2 cup mixed berries, 1 tbsp honey/maple syrup',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Almond yogurt', 'Oat yogurt'],
-      },
-      {
-        name: 'Fruit with Almond Butter',
-        description: 'Apple or banana with 2 tbsp almond butter',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Tahini on fruit', 'Cashew butter on fruit'],
-      },
-    ],
-  };
-
-  const ketoMeals = {
-    breakfast: [
-      {
-        name: 'Scrambled Eggs with Bacon & Avocado',
-        description: '4 large eggs, 3 slices bacon, 1/2 avocado, butter',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Egg muffins', 'Omelet with cheese'],
-      },
-      {
-        name: 'Greek Yogurt with Nuts & Seeds',
-        description: '150g full-fat Greek yogurt, 1/4 cup nuts, 2 tbsp seeds, MCT oil',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Cottage cheese', 'Heavy cream with berries'],
-      },
-      {
-        name: 'Smoked Salmon with Cream Cheese',
-        description: '100g smoked salmon, 50g cream cheese, cucumber slices, capers',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Mackerel with avocado', 'Sardines with cream cheese'],
-      },
-      {
-        name: 'Butter Coffee with MCT Oil',
-        description: 'Black coffee, 1 tbsp butter, 1 tbsp MCT oil, pinch of salt',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Bulletproof coffee', 'Heavy cream coffee'],
-      },
-    ],
-    lunch: [
-      {
-        name: 'Grilled Ribeye with Butter & Vegetables',
-        description: '150g grilled ribeye, garlic butter, steamed broccoli and zucchini',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Salmon', 'Lamb chops'],
-      },
-      {
-        name: 'Tuna Salad Lettuce Wraps',
-        description: '150g canned tuna (in oil), mayo, celery, butter lettuce wraps',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Chicken salad', 'Egg salad'],
-      },
-      {
-        name: 'Bacon & Cheese Burger (no bun)',
-        description: '150g ground beef burger, 2 slices cheese, bacon, mayo, pickles',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Turkey burger', 'Lamb burger'],
-      },
-      {
-        name: 'Caprese Salad with Olive Oil',
-        description: 'Fresh mozzarella, tomato, basil, olive oil, balsamic (minimal)',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Spinach salad with bacon', 'Kale salad with olive oil'],
-      },
-    ],
-    dinner: [
-      {
-        name: 'Grilled Salmon with Hollandaise',
-        description: '150g grilled salmon, hollandaise sauce, roasted asparagus',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Halibut with butter', 'Cod with hollandaise'],
-      },
-      {
-        name: 'Ribeye Steak with Compound Butter',
-        description: '200g grilled ribeye, herb compound butter, roasted Brussels sprouts',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['NY Strip', 'Filet mignon'],
-      },
-      {
-        name: 'Shrimp Scampi with Zucchini Noodles',
-        description: '200g shrimp, garlic butter, zucchini noodles, lemon, parsley',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Scallops', 'Lobster'],
-      },
-      {
-        name: 'Pork Chops with Creamy Mushroom Sauce',
-        description: '2 pork chops, heavy cream mushroom sauce, roasted cauliflower',
-        prepTime: '20 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Lamb chops', 'Chicken thighs'],
-      },
-    ],
-    snack: [
-      {
-        name: 'Macadamia Nuts & Cheese',
-        description: '1/4 cup macadamia nuts, 50g cheddar cheese, olives',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Pecans with cheese', 'Brazil nuts with cheese'],
-      },
-      {
-        name: 'Beef Jerky & Avocado',
-        description: '60g grass-fed beef jerky, 1/2 avocado, sea salt',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Biltong', 'Pepperoni slices'],
-      },
-      {
-        name: 'Full-Fat Greek Yogurt',
-        description: '150g full-fat Greek yogurt, walnuts, MCT oil',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Cottage cheese', 'Heavy cream'],
-      },
-      {
-        name: 'Pork Rinds & Guacamole',
-        description: '30g pork rinds, 1/2 avocado guacamole, lime juice',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Cheese crisps', 'Celery with almond butter'],
-      },
-    ],
-  };
-
-  const paleoMeals = {
-    breakfast: [
-      {
-        name: 'Scrambled Eggs with Bacon & Berries',
-        description: '3 large eggs, 3 slices bacon, 1/2 cup blueberries, ghee',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Frittata', 'Egg scramble'],
-      },
-      {
-        name: 'Sweet Potato Hash with Sausage',
-        description: '150g sweet potato hash, 2 paleo sausages, spinach, ghee',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Root vegetable hash', 'Cauliflower hash'],
-      },
-      {
-        name: 'Coconut Milk Smoothie',
-        description: 'Full-fat coconut milk, banana, berries, almond butter, honey',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Avocado smoothie', 'Bone broth smoothie'],
-      },
-      {
-        name: 'Grilled Fish with Fruit',
-        description: '100g grilled white fish, sliced mango, raspberries, olive oil',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Salmon with fruit', 'Mackerel with berries'],
-      },
-    ],
-    lunch: [
-      {
-        name: 'Grilled Chicken with Roasted Root Vegetables',
-        description: '150g grilled chicken breast, roasted sweet potato and carrots, olive oil',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Beef with vegetables', 'Turkey with vegetables'],
-      },
-      {
-        name: 'Salad with Grilled Steak & Olives',
-        description: 'Mixed greens, 100g grilled steak, olives, avocado, olive oil dressing',
-        prepTime: '20 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Salmon salad', 'Turkey salad'],
-      },
-      {
-        name: 'Paleo Lettuce Wrap',
-        description: 'Butter lettuce wraps, 120g ground turkey, vegetables, coconut aminos',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Beef lettuce wraps', 'Lamb lettuce wraps'],
-      },
-      {
-        name: 'Baked Sweet Potato with Ground Beef',
-        description: 'Large baked sweet potato, 120g lean ground beef, broccoli, ghee',
-        prepTime: '30 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Yam with beef', 'Root vegetables with beef'],
-      },
-    ],
-    dinner: [
-      {
-        name: 'Grilled Salmon with Asparagus & Almonds',
-        description: '150g grilled salmon, roasted asparagus, sliced almonds, olive oil',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Halibut', 'Sea bass'],
-      },
-      {
-        name: 'Slow-Cooked Beef Stew',
-        description: 'Beef chuck, root vegetables, bone broth, herbs, coconut oil',
-        prepTime: '120 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Lamb stew', 'Venison stew'],
-      },
-      {
-        name: 'Grilled Lamb Chops with Mushrooms',
-        description: '2 lamb chops, sautéed mushrooms, roasted zucchini, ghee',
-        prepTime: '20 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Beef chops', 'Bison chops'],
-      },
-      {
-        name: 'Turkey Meatballs with Vegetables',
-        description: '150g turkey meatballs (coconut flour binder), roasted vegetables',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Beef meatballs', 'Lamb meatballs'],
-      },
-    ],
-    snack: [
-      {
-        name: 'Apple with Almond Butter',
-        description: '1 medium apple, 2 tbsp almond butter, honey drizzle',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Banana with nut butter', 'Berries with nut butter'],
-      },
-      {
-        name: 'Coconut & Macadamia Nuts',
-        description: '1/4 cup unsweetened coconut flakes, 1/4 cup macadamia nuts',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Almonds with berries', 'Pecans with dates'],
-      },
-      {
-        name: 'Homemade Paleo Bars',
-        description: 'Dates, almonds, coconut oil, dark chocolate (optional)',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Larabars', 'Fruit and nuts'],
-      },
-      {
-        name: 'Beef Jerky & Berries',
-        description: '60g grass-fed beef jerky, 1/2 cup mixed berries',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Turkey jerky', 'Biltong'],
-      },
-    ],
-  };
-
-  const mediterraneanMeals = {
-    breakfast: [
-      {
-        name: 'Greek Yogurt with Honey & Walnuts',
-        description: '1 cup Greek yogurt, 1 tbsp honey, 1/4 cup walnuts, berries',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Ricotta with honey', 'Feta cheese'],
-      },
-      {
-        name: 'Whole Grain Toast with Olive Oil & Tomatoes',
-        description: '2 slices whole grain bread, olive oil, fresh tomatoes, feta, oregano',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Whole grain toast with avocado', 'Toast with cheese'],
-      },
-      {
-        name: 'Mediterranean Omelet',
-        description: '3 eggs, spinach, feta cheese, tomatoes, olives, olive oil',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Vegetable frittata', 'Egg scramble'],
-      },
-      {
-        name: 'Whole Grain Oatmeal with Figs & Nuts',
-        description: '1 cup oatmeal, 2 dried figs, 1/4 cup almonds, honey, olive oil',
-        prepTime: '15 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Barley', 'Spelt'],
-      },
-    ],
-    lunch: [
-      {
-        name: 'Grilled Fish with Olive Oil & Lemon',
-        description: '150g grilled sea bass or mackerel, whole grain, roasted vegetables',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Salmon', 'Halibut'],
-      },
-      {
-        name: 'Mediterranean Chickpea Salad',
-        description: '1 cup chickpeas, tomatoes, cucumber, red onion, feta, olive oil dressing',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Lentil salad', 'White bean salad'],
-      },
-      {
-        name: 'Whole Wheat Pasta with Vegetable Sauce',
-        description: '1.5 cups whole wheat pasta, tomato sauce, zucchini, spinach, herbs',
-        prepTime: '20 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Farro pasta', 'Barley'],
-      },
-      {
-        name: 'Mediterranean Wrap',
-        description: 'Whole grain wrap, hummus, feta, tomatoes, cucumber, olive oil',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Falafel wrap', 'Vegetable wrap'],
-      },
-    ],
-    dinner: [
-      {
-        name: 'Baked Salmon with Herbs & Lemon',
-        description: '150g baked salmon, herbs, lemon, olive oil, roasted vegetables',
-        prepTime: '30 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Baked sea bass', 'Baked halibut'],
-      },
-      {
-        name: 'Whole Grain Risotto with Vegetables',
-        description: 'Whole grain rice, vegetable broth, spinach, tomatoes, herbs, parmesan',
-        prepTime: '30 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Farro risotto', 'Barley risotto'],
-      },
-      {
-        name: 'Grilled Lamb with Mediterranean Salad',
-        description: '120g grilled lamb, Mediterranean salad, whole grain bread, olive oil',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Chicken', 'Beef'],
-      },
-      {
-        name: 'Minestrone Soup with Whole Grain Bread',
-        description: 'Vegetable soup with beans, whole grain pasta, herbs, olive oil',
-        prepTime: '30 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Lentil soup', 'White bean soup'],
-      },
-    ],
-    snack: [
-      {
-        name: 'Mixed Olives & Almonds',
-        description: '1/4 cup olives, 1/4 cup almonds, feta cheese',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Mixed nuts', 'Hummus with veggies'],
-      },
-      {
-        name: 'Whole Grain Crackers with Hummus',
-        description: '6-8 whole grain crackers, 1/4 cup hummus, lemon',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Whole wheat bread', 'Vegetable chips'],
-      },
-      {
-        name: 'Greek Yogurt with Honey & Walnuts',
-        description: '100g Greek yogurt, 1 tsp honey, 2 tbsp walnuts',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Feta cheese', 'Ricotta'],
-      },
-      {
-        name: 'Fig & Almond Energy Balls',
-        description: 'Figs, almonds, dates, olive oil, honey',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Date and walnut balls', 'Apricot and nut balls'],
-      },
-    ],
-  };
-
-  const lowCarbMeals = {
-    breakfast: [
-      {
-        name: 'Scrambled Eggs with Vegetables',
-        description: '3 large eggs, spinach, mushrooms, tomatoes, butter, cheese',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Omelet with vegetables', 'Egg muffins'],
-      },
-      {
-        name: 'Full-Fat Greek Yogurt with Berries',
-        description: '150g full-fat Greek yogurt, 1/2 cup berries, walnuts, stevia',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Cottage cheese', 'Cream cheese'],
-      },
-      {
-        name: 'Smoked Salmon with Cream Cheese & Veggies',
-        description: '100g smoked salmon, 50g cream cheese, cucumber, avocado',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Mackerel', 'Sardines'],
-      },
-      {
-        name: 'Low-Carb Breakfast Sausage & Vegetables',
-        description: '2-3 low-carb sausages, sautéed spinach and mushrooms, butter',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Bacon with vegetables', 'Turkey sausage'],
-      },
-    ],
-    lunch: [
-      {
-        name: 'Grilled Chicken with Roasted Vegetables',
-        description: '150g grilled chicken, roasted broccoli, cauliflower, zucchini, olive oil',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Beef', 'Turkey'],
-      },
-      {
-        name: 'Cobb Salad',
-        description: 'Mixed greens, bacon, hard-boiled eggs, avocado, cheese, ranch dressing',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Chef salad', 'Spinach salad'],
-      },
-      {
-        name: 'Low-Carb Lettuce Wrap Sandwich',
-        description: 'Butter lettuce wraps, turkey, cheese, mayo, lettuce, tomato',
-        prepTime: '5 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Beef lettuce wrap', 'Chicken lettuce wrap'],
-      },
-      {
-        name: 'Grilled Fish with Roasted Asparagus',
-        description: '150g grilled fish, roasted asparagus, lemon butter, olive oil',
-        prepTime: '20 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Salmon', 'Halibut'],
-      },
-    ],
-    dinner: [
-      {
-        name: 'Ribeye Steak with Creamed Spinach',
-        description: '150g grilled ribeye, creamed spinach, cauliflower mash',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['NY Strip', 'Filet mignon'],
-      },
-      {
-        name: 'Baked Salmon with Hollandaise & Broccoli',
-        description: '150g baked salmon, hollandaise, steamed broccoli, lemon',
-        prepTime: '25 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Halibut', 'Sea bass'],
-      },
-      {
-        name: 'Ground Turkey Taco Bowl (No Rice)',
-        description: '150g ground turkey, salsa, cheese, avocado, lettuce, sour cream',
-        prepTime: '10 minutes',
-        difficulty: 'Easy',
-        alternatives: ['Beef taco bowl', 'Chicken taco bowl'],
-      },
-      {
-        name: 'Pork Chops with Garlic Butter & Vegetables',
-        description: '2 pork chops, garlic butter, roasted zucchini and mushrooms',
-        prepTime: '20 minutes',
-        difficulty: 'Medium',
-        alternatives: ['Lamb chops', 'Chicken thighs'],
-      },
-    ],
-    snack: [
-      {
-        name: 'Cheese & Nuts',
-        description: '50g cheddar or your favorite cheese, 1/4 cup almonds or pecans',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Cheese and olives', 'Cheese and salami'],
-      },
-      {
-        name: 'Celery with Almond Butter',
-        description: 'Celery stalks, 2 tbsp almond butter, optional bacon bits',
-        prepTime: '2 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Cucumber with dip', 'Bell pepper with guacamole'],
-      },
-      {
-        name: 'Hard-Boiled Eggs',
-        description: '2-3 hard-boiled eggs, salt, pepper, optional mayo',
-        prepTime: '10 minutes (if prepared)',
-        difficulty: 'Very Easy',
-        alternatives: ['Deviled eggs', 'Egg salad'],
-      },
-      {
-        name: 'Pepperoni & Cheese Slices',
-        description: '1 oz pepperoni, 1 oz cheese (mozzarella or cheddar)',
-        prepTime: '0 minutes',
-        difficulty: 'Very Easy',
-        alternatives: ['Salami and cheese', 'Prosciutto and cheese'],
-      },
-    ],
-  };
-
-  const mealBase =
-    preference === 'vegetarian'
-      ? vegetarianMeals
-      : preference === 'vegan'
-        ? veganMeals
-        : preference === 'keto'
-          ? ketoMeals
-          : preference === 'paleo'
-            ? paleoMeals
-            : preference === 'mediterranean'
-              ? mediterraneanMeals
-              : preference === 'low-carb'
-                ? lowCarbMeals
-                : omnivoreMeals;
+function getMealOptions(preference, allergies, lang = 'en') {
+  const strings = getPlanStrings(lang);
+  const allMeals = strings.meals;
+  const mealBase = allMeals[preference] || allMeals['omnivore'];
 
   const filterAllergies = (meals) => {
     return meals.filter((meal) => {
@@ -2222,37 +1356,49 @@ function generateGroceryList(mealPlan) {
       const words = description.split(',').map((w) => w.trim());
 
       words.forEach((item) => {
+        const i = item.toLowerCase();
         let category = 'Other';
         if (
-          item.includes('chicken') ||
-          item.includes('beef') ||
-          item.includes('turkey') ||
-          item.includes('pork') ||
-          item.includes('fish') ||
-          item.includes('salmon') ||
-          item.includes('egg')
+          i.includes('chicken') || i.includes('beef') || i.includes('turkey') ||
+          i.includes('pork') || i.includes('fish') || i.includes('salmon') || i.includes('egg') ||
+          i.includes('tavuk') || i.includes('dana') || i.includes('hindi') ||
+          i.includes('domuz') || i.includes('balık') || i.includes('somon') ||
+          i.includes('yumurta') || i.includes('tofu') || i.includes('tempeh') ||
+          i.includes('nohut') || i.includes('mercimek') || i.includes('karides') || i.includes('kuzu')
         ) {
           category = 'Proteins';
         } else if (
-          item.includes('rice') ||
-          item.includes('pasta') ||
-          item.includes('bread') ||
-          item.includes('oat')
+          i.includes('rice') || i.includes('pasta') || i.includes('bread') || i.includes('oat') ||
+          i.includes('pirinç') || i.includes('makarna') || i.includes('ekmek') ||
+          i.includes('yulaf') || i.includes('kinoa') || i.includes('tortilla') || i.includes('granola')
         ) {
           category = 'Grains & Carbs';
         } else if (
-          item.includes('broccoli') ||
-          item.includes('spinach') ||
-          item.includes('vegetable') ||
-          item.includes('carrot') ||
-          item.includes('lettuce')
+          i.includes('broccoli') || i.includes('spinach') || i.includes('vegetable') ||
+          i.includes('carrot') || i.includes('lettuce') ||
+          i.includes('brokoli') || i.includes('ıspanak') || i.includes('sebze') ||
+          i.includes('havuç') || i.includes('marul') || i.includes('karnabahar') ||
+          i.includes('kabak') || i.includes('mantar') || i.includes('domates')
         ) {
           category = 'Vegetables';
-        } else if (item.includes('berry') || item.includes('apple') || item.includes('banana')) {
+        } else if (
+          i.includes('berry') || i.includes('apple') || i.includes('banana') ||
+          i.includes('meyve') || i.includes('elma') || i.includes('muz') ||
+          i.includes('mersini') || i.includes('incir') || i.includes('hurma') ||
+          i.includes('mango') || i.includes('portakal')
+        ) {
           category = 'Fruits';
-        } else if (item.includes('oil') || item.includes('butter') || item.includes('cheese')) {
+        } else if (
+          i.includes('oil') || i.includes('butter') || i.includes('cheese') ||
+          i.includes('yağ') || i.includes('tereyağ') || i.includes('peynir') ||
+          i.includes('yoğurt') || i.includes('krem')
+        ) {
           category = 'Oils & Dairy';
-        } else if (item.includes('nut') || item.includes('seed') || item.includes('almond')) {
+        } else if (
+          i.includes('nut') || i.includes('seed') || i.includes('almond') ||
+          i.includes('fıstık') || i.includes('badem') || i.includes('tohum') ||
+          i.includes('ceviz') || i.includes('kaju')
+        ) {
           category = 'Nuts & Seeds';
         }
 
@@ -2282,40 +1428,8 @@ function generateHydrationRecommendation(weight, age, frequency) {
   return `${rounded.toFixed(1)}-${(rounded + 0.5).toFixed(1)} liters per day (more on workout days)`;
 }
 
-function generatePersonalizedAdvice(goal, experience, age, gender) {
-  const advicesByGoal = {
-    'build-muscle': [
-      `Focus on progressive overload — add 1-2 reps or 5-10 lbs weekly. Sleep 7-9 hours daily. Consistency beats intensity. Track your lifts.`,
-      `Prioritize compound movements. Don't chase the pump; focus on strength and volume. Quality form prevents injury and maximizes gains.`,
-      `Eat protein with every meal (1.6-2.2g per kg). A surplus is essential, but don't overeat — aim for 0.5-1 lb/week weight gain.`,
-    ],
-    'lose-weight': [
-      `Maintain a moderate deficit (-300-500 cal). Too aggressive causes muscle loss and metabolic adaptation. Target 0.5-1 lb/week loss.`,
-      `Prioritize protein to preserve muscle during fat loss. Hitting macros matters more than food quality. Stay consistent.`,
-      `Maintain or increase strength in the gym. Don't do excessive cardio — 150-200 min/week is sufficient. Adherence > Perfection.`,
-    ],
-    endurance: [
-      `Build aerobic base with steady-state cardio first. Add interval training gradually. Recovery is crucial for endurance adaptations.`,
-      `Fuel adequately before and after training. Hydration strategy is critical for performance. Listen to your body.`,
-      `Combine different intensities: easy days, tempo work, and hard intervals. Periodize training to avoid overtraining.`,
-    ],
-    flexibility: [
-      `Consistency matters more than intensity. Stretch all major muscle groups daily. Improve mobility gradually over weeks/months.`,
-      `Focus on breathing and body awareness. Don't push into pain. Breathe deeply during stretches for maximum benefit.`,
-      `Combine flexibility work with light strength training to prevent injury. A flexible body is resilient.`,
-    ],
-    'general-fitness': [
-      `Aim for consistency and sustainability. Exercise 3-5 days per week. Find movements that feel good and match your lifestyle.`,
-      `Balance training, nutrition, sleep, and stress management. These pillars matter equally. Listen to your body.`,
-      `If something hurts, rest. If a program feels unsustainable, modify it. Long-term consistency beats short-term perfection.`,
-    ],
-    performance: [
-      `Periodize your training: build base strength, then add power and speed work. Deload every 4-6 weeks for recovery.`,
-      `Sport-specific movements should match your goals. Work on weak links first. Video your lifts to check form.`,
-      `Combine training with adequate sleep and nutrition. Performance athletes recover hard. Rest days are training days.`,
-    ],
-  };
-
+function generatePersonalizedAdvice(goal, experience, age, gender, lang = 'en') {
+  const advicesByGoal = getPlanStrings(lang).advice;
   const adviceList = advicesByGoal[goal] || advicesByGoal['general-fitness'];
   return adviceList[Math.floor(Math.random() * adviceList.length)];
 }

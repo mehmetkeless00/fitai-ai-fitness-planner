@@ -2,26 +2,13 @@
 
 import { useState } from 'react';
 import Button from '../../ui/Button';
-
-const STEP_MOTIVATION = {
-  0: {
-    title: "Let's build your personalized plan",
-    description: 'We need to know a bit about you first',
-  },
-  1: {
-    title: 'Your fitness goals matter',
-    description: 'The AI will tailor everything based on your objectives',
-  },
-  2: {
-    title: 'Almost there!',
-    description: 'A few final preferences before we generate your plan',
-  },
-};
+import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function FormStepper({ steps, onComplete, isLoading }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const { t } = useLanguage();
 
   const handleNext = (stepData) => {
     const merged = { ...formData, ...stepData };
@@ -49,10 +36,10 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
   };
 
   const StepComponent = steps[currentStep].component;
-  const motivation = STEP_MOTIVATION[currentStep] || {};
+  const motivation = t.createPlan.stepMotivation[currentStep] || {};
   const completedSteps = currentStep;
   const totalSteps = steps.length;
-  const stepProgress = ((completedSteps) / totalSteps) * 100;
+  const stepProgress = (completedSteps / totalSteps) * 100;
 
   return (
     <div className="w-full">
@@ -61,9 +48,9 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
         {/* Step counter and progress */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
-            Step {currentStep + 1} of {steps.length}
+            {t.createPlan.stepOf} {currentStep + 1} {t.createPlan.of} {steps.length}
           </span>
-          <span className="text-xs text-slate-500">{Math.round(stepProgress)}% complete</span>
+          <span className="text-xs text-slate-500">{Math.round(stepProgress)}{t.createPlan.percentComplete}</span>
         </div>
 
         {/* Animated progress bar */}
@@ -127,7 +114,7 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
           disabled={currentStep === 0 || isLoading || isTransitioning}
           className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 w-full sm:w-auto"
         >
-          ← Previous
+          {t.createPlan.prev}
         </Button>
         <div className="flex-1" />
         <Button
@@ -141,12 +128,12 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
           {isLoading ? (
             <span className="flex items-center gap-2">
               <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Generating...
+              {t.createPlan.generating}
             </span>
           ) : currentStep === steps.length - 1 ? (
-            '✨ Generate Plan'
+            t.createPlan.generate
           ) : (
-            'Next →'
+            t.createPlan.next
           )}
         </Button>
       </div>

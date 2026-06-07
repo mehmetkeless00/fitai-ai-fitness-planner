@@ -5,14 +5,17 @@ import Input from '../../ui/Input';
 import Select from '../../ui/Select';
 import FormGroup from '../../ui/FormGroup';
 import Button from '../../ui/Button';
+import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function PreferencesForm({ onNext, formData }) {
   const [data, setData] = useState(formData || {});
   const [errors, setErrors] = useState({});
+  const { t } = useLanguage();
+  const s = t.createPlan.preferences;
 
   const validate = () => {
     const newErrors = {};
-    if (!data.dietaryPreference) newErrors.dietaryPreference = 'Dietary preference is required';
+    if (!data.dietaryPreference) newErrors.dietaryPreference = s.errors.dietaryPreference;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -46,21 +49,10 @@ export default function PreferencesForm({ onNext, formData }) {
       `}</style>
 
       <div className="form-section">
-        <FormGroup
-          label="Dietary Preferences"
-          description="Customize your meal plan based on your preferences"
-        >
+        <FormGroup label={s.dietLabel} description={s.dietDesc}>
           <Select
-            label="Main Dietary Preference"
-            options={[
-              { value: 'omnivore', label: 'Omnivore (eat everything)' },
-              { value: 'vegetarian', label: 'Vegetarian' },
-              { value: 'vegan', label: 'Vegan' },
-              { value: 'keto', label: 'Keto' },
-              { value: 'paleo', label: 'Paleo' },
-              { value: 'mediterranean', label: 'Mediterranean' },
-              { value: 'low-carb', label: 'Low Carb' },
-            ]}
+            label={s.dietSelect}
+            options={s.dietOptions}
             value={data.dietaryPreference || ''}
             onChange={(e) => setData({ ...data, dietaryPreference: e.target.value })}
             error={errors.dietaryPreference}
@@ -70,14 +62,11 @@ export default function PreferencesForm({ onNext, formData }) {
       </div>
 
       <div className="form-section">
-        <FormGroup
-          label="Allergies & Restrictions"
-          description="Let us know what foods to avoid"
-        >
+        <FormGroup label={s.allergiesLabel} description={s.allergiesDesc}>
           <Input
-            label="List any allergies or restrictions (e.g., nuts, dairy, gluten)"
+            label={s.allergiesInput}
             type="text"
-            placeholder="Separate multiple items with commas"
+            placeholder={s.allergiesPlaceholder}
             value={data.allergies || ''}
             onChange={(e) => setData({ ...data, allergies: e.target.value })}
           />
@@ -85,11 +74,11 @@ export default function PreferencesForm({ onNext, formData }) {
       </div>
 
       <div className="form-section">
-        <FormGroup label="Additional Info">
+        <FormGroup label={s.additionalLabel}>
           <Input
-            label="Any other notes or preferences?"
+            label={s.additionalInput}
             type="textarea"
-            placeholder="Tell us anything else we should know..."
+            placeholder={s.additionalPlaceholder}
             value={data.notes || ''}
             onChange={(e) => setData({ ...data, notes: e.target.value })}
             as="textarea"
@@ -99,7 +88,7 @@ export default function PreferencesForm({ onNext, formData }) {
       </div>
 
       <Button type="submit" className="w-full" style={{ animation: 'slideUp 0.5s ease-out forwards 0.2s both' }}>
-        Generate My Plan →
+        {s.generateBtn}
       </Button>
     </form>
   );

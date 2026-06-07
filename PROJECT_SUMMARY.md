@@ -1,4 +1,4 @@
-# FitAI Project — Complete Development Handoff Document
+# FitFlow Project — Complete Development Handoff Document
 
 **Last Updated:** June 7, 2026  
 **Project Version:** 0.1.0 (MVP)  
@@ -8,8 +8,8 @@
 
 ## 1. Project Overview
 
-### What is FitAI?
-FitAI is a modern web application that generates personalized workout and nutrition plans using AI-powered algorithms. Users fill out a simple questionnaire about their fitness goals, experience level, body metrics, and preferences, and the app generates a complete 7-day workout plan, customized meal plan, and personalized coaching advice.
+### What is FitFlow?
+FitFlow is a modern web application that generates personalized workout and nutrition plans using AI-powered algorithms. Users fill out a simple questionnaire about their fitness goals, experience level, body metrics, and preferences, and the app generates a complete 7-day workout plan, customized meal plan, and personalized coaching advice.
 
 ### Main Purpose
 - **Primary Goal:** Democratize fitness planning by providing AI-generated, personalized plans without requiring expensive personal trainers
@@ -22,7 +22,7 @@ FitAI is a modern web application that generates personalized workout and nutrit
 - **Tertiary:** Intermediate/advanced users seeking AI-generated training periodization
 
 ### User Journey
-1. **Homepage** → Browse features & learn about FitAI
+1. **Homepage** → Browse features & learn about FitFlow
 2. **Create Plan** → Fill 3-step form (Personal Info → Goals & Experience → Preferences)
 3. **Generate** → Wait for AI to generate plan (2-3 second simulation)
 4. **View Results** → See 7-day workout plan, meal plan, nutrition stats, AI coach advice
@@ -916,7 +916,7 @@ More detailed explanation if needed.
 
 ## Conclusion
 
-FitAI is a solid MVP with a professional UI, responsive design, and working plan generation. The foundation is strong enough for:
+FitFlow is a solid MVP with a professional UI, responsive design, and working plan generation. The foundation is strong enough for:
 - ✅ User testing
 - ✅ Early adopter launch
 - ✅ Data collection for improvements

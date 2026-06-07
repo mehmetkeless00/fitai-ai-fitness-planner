@@ -5,16 +5,19 @@ import ToggleGroup from '../../ui/ToggleGroup';
 import Select from '../../ui/Select';
 import FormGroup from '../../ui/FormGroup';
 import Button from '../../ui/Button';
+import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function GoalsForm({ onNext, formData }) {
   const [data, setData] = useState(formData || {});
   const [errors, setErrors] = useState({});
+  const { t } = useLanguage();
+  const s = t.createPlan.goals;
 
   const validate = () => {
     const newErrors = {};
-    if (!data.fitnessGoal) newErrors.fitnessGoal = 'Fitness goal is required';
-    if (!data.experience) newErrors.experience = 'Experience level is required';
-    if (!data.frequency) newErrors.frequency = 'Workout frequency is required';
+    if (!data.fitnessGoal) newErrors.fitnessGoal = s.errors.fitnessGoal;
+    if (!data.experience) newErrors.experience = s.errors.experience;
+    if (!data.frequency) newErrors.frequency = s.errors.frequency;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -48,58 +51,34 @@ export default function GoalsForm({ onNext, formData }) {
       `}</style>
 
       <div className="form-section">
-        <FormGroup
-          label="Fitness Goals"
-          description="Choose the goals that matter most to you"
-        >
+        <FormGroup label={s.goalsLabel} description={s.goalsDesc}>
           <ToggleGroup
-            options={[
-              { value: 'lose-weight', label: 'Lose Weight' },
-              { value: 'build-muscle', label: 'Build Muscle' },
-              { value: 'endurance', label: 'Endurance' },
-              { value: 'flexibility', label: 'Flexibility' },
-              { value: 'general-fitness', label: 'General Fitness' },
-              { value: 'performance', label: 'Performance' },
-            ]}
+            options={s.goalOptions}
             value={data.fitnessGoal || ''}
             onChange={(val) => setData({ ...data, fitnessGoal: val })}
-            label="Primary Goal"
+            label={s.primaryGoal}
             required
           />
         </FormGroup>
       </div>
 
       <div className="form-section">
-        <FormGroup
-          label="Experience Level"
-          description="Help us match your workouts to your fitness level"
-        >
+        <FormGroup label={s.expLabel} description={s.expDesc}>
           <ToggleGroup
-            options={[
-              { value: 'beginner', label: 'Beginner' },
-              { value: 'intermediate', label: 'Intermediate' },
-              { value: 'advanced', label: 'Advanced' },
-              { value: 'elite', label: 'Elite' },
-            ]}
+            options={s.expOptions}
             value={data.experience || ''}
             onChange={(val) => setData({ ...data, experience: val })}
-            label="Workout Experience"
+            label={s.workoutExp}
             required
           />
         </FormGroup>
       </div>
 
       <div className="form-section">
-        <FormGroup label="Workout Frequency">
+        <FormGroup label={s.freqLabel}>
           <Select
-            label="Days per week"
-            options={[
-              { value: '3', label: '3 days/week' },
-              { value: '4', label: '4 days/week' },
-              { value: '5', label: '5 days/week' },
-              { value: '6', label: '6 days/week' },
-              { value: '7', label: '7 days/week' },
-            ]}
+            label={s.freqSelect}
+            options={s.freqOptions}
             value={data.frequency || ''}
             onChange={(e) => setData({ ...data, frequency: e.target.value })}
             error={errors.frequency}
@@ -109,7 +88,7 @@ export default function GoalsForm({ onNext, formData }) {
       </div>
 
       <Button type="submit" className="w-full" style={{ animation: 'slideUp 0.5s ease-out forwards 0.2s both' }}>
-        Continue →
+        {s.continueBtn}
       </Button>
     </form>
   );

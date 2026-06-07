@@ -1,6 +1,6 @@
 # Developer Onboarding Checklist
 
-**Before Starting Work on FitAI**
+**Before Starting Work on FitFlow**
 
 ---
 
@@ -111,8 +111,8 @@
 
 ### Task: Update Footer Text
 1. [ ] Open `app/page.js`
-2. [ ] Find: Footer section with "© 2024 FitAI..."
-3. [ ] Change text to: "© 2026 FitAI. All rights reserved. Built with 💪 and ❤️"
+2. [ ] Find: Footer section with "© 2024 FitFlow..."
+3. [ ] Change text to: "© 2026 FitFlow. All rights reserved. Built with 💪 and ❤️"
 4. [ ] Save file
 5. [ ] Verify: Page refreshes in browser (hot reload)
 6. [ ] Verify: Change appears on home page

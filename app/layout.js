@@ -1,66 +1,52 @@
-'use client';
-
-import { useState, useEffect, createContext } from 'react';
 import './globals.css';
+import ThemeProvider from '@/components/layout/ThemeProvider';
+import LanguageProvider from '@/components/layout/LanguageProvider';
 
-export const ThemeContext = createContext();
+export const metadata = {
+  title: {
+    default: 'FitFlow - Your Personal Fitness Coach',
+    template: '%s | FitFlow',
+  },
+  description:
+    'Get a free personalized 7-day workout and meal plan. Tailored to your fitness goals, experience level, and dietary preferences.',
+  keywords: [
+    'fitness plan',
+    'workout plan',
+    'meal plan',
+    'AI fitness',
+    'personal trainer',
+    'nutrition plan',
+    'weight loss',
+    'muscle building',
+  ],
+  authors: [{ name: 'FitFlow' }],
+  openGraph: {
+    title: 'FitFlow - Your Personal Fitness Coach',
+    description:
+      'Get a free personalized 7-day workout and meal plan. Tailored to your goals, experience, and diet.',
+    type: 'website',
+    siteName: 'FitFlow',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FitFlow - Your Personal Fitness Coach',
+    description:
+      'Get a free personalized 7-day workout and meal plan. Tailored to your goals, experience, and diet.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function RootLayout({ children }) {
-  const [isDark, setIsDark] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem('theme');
-    if (stored === 'light') {
-      setIsDark(false);
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-    } else {
-      setIsDark(true);
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newIsDark = !isDark;
-    if (newIsDark) {
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-      localStorage.setItem('theme', 'light');
-    }
-    setIsDark(newIsDark);
-  };
-
   return (
-    <html lang="en" className={mounted ? (isDark ? 'dark' : 'light') : 'dark'}>
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="AI-powered personalized fitness and nutrition plans" />
-        <title>FitAI - Your Personal Fitness Coach</title>
-      </head>
+    <html lang="en" className="dark">
       <body>
-        <ThemeProvider theme={isDark} toggleTheme={toggleTheme} mounted={mounted}>
-          {children}
+        <ThemeProvider>
+          <LanguageProvider>{children}</LanguageProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
-
-function ThemeProvider({ children, theme, toggleTheme, mounted }) {
-  if (!mounted) return children;
-
-  return (
-    <ThemeContext.Provider value={{ isDark: theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-}
-

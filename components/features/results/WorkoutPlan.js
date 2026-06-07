@@ -4,21 +4,22 @@ import { useState } from 'react';
 import Card from '../../ui/Card';
 import ExerciseDemo from './ExerciseDemo';
 import { getExerciseDemo } from '../../../utils/exerciseMediaMap';
+import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function WorkoutPlan({ plan }) {
   const [expandedDay, setExpandedDay] = useState(0);
   const [expandedAlternatives, setExpandedAlternatives] = useState({});
+  const { t } = useLanguage();
+  const s = t.workoutPlan;
+  const m = t.maps;
 
   if (!plan || !plan.workoutPlan) {
-    return <div className="text-center text-slate-400 py-8">Loading workout plan...</div>;
+    return <div className="text-center text-slate-400 py-8">{s.loading}</div>;
   }
 
   const toggleAlternatives = (dayIdx, exIdx) => {
     const key = `${dayIdx}-${exIdx}`;
-    setExpandedAlternatives((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    setExpandedAlternatives((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
@@ -33,16 +34,16 @@ export default function WorkoutPlan({ plan }) {
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                 <span className="text-2xl">💪</span>
-                {dayPlan.day}
+                {m.days[dayPlan.day] || dayPlan.day}
                 {dayPlan.focus && (
                   <span className="text-sm bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 px-2 py-1 rounded">
-                    {dayPlan.focus}
+                    {m.workoutFocus[dayPlan.focus] || dayPlan.focus}
                   </span>
                 )}
               </h3>
               {dayPlan.totalEstimatedTime && (
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  ⏱ Est. {dayPlan.totalEstimatedTime} mins | {dayPlan.exercises?.length || 0} exercises
+                  ⏱ {s.estMins} {dayPlan.totalEstimatedTime} {s.mins} | {dayPlan.exercises?.length || 0} {s.exercises}
                 </p>
               )}
             </div>
@@ -55,7 +56,7 @@ export default function WorkoutPlan({ plan }) {
               {dayPlan.warmupExercises && dayPlan.warmupExercises.length > 0 && (
                 <div className="bg-blue-50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20 rounded-lg p-3">
                   <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-2">
-                    🔥 Warm-up ({dayPlan.warmupMinutes || 5} mins)
+                    {s.warmup} ({dayPlan.warmupMinutes || 5} {s.mins})
                   </h4>
                   <ul className="space-y-1">
                     {dayPlan.warmupExercises.map((ex, idx) => (
@@ -76,7 +77,6 @@ export default function WorkoutPlan({ plan }) {
                       className="bg-slate-50 dark:bg-dark-surface/50 border border-slate-200 dark:border-dark-border rounded-lg p-3"
                     >
                       <div className="flex flex-col lg:flex-row gap-4">
-                        {/* Exercise details - left side on desktop, full width on mobile */}
                         <div className="flex-1 space-y-2">
                           <div className="flex justify-between items-start gap-2">
                             <div className="flex-1">
@@ -89,7 +89,7 @@ export default function WorkoutPlan({ plan }) {
                                 )}
                                 {exercise.exerciseType && (
                                   <span className="text-xs bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 px-2 py-0.5 rounded">
-                                    {exercise.exerciseType}
+                                    {m.exerciseType[exercise.exerciseType] || exercise.exerciseType}
                                   </span>
                                 )}
                                 {exercise.intensity && (
@@ -104,7 +104,7 @@ export default function WorkoutPlan({ plan }) {
                                             : 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300'
                                     }`}
                                   >
-                                    {exercise.intensity}
+                                    {m.intensity[exercise.intensity] || exercise.intensity}
                                   </span>
                                 )}
                               </div>
@@ -115,26 +115,20 @@ export default function WorkoutPlan({ plan }) {
                             <p className="text-slate-700 dark:text-slate-400">
                               <span className="font-medium text-slate-900 dark:text-white">{exercise.sets}x{exercise.reps}</span>
                               {exercise.restTime && (
-                                <>
-                                  {' | Rest: '}
-                                  <span className="font-medium text-slate-600 dark:text-slate-300">{exercise.restTime}s</span>
-                                </>
+                                <> {' | '}{s.rest} <span className="font-medium text-slate-600 dark:text-slate-300">{exercise.restTime}s</span></>
                               )}
                               {exercise.rpe && (
-                                <>
-                                  {' | '}
-                                  <span className="font-medium text-slate-600 dark:text-slate-300">{exercise.rpe}</span>
-                                </>
+                                <> {' | '}<span className="font-medium text-slate-600 dark:text-slate-300">{exercise.rpe}</span></>
                               )}
                             </p>
 
                             {exercise.estimatedDuration && (
-                              <p className="text-slate-700 dark:text-slate-400">⏱ {exercise.estimatedDuration} mins</p>
+                              <p className="text-slate-700 dark:text-slate-400">⏱ {exercise.estimatedDuration} {s.mins}</p>
                             )}
 
                             {exercise.warmupSets && exercise.warmupSets.length > 0 && (
                               <p className="text-slate-700 dark:text-slate-400 text-xs">
-                                Warmup: {exercise.warmupSets.map((w) => `${w.reps}x${w.weight}`).join(', ')}
+                                {s.warmupLabel} {exercise.warmupSets.map((w) => `${w.reps}x${w.weight}`).join(', ')}
                               </p>
                             )}
 
@@ -147,9 +141,7 @@ export default function WorkoutPlan({ plan }) {
                                   }}
                                   className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
                                 >
-                                  {expandedAlternatives[`${dayIdx}-${exIdx}`]
-                                    ? '▼ Hide alternatives'
-                                    : '▶ Show alternatives'}
+                                  {expandedAlternatives[`${dayIdx}-${exIdx}`] ? s.hideAlternatives : s.showAlternatives}
                                 </button>
                                 {expandedAlternatives[`${dayIdx}-${exIdx}`] && (
                                   <ul className="mt-1 space-y-1 ml-2">
@@ -166,7 +158,6 @@ export default function WorkoutPlan({ plan }) {
                           </div>
                         </div>
 
-                        {/* Exercise demo - right side on desktop, below on mobile */}
                         <div className="w-full lg:w-48 flex-shrink-0">
                           <ExerciseDemo
                             exerciseName={exercise.name}
@@ -178,20 +169,18 @@ export default function WorkoutPlan({ plan }) {
                     </div>
                   ))
                 ) : (
-                  <p className="text-slate-700 dark:text-slate-400 text-sm">Rest day</p>
+                  <p className="text-slate-700 dark:text-slate-400 text-sm">{s.restDay}</p>
                 )}
               </div>
 
               {dayPlan.cooldownExercises && dayPlan.cooldownExercises.length > 0 && (
                 <div className="bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20 rounded-lg p-3">
-                  <h4 className="text-sm font-semibold text-green-700 dark:text-green-400 mb-2">🧘 Cool-down</h4>
+                  <h4 className="text-sm font-semibold text-green-700 dark:text-green-400 mb-2">{s.cooldown}</h4>
                   <ul className="space-y-1">
                     {dayPlan.cooldownExercises.map((ex, idx) => (
                       <li key={idx} className="text-sm text-slate-700 dark:text-slate-400 flex items-start gap-2">
                         <span className="text-green-600 dark:text-green-400 mt-0.5">•</span>
-                        <span>
-                          {ex.name} ({ex.duration} mins)
-                        </span>
+                        <span>{ex.name} ({ex.duration} {s.mins})</span>
                       </li>
                     ))}
                   </ul>
@@ -200,14 +189,14 @@ export default function WorkoutPlan({ plan }) {
 
               {dayPlan.recoveryTips && (
                 <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 rounded-lg p-3">
-                  <h4 className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">💡 Recovery Tips</h4>
+                  <h4 className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">{s.recoveryTipsLabel}</h4>
                   <p className="text-sm text-gray-700 dark:text-slate-400">{dayPlan.recoveryTips}</p>
                 </div>
               )}
 
               {dayPlan.progressionGuidance && (
                 <div className="bg-violet-50 dark:bg-violet-500/5 border border-violet-200 dark:border-violet-500/20 rounded-lg p-3">
-                  <h4 className="text-sm font-semibold text-violet-700 dark:text-violet-400 mb-1">📈 Progression</h4>
+                  <h4 className="text-sm font-semibold text-violet-700 dark:text-violet-400 mb-1">{s.progressionLabel}</h4>
                   <p className="text-sm text-gray-700 dark:text-slate-400">{dayPlan.progressionGuidance}</p>
                 </div>
               )}

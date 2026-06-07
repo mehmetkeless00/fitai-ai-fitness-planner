@@ -47,6 +47,8 @@ export async function POST(request) {
       );
     }
 
+    const lang = userProfile.lang === 'tr' ? 'tr' : 'en';
+
     const plan = generateSmartPlan({
       age,
       gender: userProfile.gender,
@@ -57,6 +59,7 @@ export async function POST(request) {
       frequency,
       dietaryPreference: userProfile.dietaryPreference,
       allergies: userProfile.allergies || '',
+      lang,
     });
 
     // Simulate API delay for better UX (feels like real generation)

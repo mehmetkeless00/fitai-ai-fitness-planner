@@ -11,11 +11,18 @@ import NutritionSummary from '@/components/features/results/NutritionSummary';
 import WorkoutPlan from '@/components/features/results/WorkoutPlan';
 import MealPlan from '@/components/features/results/MealPlan';
 import { generatePlanPDF } from '@/utils/pdf-generator';
+import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function Result() {
   const [planData, setPlanData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [isDownloading, setIsDownloading] = useState(false);
+  const { t } = useLanguage();
+  const r = t.result;
+
+  const getGoalLabel = (goalValue) => {
+    return t.createPlan.goals.goalOptions.find((g) => g.value === goalValue)?.label || goalValue?.replace(/-/g, ' ');
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem('userPlan');
@@ -45,13 +52,10 @@ export default function Result() {
         <Navigation />
         <main className="min-h-screen pt-20 pb-12 md:pb-20">
           <Container>
-            <PageHeader
-              title="No Plan Found"
-              description="Please create a plan first"
-            />
+            <PageHeader title={r.noPlanTitle} description={r.noPlanDesc} />
             <div className="text-center">
               <Link href="/create-plan">
-                <Button size="lg">Create Plan</Button>
+                <Button size="lg">{r.createPlanBtn}</Button>
               </Link>
             </div>
           </Container>
@@ -60,35 +64,42 @@ export default function Result() {
     );
   }
 
+  const tabs = [
+    { key: 'overview', label: r.tabs.overview },
+    { key: 'workout', label: r.tabs.workout },
+    { key: 'meals', label: r.tabs.meals },
+    { key: 'advice', label: r.tabs.advice },
+  ];
+
   return (
     <>
       <Navigation />
       <main className="min-h-screen pt-20 pb-20">
         <Container>
           <PageHeader
-            title="Your Personalized Plan"
-            description={`Generated for ${planData.age} year old - ${planData.fitnessGoal?.replace(/-/g, ' ')}`}
+            title={r.pageTitle}
+            description={`${r.generatedFor} ${planData.age} ${r.yearOld} - ${getGoalLabel(planData.fitnessGoal)}`}
           />
 
           <div className="max-w-2xl mx-auto mb-8 p-4 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-lg">
             <p className="text-yellow-800 dark:text-yellow-400 text-sm">
-              ⚠️ <span className="font-semibold">Disclaimer:</span> This plan is educational and based on fitness science principles. It is not medical advice. Consult a healthcare provider before starting any fitness program.
+              ⚠️ <span className="font-semibold">{r.disclaimerLabel}:</span> {r.disclaimer}
             </p>
           </div>
 
           <div className="flex gap-2 justify-center mb-8 overflow-x-auto pb-2 px-2">
-            {['overview', 'workout', 'meals', 'advice'].map((tab) => (
+            {tabs.map(({ key, label }) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-3 sm:px-6 py-2 rounded-lg font-medium transition-all capitalize whitespace-nowrap text-sm sm:text-base
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`px-3 sm:px-6 py-2 rounded-lg font-medium transition-all whitespace-nowrap text-sm sm:text-base
                   ${
-                    activeTab === tab
+                    activeTab === key
                       ? 'bg-sky-500 text-white'
                       : 'bg-slate-100 dark:bg-dark-surface text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-dark-surface/80 dark:hover:text-white'
                   }`}
               >
-                {tab === 'advice' ? '💡 Coach' : tab}
+                {label}
               </button>
             ))}
           </div>
@@ -96,29 +107,29 @@ export default function Result() {
           {activeTab === 'overview' && (
             <div className="space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">📊 Nutrition Overview</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.nutritionHeading}</h2>
                 <NutritionSummary plan={planData} />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Your Profile</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.profileHeading}</h2>
                 <Card>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm">Age</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">{r.profile.age}</p>
                       <p className="text-xl font-semibold text-slate-900 dark:text-white">{planData.age}</p>
                     </div>
                     <div>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm">Height</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">{r.profile.height}</p>
                       <p className="text-xl font-semibold text-slate-900 dark:text-white">{planData.height}cm</p>
                     </div>
                     <div>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm">Weight</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">{r.profile.weight}</p>
                       <p className="text-xl font-semibold text-slate-900 dark:text-white">{planData.weight}kg</p>
                     </div>
                     <div>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm">Goal</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">{r.profile.goal}</p>
                       <p className="text-xl font-semibold text-slate-900 dark:text-white capitalize">
-                        {planData.fitnessGoal?.replace(/-/g, ' ')}
+                        {getGoalLabel(planData.fitnessGoal)}
                       </p>
                     </div>
                   </div>
@@ -129,26 +140,26 @@ export default function Result() {
 
           {activeTab === 'workout' && (
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">💪 Workout Plan</h2>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.workoutHeading}</h2>
               <WorkoutPlan plan={planData} />
             </div>
           )}
 
           {activeTab === 'meals' && (
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">🥗 Meal Plan</h2>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.mealHeading}</h2>
               <MealPlan plan={planData} />
             </div>
           )}
 
           {activeTab === 'advice' && (
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">💡 AI Coach Advice</h2>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.coachHeading}</h2>
               <Card className="bg-gradient-to-r from-sky-50 dark:from-sky-500/10 to-blue-50 dark:to-blue-500/10 border-sky-200 dark:border-sky-500/20">
                 <div className="text-center md:text-left">
                   <div className="text-5xl mb-4 text-center">🎯</div>
                   <p className="text-lg text-slate-700 dark:text-slate-200 leading-relaxed">
-                    {planData.advice || 'Your personalized coaching advice will appear here.'}
+                    {planData.advice || r.defaultAdvice}
                   </p>
                 </div>
               </Card>
@@ -158,7 +169,7 @@ export default function Result() {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-8 md:mt-12 px-2">
             <Link href="/create-plan" className="w-full sm:w-auto">
               <Button variant="secondary" disabled={isDownloading} className="w-full">
-                Create New Plan
+                {r.createNewPlan}
               </Button>
             </Link>
             <Button
@@ -166,7 +177,7 @@ export default function Result() {
               disabled={isDownloading}
               className={`w-full sm:w-auto ${isDownloading ? 'opacity-75 cursor-not-allowed' : ''}`}
             >
-              {isDownloading ? '⏳ Generating...' : '📥 Download PDF'}
+              {isDownloading ? r.generatingPDF : r.downloadPDF}
             </Button>
           </div>
         </Container>

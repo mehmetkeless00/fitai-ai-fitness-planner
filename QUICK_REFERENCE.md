@@ -1,4 +1,4 @@
-# FitAI Quick Reference Guide
+# FitFlow Quick Reference Guide
 
 **Last Updated:** June 7, 2026
 
