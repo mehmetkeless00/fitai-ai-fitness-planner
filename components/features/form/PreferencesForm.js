@@ -20,7 +20,6 @@ export default function PreferencesForm({ onNext, formData }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log('[PreferencesForm] Submitting:', data);
       onNext(data);
     }
   };

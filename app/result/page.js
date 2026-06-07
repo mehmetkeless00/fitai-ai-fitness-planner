@@ -43,7 +43,7 @@ export default function Result() {
     return (
       <>
         <Navigation />
-        <main className="min-h-screen pt-20 pb-20">
+        <main className="min-h-screen pt-20 pb-12 md:pb-20">
           <Container>
             <PageHeader
               title="No Plan Found"
@@ -76,19 +76,19 @@ export default function Result() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2 justify-center mb-8">
+          <div className="flex gap-2 justify-center mb-8 overflow-x-auto pb-2 px-2">
             {['overview', 'workout', 'meals', 'advice'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 rounded-lg font-medium transition-all capitalize
+                className={`px-3 sm:px-6 py-2 rounded-lg font-medium transition-all capitalize whitespace-nowrap text-sm sm:text-base
                   ${
                     activeTab === tab
                       ? 'bg-sky-500 text-white'
                       : 'bg-slate-100 dark:bg-dark-surface text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-dark-surface/80 dark:hover:text-white'
                   }`}
               >
-                {tab === 'advice' ? '💡 Coach Advice' : tab}
+                {tab === 'advice' ? '💡 Coach' : tab}
               </button>
             ))}
           </div>
@@ -155,16 +155,16 @@ export default function Result() {
             </div>
           )}
 
-          <div className="flex gap-4 justify-center mt-12">
-            <Link href="/create-plan">
-              <Button variant="secondary" disabled={isDownloading}>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-8 md:mt-12 px-2">
+            <Link href="/create-plan" className="w-full sm:w-auto">
+              <Button variant="secondary" disabled={isDownloading} className="w-full">
                 Create New Plan
               </Button>
             </Link>
             <Button
               onClick={handleDownloadPDF}
               disabled={isDownloading}
-              className={isDownloading ? 'opacity-75 cursor-not-allowed' : ''}
+              className={`w-full sm:w-auto ${isDownloading ? 'opacity-75 cursor-not-allowed' : ''}`}
             >
               {isDownloading ? '⏳ Generating...' : '📥 Download PDF'}
             </Button>

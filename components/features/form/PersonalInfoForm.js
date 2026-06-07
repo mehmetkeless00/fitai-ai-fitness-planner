@@ -12,10 +12,23 @@ export default function PersonalInfoForm({ onNext, formData }) {
 
   const validate = () => {
     const newErrors = {};
-    if (!data.age) newErrors.age = 'Age is required';
-    if (!data.gender) newErrors.gender = 'Gender is required';
-    if (!data.height) newErrors.height = 'Height is required';
-    if (!data.weight) newErrors.weight = 'Weight is required';
+    const age = parseInt(data.age);
+    const height = parseInt(data.height);
+    const weight = parseInt(data.weight);
+
+    if (!data.age || isNaN(age) || age < 13 || age > 100) {
+      newErrors.age = 'Age must be between 13 and 100';
+    }
+    if (!data.gender) {
+      newErrors.gender = 'Gender is required';
+    }
+    if (!data.height || isNaN(height) || height < 100 || height > 250) {
+      newErrors.height = 'Height must be between 100 and 250 cm';
+    }
+    if (!data.weight || isNaN(weight) || weight < 30 || weight > 300) {
+      newErrors.weight = 'Weight must be between 30 and 300 kg';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -23,7 +36,6 @@ export default function PersonalInfoForm({ onNext, formData }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log('[PersonalInfoForm] Submitting:', data);
       onNext(data);
     }
   };

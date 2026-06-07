@@ -499,7 +499,7 @@ fitai-ai-fitness-planner/
 ### Environment Configuration
 ```env
 # .env.local (required for local development & production)
-OPENAI_API_KEY=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
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # Note: Currently unused in MVP, reserved for Phase 2
 ```

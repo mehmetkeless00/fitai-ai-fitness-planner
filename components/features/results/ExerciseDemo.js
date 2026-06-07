@@ -40,7 +40,6 @@ export default function ExerciseDemo({ exerciseName, muscleGroups = [], exercise
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          console.log('How to perform clicked');
           setShowInstructions((prev) => !prev);
         }}
         className="w-full text-xs font-medium text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors flex items-center gap-2 px-3 py-2 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-lg"

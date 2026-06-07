@@ -40,23 +40,23 @@ export default function NutritionSummary({ plan }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {stats.map((stat, idx) => (
-          <Card key={idx} className="text-center">
-            <div className="text-3xl mb-2">{stat.icon}</div>
-            <p className="text-slate-600 dark:text-slate-400 text-sm mb-1">{stat.label}</p>
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
+          <Card key={idx} className="text-center p-3 md:p-4">
+            <div className="text-2xl md:text-3xl mb-2">{stat.icon}</div>
+            <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 mb-1">{stat.label}</p>
+            <p className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
           </Card>
         ))}
       </div>
 
       {plan.macros && (
         <Card className="mt-4">
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">Macronutrient Breakdown</p>
+          <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 mb-3">Macronutrient Breakdown</p>
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-slate-900 dark:text-white">Protein</span>
-              <span className="text-red-600 dark:text-red-400 font-semibold">{plan.macros.protein?.percentage || 28}%</span>
+              <span className="text-xs md:text-sm text-slate-900 dark:text-white">Protein</span>
+              <span className="text-sm md:text-base text-red-600 dark:text-red-400 font-semibold">{plan.macros.protein?.percentage || 28}%</span>
             </div>
             <div className="w-full bg-slate-300 dark:bg-dark-bg rounded-full h-2 overflow-hidden">
               <div
@@ -66,8 +66,8 @@ export default function NutritionSummary({ plan }) {
             </div>
 
             <div className="flex justify-between items-center mt-4">
-              <span className="text-slate-900 dark:text-white">Carbs</span>
-              <span className="text-yellow-600 dark:text-yellow-400 font-semibold">{plan.macros.carbs?.percentage || 48}%</span>
+              <span className="text-xs md:text-sm text-slate-900 dark:text-white">Carbs</span>
+              <span className="text-sm md:text-base text-yellow-600 dark:text-yellow-400 font-semibold">{plan.macros.carbs?.percentage || 48}%</span>
             </div>
             <div className="w-full bg-slate-300 dark:bg-dark-bg rounded-full h-2 overflow-hidden">
               <div
@@ -77,8 +77,8 @@ export default function NutritionSummary({ plan }) {
             </div>
 
             <div className="flex justify-between items-center mt-4">
-              <span className="text-slate-900 dark:text-white">Fat</span>
-              <span className="text-green-600 dark:text-green-400 font-semibold">{plan.macros.fat?.percentage || 24}%</span>
+              <span className="text-xs md:text-sm text-slate-900 dark:text-white">Fat</span>
+              <span className="text-sm md:text-base text-green-600 dark:text-green-400 font-semibold">{plan.macros.fat?.percentage || 24}%</span>
             </div>
             <div className="w-full bg-slate-300 dark:bg-dark-bg rounded-full h-2 overflow-hidden">
               <div
@@ -93,8 +93,8 @@ export default function NutritionSummary({ plan }) {
       {plan.hydration && (
         <Card className="mt-4">
           <div className="text-center">
-            <p className="text-slate-600 dark:text-slate-400 text-sm mb-2">Daily Hydration Goal</p>
-            <p className="text-xl font-semibold text-sky-600 dark:text-sky-400">{plan.hydration}</p>
+            <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 mb-2">Daily Hydration Goal</p>
+            <p className="text-lg md:text-xl font-semibold text-sky-600 dark:text-sky-400">{plan.hydration}</p>
           </div>
         </Card>
       )}
@@ -102,8 +102,8 @@ export default function NutritionSummary({ plan }) {
       {plan.recoveryScore !== undefined && (
         <Card className={`mt-4 ${recoveryColor.bg} border ${recoveryColor.border}`}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className={`font-semibold ${recoveryColor.text}`}>Recovery Score</h3>
-            <span className={`text-3xl font-bold ${recoveryColor.text}`}>{Math.round(plan.recoveryScore)}</span>
+            <h3 className={`font-semibold text-sm md:text-base ${recoveryColor.text}`}>Recovery Score</h3>
+            <span className={`text-2xl md:text-3xl font-bold ${recoveryColor.text}`}>{Math.round(plan.recoveryScore)}</span>
           </div>
           <div className="w-full bg-slate-300 dark:bg-dark-bg rounded-full h-2 overflow-hidden">
             <div
@@ -111,7 +111,7 @@ export default function NutritionSummary({ plan }) {
               style={{ width: `${plan.recoveryScore}%` }}
             />
           </div>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-2">
+          <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 mt-2">
             {plan.recoveryScore >= 80
               ? '✅ Great recovery conditions. Stick to your plan.'
               : plan.recoveryScore >= 60

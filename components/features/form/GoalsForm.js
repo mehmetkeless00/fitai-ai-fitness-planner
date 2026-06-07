@@ -22,7 +22,6 @@ export default function GoalsForm({ onNext, formData }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log('[GoalsForm] Submitting:', data);
       onNext(data);
     }
   };

@@ -4,38 +4,57 @@ export async function POST(request) {
   try {
     const userProfile = await request.json();
 
-    // Validate required fields
-    if (
-      !userProfile.age ||
-      !userProfile.gender ||
-      !userProfile.height ||
-      !userProfile.weight ||
-      !userProfile.fitnessGoal ||
-      !userProfile.experience ||
-      !userProfile.frequency ||
-      !userProfile.dietaryPreference
-    ) {
+    // Validate and parse numeric fields
+    const age = parseInt(userProfile.age);
+    const height = parseInt(userProfile.height);
+    const weight = parseInt(userProfile.weight);
+    const frequency = parseInt(userProfile.frequency);
+
+    const validationErrors = [];
+
+    if (!userProfile.age || isNaN(age) || age < 13 || age > 100) {
+      validationErrors.push('Age must be between 13 and 100');
+    }
+    if (!userProfile.gender) {
+      validationErrors.push('Gender is required');
+    }
+    if (!userProfile.height || isNaN(height) || height < 100 || height > 250) {
+      validationErrors.push('Height must be between 100 and 250 cm');
+    }
+    if (!userProfile.weight || isNaN(weight) || weight < 30 || weight > 300) {
+      validationErrors.push('Weight must be between 30 and 300 kg');
+    }
+    if (!userProfile.fitnessGoal) {
+      validationErrors.push('Fitness goal is required');
+    }
+    if (!userProfile.experience) {
+      validationErrors.push('Experience level is required');
+    }
+    if (!userProfile.frequency || isNaN(frequency) || frequency < 3 || frequency > 7) {
+      validationErrors.push('Workout frequency must be between 3 and 7 days per week');
+    }
+    if (!userProfile.dietaryPreference) {
+      validationErrors.push('Dietary preference is required');
+    }
+
+    if (validationErrors.length > 0) {
       return Response.json(
         {
           success: false,
-          error: 'Missing required fields',
+          error: validationErrors[0],
         },
         { status: 400 }
       );
     }
 
-    // Convert frequency string to number
-    const frequency = parseInt(userProfile.frequency);
-
-    // Generate plan using rule-based algorithm
     const plan = generateSmartPlan({
-      age: parseInt(userProfile.age),
+      age,
       gender: userProfile.gender,
-      height: parseInt(userProfile.height),
-      weight: parseInt(userProfile.weight),
+      height,
+      weight,
       fitnessGoal: userProfile.fitnessGoal,
       experience: userProfile.experience,
-      frequency: frequency,
+      frequency,
       dietaryPreference: userProfile.dietaryPreference,
       allergies: userProfile.allergies || '',
     });

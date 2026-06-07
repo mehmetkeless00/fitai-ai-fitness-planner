@@ -24,9 +24,7 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleNext = (stepData) => {
-    console.log('[FormStepper] Step data received:', stepData);
     const merged = { ...formData, ...stepData };
-    console.log('[FormStepper] Merged data:', merged);
     setFormData(merged);
 
     if (currentStep < steps.length - 1) {
@@ -36,7 +34,6 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
         setIsTransitioning(false);
       }, 300);
     } else {
-      console.log('[FormStepper] Final submission:', merged);
       onComplete(merged);
     }
   };
@@ -63,7 +60,7 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
       <div className="mb-10">
         {/* Step counter and progress */}
         <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+          <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
             Step {currentStep + 1} of {steps.length}
           </span>
           <span className="text-xs text-slate-500">{Math.round(stepProgress)}% complete</span>
@@ -78,11 +75,11 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
         </div>
 
         {/* Step indicators with animation */}
-        <div className="flex justify-between gap-2 mb-8">
+        <div className="flex justify-between gap-2 mb-6 md:mb-8">
           {steps.map((step, idx) => (
             <div key={idx} className="flex flex-col items-center flex-1">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-500 relative
+                className={`w-8 md:w-10 h-8 md:h-10 rounded-full flex items-center justify-center font-semibold text-sm md:text-base transition-all duration-500 relative
                   ${
                     idx < currentStep
                       ? 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30'
@@ -97,15 +94,15 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
                   <span className="absolute inset-0 rounded-full bg-sky-500 animate-pulse opacity-20" />
                 )}
               </div>
-              <span className="text-xs text-slate-600 dark:text-slate-500 mt-2 text-center leading-tight">{step.title}</span>
+              <span className="text-xs md:text-sm text-slate-600 dark:text-slate-500 mt-1.5 md:mt-2 text-center leading-tight">{step.title}</span>
             </div>
           ))}
         </div>
 
         {/* Motivational copy */}
-        <div className="bg-gradient-to-r from-sky-500/5 to-purple-500/5 border border-sky-500/20 rounded-lg p-4 step-motivation">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">{motivation.title}</h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400">{motivation.description}</p>
+        <div className="bg-gradient-to-r from-sky-500/5 to-purple-500/5 border border-sky-500/20 rounded-lg p-3 md:p-4 step-motivation">
+          <h3 className="text-base md:text-lg font-semibold text-slate-900 dark:text-white mb-1">{motivation.title}</h3>
+          <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">{motivation.description}</p>
         </div>
       </div>
 
@@ -123,12 +120,12 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
       </div>
 
       {/* Navigation buttons */}
-      <div className="flex gap-4 mt-10">
+      <div className="flex flex-col sm:flex-row gap-3 mt-8 md:mt-10">
         <Button
           variant="secondary"
           onClick={handlePrev}
           disabled={currentStep === 0 || isLoading || isTransitioning}
-          className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+          className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 w-full sm:w-auto"
         >
           ← Previous
         </Button>
@@ -139,7 +136,7 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
             handleNext(stepData);
           }}
           disabled={isLoading || isTransitioning}
-          className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+          className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 w-full sm:w-auto"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">

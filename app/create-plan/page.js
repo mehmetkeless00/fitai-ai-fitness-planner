@@ -36,10 +36,7 @@ export default function CreatePlan() {
     setError(null);
     setIsGenerating(true);
 
-    console.log('[Create Plan] Received form data:', formData);
-
     try {
-      console.log('[Create Plan] Sending to API:', formData);
       const response = await fetch('/api/generate-plan', {
         method: 'POST',
         headers: {
@@ -48,16 +45,12 @@ export default function CreatePlan() {
         body: JSON.stringify(formData),
       });
 
-      console.log('[Create Plan] API Response status:', response.status);
-
       if (!response.ok) {
         const errorData = await response.json();
-        console.log('[Create Plan] API Error:', errorData);
         throw new Error(errorData.error || 'Failed to generate plan');
       }
 
       const data = await response.json();
-      console.log('[Create Plan] API Success:', data);
 
       if (!data.success) {
         throw new Error(data.error || 'Failed to generate plan');
@@ -69,11 +62,9 @@ export default function CreatePlan() {
         generatedAt: new Date().toISOString(),
       };
 
-      console.log('[Create Plan] Saving to localStorage:', planData);
       localStorage.setItem('userPlan', JSON.stringify(planData));
       router.push('/result');
     } catch (err) {
-      console.error('[Create Plan] Error:', err);
       setError(err.message || 'An error occurred while generating your plan. Please try again.');
       setIsGenerating(false);
     }
@@ -82,7 +73,7 @@ export default function CreatePlan() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen pt-20 pb-20">
+      <main className="min-h-screen pt-20 pb-12 md:pb-20">
         {isGenerating && <PremiumLoadingScreen />}
 
         <Container>

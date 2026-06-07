@@ -37,15 +37,15 @@ export default function Features() {
   ];
 
   return (
-    <section id="features-section" className="py-20">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Why Choose FitAI?</h2>
-        <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+    <section id="features-section" className="py-12 md:py-20">
+      <div className="text-center mb-8 md:mb-12 px-3">
+        <h2 className="text-2xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-2 sm:mb-4">Why Choose FitAI?</h2>
+        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
           Everything you need to transform your fitness journey
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {features.map((feature, idx) => (
           <Card
             key={idx}

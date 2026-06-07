@@ -53,21 +53,21 @@ export default function Navigation() {
             FitAI
           </Link>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <Link
               href="/"
-              className="text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
+              className="hidden sm:inline text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
             >
               Home
             </Link>
             <Link
               href="/create-plan"
-              className="text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
+              className="hidden sm:inline text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
             >
               Create Plan
             </Link>
             <button
-              className="px-4 py-1.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-sm font-medium transition-all"
+              className="px-3 md:px-4 py-1.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-sm font-medium transition-all"
               onClick={themeContext.toggleTheme}
               aria-label="Toggle theme"
             >
