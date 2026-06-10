@@ -1,6 +1,6 @@
 'use client';
 
-export default function ToggleGroup({ options = [], value, onChange, label, required }) {
+export default function ToggleGroup({ options = [], value, onChange, label, required, error }) {
   return (
     <div className="w-full">
       {label && (
@@ -13,6 +13,7 @@ export default function ToggleGroup({ options = [], value, onChange, label, requ
         {options.map((opt) => (
           <button
             key={opt.value}
+            type="button"
             onClick={() => onChange(opt.value)}
             className={`px-4 py-2.5 rounded-lg font-medium transition-all border
               ${
@@ -25,6 +26,7 @@ export default function ToggleGroup({ options = [], value, onChange, label, requ
           </button>
         ))}
       </div>
+      {error && <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 mt-2">{error}</p>}
     </div>
   );
 }

@@ -7,11 +7,12 @@ import FormGroup from '../../ui/FormGroup';
 import Button from '../../ui/Button';
 import { useLanguage } from '@/components/layout/LanguageProvider';
 
-export default function PreferencesForm({ onNext, formData }) {
+export default function PreferencesForm({ onNext, formData, isLoading }) {
   const [data, setData] = useState(formData || {});
   const [errors, setErrors] = useState({});
   const { t } = useLanguage();
   const s = t.createPlan.preferences;
+  const generatingLabel = t.createPlan.generating;
 
   const validate = () => {
     const newErrors = {};
@@ -77,7 +78,6 @@ export default function PreferencesForm({ onNext, formData }) {
         <FormGroup label={s.additionalLabel}>
           <Input
             label={s.additionalInput}
-            type="textarea"
             placeholder={s.additionalPlaceholder}
             value={data.notes || ''}
             onChange={(e) => setData({ ...data, notes: e.target.value })}
@@ -87,8 +87,20 @@ export default function PreferencesForm({ onNext, formData }) {
         </FormGroup>
       </div>
 
-      <Button type="submit" className="w-full" style={{ animation: 'slideUp 0.5s ease-out forwards 0.2s both' }}>
-        {s.generateBtn}
+      <Button
+        type="submit"
+        disabled={isLoading}
+        className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{ animation: 'slideUp 0.5s ease-out forwards 0.2s both' }}
+      >
+        {isLoading ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            {generatingLabel}
+          </span>
+        ) : (
+          s.generateBtn
+        )}
       </Button>
     </form>
   );

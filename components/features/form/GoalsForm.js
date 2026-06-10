@@ -57,6 +57,7 @@ export default function GoalsForm({ onNext, formData }) {
             value={data.fitnessGoal || ''}
             onChange={(val) => setData({ ...data, fitnessGoal: val })}
             label={s.primaryGoal}
+            error={errors.fitnessGoal}
             required
           />
         </FormGroup>
@@ -69,6 +70,7 @@ export default function GoalsForm({ onNext, formData }) {
             value={data.experience || ''}
             onChange={(val) => setData({ ...data, experience: val })}
             label={s.workoutExp}
+            error={errors.experience}
             required
           />
         </FormGroup>

@@ -27,7 +27,11 @@ export default function Result() {
   useEffect(() => {
     const stored = localStorage.getItem('userPlan');
     if (stored) {
-      setPlanData(JSON.parse(stored));
+      try {
+        setPlanData(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem('userPlan');
+      }
     }
   }, []);
 
@@ -78,7 +82,9 @@ export default function Result() {
         <Container>
           <PageHeader
             title={r.pageTitle}
-            description={`${r.generatedFor} ${planData.age} ${r.yearOld} - ${getGoalLabel(planData.fitnessGoal)}`}
+            description={r.headerDesc
+              .replace('{age}', planData.age)
+              .replace('{goal}', getGoalLabel(planData.fitnessGoal))}
           />
 
           <div className="max-w-2xl mx-auto mb-8 p-4 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-lg">
@@ -133,6 +139,12 @@ export default function Result() {
                       </p>
                     </div>
                   </div>
+                  {planData.notes && (
+                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-dark-border text-left">
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">{r.profile.notes}</p>
+                      <p className="text-slate-900 dark:text-white text-sm mt-1">{planData.notes}</p>
+                    </div>
+                  )}
                 </Card>
               </div>
             </div>

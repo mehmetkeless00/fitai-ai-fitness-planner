@@ -101,42 +101,25 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
           <StepComponent
             onNext={handleNext}
             formData={formData}
+            isLoading={isLoading}
             isLastStep={currentStep === steps.length - 1}
           />
         </div>
       </div>
 
-      {/* Navigation buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 mt-8 md:mt-10">
-        <Button
-          variant="secondary"
-          onClick={handlePrev}
-          disabled={currentStep === 0 || isLoading || isTransitioning}
-          className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 w-full sm:w-auto"
-        >
-          {t.createPlan.prev}
-        </Button>
-        <div className="flex-1" />
-        <Button
-          onClick={() => {
-            const stepData = StepComponent.defaultProps?.initialData || {};
-            handleNext(stepData);
-          }}
-          disabled={isLoading || isTransitioning}
-          className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 w-full sm:w-auto"
-        >
-          {isLoading ? (
-            <span className="flex items-center gap-2">
-              <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              {t.createPlan.generating}
-            </span>
-          ) : currentStep === steps.length - 1 ? (
-            t.createPlan.generate
-          ) : (
-            t.createPlan.next
-          )}
-        </Button>
-      </div>
+      {/* Navigation buttons — each step's own submit button advances the flow */}
+      {currentStep > 0 && (
+        <div className="flex mt-8 md:mt-10">
+          <Button
+            variant="secondary"
+            onClick={handlePrev}
+            disabled={isLoading || isTransitioning}
+            className="disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 w-full sm:w-auto"
+          >
+            {t.createPlan.prev}
+          </Button>
+        </div>
+      )}
 
       <style jsx>{`
         @keyframes slideUp {

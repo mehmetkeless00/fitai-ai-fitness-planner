@@ -641,6 +641,79 @@ function generateBeginnerPlan(frequency, goal) {
         recoveryTips: 'Leg day is demanding. Ensure adequate carbs and protein post-workout.',
         progressionGuidance: 'Week 1-2: Form focus. Week 3-4: Add 1-2 reps or 5-10lbs to squats. Week 5: Deload.',
       },
+      {
+        day: 'Friday',
+        focus: 'Shoulders & Arms',
+        warmupMinutes: 5,
+        warmupExercises: [
+          '3 mins light cardio',
+          'Arm circles 10x each direction',
+          'Band pull-aparts 15x',
+          'Light lateral raises 12x',
+        ],
+        totalEstimatedTime: 50,
+        exercises: [
+          {
+            name: 'Overhead Press',
+            sets: 4,
+            reps: 8,
+            restTime: 120,
+            intensity: 'High',
+            rpe: 'RPE 7-8',
+            muscleGroups: ['Shoulders', 'Triceps'],
+            exerciseType: 'Compound',
+            warmupSets: [
+              { reps: 5, weight: 'bar' },
+              { reps: 3, weight: '50%' },
+            ],
+            estimatedDuration: 12,
+            alternatives: ['Dumbbell Shoulder Press', 'Machine Shoulder Press'],
+          },
+          {
+            name: 'Lateral Raises',
+            sets: 3,
+            reps: 12,
+            restTime: 60,
+            intensity: 'Moderate',
+            rpe: 'RPE 6-7',
+            muscleGroups: ['Shoulders'],
+            exerciseType: 'Isolation',
+            estimatedDuration: 8,
+            alternatives: ['Cable Lateral Raises', 'Machine Lateral Raises'],
+          },
+          {
+            name: 'Barbell Curls',
+            sets: 3,
+            reps: 10,
+            restTime: 75,
+            intensity: 'Moderate',
+            rpe: 'RPE 6-7',
+            muscleGroups: ['Biceps'],
+            exerciseType: 'Isolation',
+            estimatedDuration: 8,
+            alternatives: ['Dumbbell Curls', 'Cable Curls'],
+          },
+          {
+            name: 'Tricep Rope Pushdown',
+            sets: 3,
+            reps: 12,
+            restTime: 60,
+            intensity: 'Moderate',
+            rpe: 'RPE 6-7',
+            muscleGroups: ['Triceps'],
+            exerciseType: 'Isolation',
+            estimatedDuration: 8,
+            alternatives: ['Dips', 'Overhead Tricep Extension'],
+          },
+        ],
+        cooldownExercises: [
+          { name: 'Shoulder Stretch', duration: 2 },
+          { name: 'Tricep Stretch', duration: 2 },
+          { name: 'Bicep Stretch', duration: 2 },
+        ],
+        recoveryTips: 'Lighter session to close the week. Strict form on isolation work — no swinging.',
+        progressionGuidance: 'Week 1-2: Master form. Week 3-4: Add 1-2 reps per set. Week 5: Increase weight slightly.',
+      },
     ],
     5: [
       {
@@ -1004,7 +1077,84 @@ function generateBeginnerPlan(frequency, goal) {
     ],
   };
 
+  if (frequency >= 6) {
+    return extendFiveDayPlan(plans[5], frequency);
+  }
+
   return plans[frequency] || plans[3];
+}
+
+// Builds 6- and 7-day schedules from the 5-day split: Saturday becomes a real
+// conditioning session, and for 7 days Sunday becomes active recovery instead of full rest.
+function extendFiveDayPlan(fiveDayPlan, frequency) {
+  const conditioningDay = {
+    day: 'Saturday',
+    focus: 'Steady-State Cardio',
+    warmupMinutes: 5,
+    warmupExercises: [
+      '3 mins easy pace cardio',
+      'Leg swings 10x each leg',
+      'Arm circles 10x each direction',
+    ],
+    totalEstimatedTime: 45,
+    exercises: [
+      {
+        name: 'Steady-State Cardio',
+        sets: 1,
+        reps: 30,
+        restTime: 0,
+        intensity: 'Moderate',
+        rpe: 'RPE 5-6',
+        muscleGroups: ['Full Body'],
+        exerciseType: 'Cardio',
+        estimatedDuration: 30,
+        alternatives: ['Running', 'Cycling', 'Rowing', 'Incline treadmill walk'],
+      },
+      {
+        name: 'Hanging Leg Raises',
+        sets: 3,
+        reps: 10,
+        restTime: 60,
+        intensity: 'Moderate',
+        rpe: 'RPE 6-7',
+        muscleGroups: ['Core', 'Abs'],
+        exerciseType: 'Isolation',
+        estimatedDuration: 8,
+        alternatives: ['Cable Crunches', 'Plank', 'Dead Bug'],
+      },
+    ],
+    cooldownExercises: [{ name: 'Full Body Stretch', duration: 5 }],
+    recoveryTips: 'Keep the pace conversational — this session supports recovery, not fatigue.',
+    progressionGuidance: 'Add 2-3 minutes of cardio each week, up to 45 minutes.',
+  };
+
+  return fiveDayPlan.map((day) => {
+    if (day.day === 'Saturday') return conditioningDay;
+    if (day.day === 'Sunday' && frequency >= 7) {
+      return {
+        ...day,
+        focus: 'Active Recovery',
+        totalEstimatedTime: 30,
+        exercises: [
+          {
+            name: 'Light Walk or Stretch Session',
+            sets: 1,
+            reps: 30,
+            restTime: 0,
+            intensity: 'Very Light',
+            rpe: 'RPE 2-3',
+            muscleGroups: ['Full Body'],
+            exerciseType: 'Recovery',
+            estimatedDuration: 30,
+            alternatives: ['Yoga', 'Swimming', 'Light cycling'],
+          },
+        ],
+        recoveryTips: 'Seven sessions a week only works if this one stays genuinely easy.',
+        progressionGuidance: 'Keep intensity very low — this day protects the rest of your week.',
+      };
+    }
+    return day;
+  });
 }
 
 function generateIntermediatePlan(frequency, goal) {
