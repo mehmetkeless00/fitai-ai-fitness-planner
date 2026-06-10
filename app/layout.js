@@ -1,8 +1,15 @@
 import './globals.css';
+import { Inter } from 'next/font/google';
 import ThemeProvider from '@/components/layout/ThemeProvider';
 import LanguageProvider from '@/components/layout/LanguageProvider';
 
+const inter = Inter({
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+});
+
 export const metadata = {
+  metadataBase: new URL('https://fitai-ai-fitness-planner.vercel.app'),
   title: {
     default: 'FitFlow - Your Personal Fitness Coach',
     template: '%s | FitFlow',
@@ -42,7 +49,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
-      <body>
+      <body className={inter.className}>
         <ThemeProvider>
           <LanguageProvider>{children}</LanguageProvider>
         </ThemeProvider>

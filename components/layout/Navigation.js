@@ -19,7 +19,7 @@ export default function Navigation() {
       </Link>
       <Link
         href="/create-plan"
-        className="hidden sm:inline text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
+        className="text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
       >
         {t.nav.createPlan}
       </Link>
@@ -27,11 +27,13 @@ export default function Navigation() {
   );
 
   const logo = (
-    <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white">
-      <div className="w-8 h-8 bg-gradient-to-br from-sky-400 to-blue-600 rounded-lg flex items-center justify-center">
+    <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+      <div className="w-8 h-8 bg-gradient-to-br from-sky-400 to-blue-600 rounded-lg flex items-center justify-center shadow-md shadow-sky-500/30">
         💪
       </div>
-      FitFlow
+      <span className="bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+        FitFlow
+      </span>
     </Link>
   );
 

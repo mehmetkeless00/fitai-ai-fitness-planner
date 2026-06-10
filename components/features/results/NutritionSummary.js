@@ -40,8 +40,10 @@ export default function NutritionSummary({ plan }) {
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {stats.map((stat, idx) => (
-          <Card key={idx} className="text-center p-3 md:p-4">
-            <div className="text-2xl md:text-3xl mb-2">{stat.icon}</div>
+          <Card key={idx} className="text-center p-3 md:p-4 hover:border-sky-500/30">
+            <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 mb-2 rounded-xl bg-gradient-to-br from-sky-500/10 to-blue-500/10 border border-sky-500/15 text-xl md:text-2xl">
+              {stat.icon}
+            </div>
             <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 mb-1">{stat.label}</p>
             <p className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
           </Card>

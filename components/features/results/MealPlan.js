@@ -43,7 +43,7 @@ export default function MealPlan({ plan }) {
       {plan.mealPlan.map((dayPlan, dayIdx) => (
         <Card
           key={dayIdx}
-          className="hover:border-sky-500/30 transition-all cursor-pointer"
+          className="hover:border-sky-500/40 hover:shadow-lg hover:shadow-sky-500/5 transition-all cursor-pointer"
           onClick={() => setExpandedDay(expandedDay === dayIdx ? -1 : dayIdx)}
         >
           <div className="flex justify-between items-center mb-4">
@@ -51,8 +51,14 @@ export default function MealPlan({ plan }) {
               <span className="text-2xl">🥗</span>
               {m.days[dayPlan.day] || dayPlan.day}
             </h3>
-            {expandedDay === dayIdx && <span className="text-xl text-sky-400">▲</span>}
-            {expandedDay !== dayIdx && <span className="text-xl text-slate-400 dark:text-slate-500">▼</span>}
+            <span
+              className={`text-lg transition-transform duration-300 ${
+                expandedDay === dayIdx ? 'rotate-180 text-sky-500' : 'text-slate-400 dark:text-slate-500'
+              }`}
+              aria-hidden="true"
+            >
+              ▼
+            </span>
           </div>
 
           {expandedDay === dayIdx && (

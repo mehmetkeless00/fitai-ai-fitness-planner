@@ -17,7 +17,7 @@ export default function Result() {
   const [planData, setPlanData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [isDownloading, setIsDownloading] = useState(false);
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const r = t.result;
 
   const getGoalLabel = (goalValue) => {
@@ -40,8 +40,7 @@ export default function Result() {
 
     setIsDownloading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      generatePlanPDF(planData);
+      await generatePlanPDF(planData, lang);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to generate PDF. Please try again.');
@@ -93,21 +92,28 @@ export default function Result() {
             </p>
           </div>
 
-          <div className="flex gap-2 justify-center mb-8 overflow-x-auto pb-2 px-2">
-            {tabs.map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                className={`px-3 sm:px-6 py-2 rounded-lg font-medium transition-all whitespace-nowrap text-sm sm:text-base
-                  ${
-                    activeTab === key
-                      ? 'bg-sky-500 text-white'
-                      : 'bg-slate-100 dark:bg-dark-surface text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-dark-surface/80 dark:hover:text-white'
-                  }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="flex justify-center mb-8 overflow-x-auto pb-2 px-2">
+            <div
+              role="tablist"
+              className="inline-flex gap-1 p-1 bg-slate-100 dark:bg-dark-surface border border-slate-200 dark:border-dark-border rounded-xl"
+            >
+              {tabs.map(({ key, label }) => (
+                <button
+                  key={key}
+                  role="tab"
+                  aria-selected={activeTab === key}
+                  onClick={() => setActiveTab(key)}
+                  className={`px-3 sm:px-5 py-2 rounded-lg font-medium transition-all whitespace-nowrap text-sm sm:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
+                    ${
+                      activeTab === key
+                        ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/25'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-dark-bg/40'
+                    }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {activeTab === 'overview' && (
@@ -167,12 +173,20 @@ export default function Result() {
           {activeTab === 'advice' && (
             <div>
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.coachHeading}</h2>
-              <Card className="bg-gradient-to-r from-sky-50 dark:from-sky-500/10 to-blue-50 dark:to-blue-500/10 border-sky-200 dark:border-sky-500/20">
-                <div className="text-center md:text-left">
-                  <div className="text-5xl mb-4 text-center">🎯</div>
-                  <p className="text-lg text-slate-700 dark:text-slate-200 leading-relaxed">
-                    {planData.advice || r.defaultAdvice}
-                  </p>
+              <Card className="bg-gradient-to-br from-sky-50 via-white dark:via-transparent to-blue-50 dark:from-sky-500/10 dark:to-blue-500/10 border-sky-200 dark:border-sky-500/20">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
+                  <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-3xl shadow-lg shadow-sky-500/30">
+                    🎯
+                  </div>
+                  <blockquote className="relative text-center md:text-left">
+                    <span
+                      className="hidden md:block absolute -left-3 top-0 bottom-0 w-1 rounded-full bg-gradient-to-b from-sky-500 to-blue-600"
+                      aria-hidden="true"
+                    />
+                    <p className="text-lg text-slate-700 dark:text-slate-200 leading-relaxed md:pl-3">
+                      {planData.advice || r.defaultAdvice}
+                    </p>
+                  </blockquote>
                 </div>
               </Card>
             </div>

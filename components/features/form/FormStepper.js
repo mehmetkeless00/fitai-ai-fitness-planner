@@ -37,9 +37,8 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
 
   const StepComponent = steps[currentStep].component;
   const motivation = t.createPlan.stepMotivation[currentStep] || {};
-  const completedSteps = currentStep;
   const totalSteps = steps.length;
-  const stepProgress = (completedSteps / totalSteps) * 100;
+  const stepProgress = ((currentStep + 1) / totalSteps) * 100;
 
   return (
     <div className="w-full">
@@ -69,10 +68,10 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
                 className={`w-8 md:w-10 h-8 md:h-10 rounded-full flex items-center justify-center font-semibold text-sm md:text-base transition-all duration-500 relative
                   ${
                     idx < currentStep
-                      ? 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30'
+                      ? 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/40'
                       : idx === currentStep
-                        ? 'bg-sky-500 text-white border border-sky-500 shadow-lg shadow-sky-500/50'
-                        : 'bg-slate-100 dark:bg-dark-surface text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-dark-border'
+                        ? 'bg-gradient-to-br from-sky-500 to-blue-600 text-white border border-sky-500 shadow-lg shadow-sky-500/40 scale-110'
+                        : 'bg-slate-100 dark:bg-dark-surface text-slate-500 dark:text-slate-400 border border-slate-300 dark:border-dark-border'
                   }
                 `}
               >
@@ -81,7 +80,12 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
                   <span className="absolute inset-0 rounded-full bg-sky-500 animate-pulse opacity-20" />
                 )}
               </div>
-              <span className="text-xs md:text-sm text-slate-600 dark:text-slate-500 mt-1.5 md:mt-2 text-center leading-tight">{step.title}</span>
+              <span
+                className={`text-xs md:text-sm mt-1.5 md:mt-2 text-center leading-tight transition-colors
+                  ${idx === currentStep ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-500 dark:text-slate-400'}`}
+              >
+                {step.title}
+              </span>
             </div>
           ))}
         </div>

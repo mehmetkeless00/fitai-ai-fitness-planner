@@ -23,28 +23,39 @@ export default function ExerciseDemo({ exerciseName, muscleGroups = [], exercise
   return (
     <div className="space-y-3">
       <div
-        className="h-32 rounded-lg border border-slate-300 dark:border-slate-700 flex items-center justify-center"
+        className="relative h-32 rounded-xl border flex items-center justify-center overflow-hidden"
         style={{
-          background: `linear-gradient(135deg, ${displayDemo.color}08 0%, ${displayDemo.color}12 100%)`,
-          borderColor: displayDemo.color + '30',
+          background: `linear-gradient(135deg, ${displayDemo.color}0a 0%, ${displayDemo.color}1a 100%)`,
+          borderColor: displayDemo.color + '35',
         }}
       >
+        <span
+          className="absolute top-2 right-2 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
+          style={{ backgroundColor: displayDemo.color + '20', color: displayDemo.color }}
+        >
+          {categoryLabel}
+        </span>
         <div className="text-center">
-          <div className="text-5xl mb-2">{categoryEmoji}</div>
-          <p className="text-sm text-slate-600 dark:text-slate-400">{categoryLabel}</p>
+          <div className="text-5xl drop-shadow-sm">{categoryEmoji}</div>
         </div>
       </div>
 
       <button
         type="button"
+        aria-expanded={showInstructions}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           setShowInstructions((prev) => !prev);
         }}
-        className="w-full text-xs font-medium text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors flex items-center gap-2 px-3 py-2 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-lg"
+        className="w-full text-xs font-medium text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors flex items-center gap-2 px-3 py-2 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-lg border border-transparent hover:border-sky-200 dark:hover:border-sky-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
       >
-        <span>{showInstructions ? '▼' : '▶'}</span>
+        <span
+          className={`inline-block transition-transform duration-200 ${showInstructions ? 'rotate-90' : ''}`}
+          aria-hidden="true"
+        >
+          ▶
+        </span>
         <span>How to perform</span>
       </button>
 

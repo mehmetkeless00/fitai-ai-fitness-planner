@@ -1,6 +1,7 @@
 import Navigation from '@/components/layout/Navigation';
 import Container from '@/components/layout/Container';
 import Hero from '@/components/features/home/Hero';
+import HowItWorks from '@/components/features/home/HowItWorks';
 import Features from '@/components/features/home/Features';
 import CTA from '@/components/features/home/CTA';
 import HomeFooter from '@/components/layout/HomeFooter';
@@ -28,6 +29,7 @@ export default function Home() {
       <main className="min-h-screen pt-20">
         <Container>
           <Hero />
+          <HowItWorks />
           <Features />
           <CTA />
         </Container>

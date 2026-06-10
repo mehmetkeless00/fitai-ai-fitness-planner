@@ -21,11 +21,13 @@ export default function Features() {
         {t.features.items.map((feature, idx) => (
           <Card
             key={idx}
-            className="text-center hover:border-sky-500/30 transition-all hover:-translate-y-1"
+            className="group text-left hover:border-sky-500/40 transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-sky-500/5"
           >
-            <div className="text-5xl mb-4">{feature.emoji}</div>
-            <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
-            <p className="text-slate-600 dark:text-slate-400">{feature.description}</p>
+            <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl bg-gradient-to-br from-sky-500/10 to-blue-500/10 border border-sky-500/20 text-2xl transition-transform duration-200 group-hover:scale-110">
+              {feature.emoji}
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1.5">{feature.title}</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300">{feature.description}</p>
           </Card>
         ))}
       </div>
