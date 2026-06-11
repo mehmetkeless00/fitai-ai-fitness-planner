@@ -1,7 +1,8 @@
 /**
- * Advanced AI Fitness Plan Generator
- * Generates complete 7-day personalized plans with smart periodization
- * Supports all fitness goals, experience levels, and dietary preferences
+ * Rule-based fitness plan generator.
+ * Builds complete 7-day personalized plans from sports-science formulas
+ * (Mifflin-St Jeor BMR, TDEE activity factors, goal-based macro splits).
+ * Supports all fitness goals, experience levels, and dietary preferences.
  */
 
 import { getPlanStrings } from './planStrings.js';
@@ -1422,7 +1423,7 @@ function getMealOptions(preference, allergies, lang = 'en') {
 }
 
 // ============================================
-// AI COACH INTELLIGENCE
+// COACH INSIGHTS (recovery score, habit tips, risk flags)
 // ============================================
 
 function generateRecoveryScore(frequency, age, fitnessGoal, dailyCalories, tdee) {

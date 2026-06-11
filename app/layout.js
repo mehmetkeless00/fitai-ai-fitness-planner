@@ -20,7 +20,7 @@ export const metadata = {
     'fitness plan',
     'workout plan',
     'meal plan',
-    'AI fitness',
+    'fitness calculator',
     'personal trainer',
     'nutrition plan',
     'weight loss',

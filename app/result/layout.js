@@ -1,7 +1,7 @@
 export const metadata = {
   title: 'Your Personalized Plan',
   description:
-    'Your AI-generated 7-day workout and meal plan. View your nutrition targets, workout schedule, and coaching advice — or download as a PDF.',
+    'Your personalized 7-day workout and meal plan. View your nutrition targets, workout schedule, and coaching advice — or download as a PDF.',
   openGraph: {
     title: 'Your Personalized Fitness Plan | FitFlow',
     description:

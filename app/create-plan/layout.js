@@ -5,7 +5,7 @@ export const metadata = {
   openGraph: {
     title: 'Create Your Personalized Fitness Plan | FitFlow',
     description:
-      'Fill in your details and get a free AI-generated 7-day workout and meal plan tailored to you.',
+      'Fill in your details and get a free personalized 7-day workout and meal plan tailored to you.',
   },
 };
 

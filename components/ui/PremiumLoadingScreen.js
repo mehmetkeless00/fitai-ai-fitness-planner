@@ -1,27 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-const LOADING_STAGES = [
-  { stage: 'Analyzing your fitness goals', icon: '🎯' },
-  { stage: 'Calculating your nutrition needs', icon: '🥗' },
-  { stage: 'Creating workout routine', icon: '💪' },
-  { stage: 'Optimizing your plan', icon: '⚡' },
-  { stage: 'Finalizing recommendations', icon: '✨' },
-];
-
-const AI_TIPS = [
-  '💡 AI adapts your plan as you progress',
-  '🏋️ Progressive overload is key to growth',
-  '🥤 Stay hydrated for optimal performance',
-  '😴 Recovery is when your muscles grow',
-  '🎯 Consistency beats intensity',
-  '🧠 Mind-muscle connection matters',
-  '⏱️ Rest periods affect your gains',
-  '🔄 Periodization prevents plateaus',
-];
+import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function PremiumLoadingScreen() {
+  const { t } = useLanguage();
+  const LOADING_STAGES = t.loading.stages;
+  const TIPS = t.loading.tips;
+
   const [currentStage, setCurrentStage] = useState(0);
   const [progress, setProgress] = useState(0);
   const [currentTip, setCurrentTip] = useState(0);
@@ -31,14 +17,14 @@ export default function PremiumLoadingScreen() {
       setCurrentStage((prev) => (prev + 1) % LOADING_STAGES.length);
     }, 1200);
     return () => clearInterval(stageInterval);
-  }, []);
+  }, [LOADING_STAGES.length]);
 
   useEffect(() => {
     const tipInterval = setInterval(() => {
-      setCurrentTip((prev) => (prev + 1) % AI_TIPS.length);
+      setCurrentTip((prev) => (prev + 1) % TIPS.length);
     }, 4000);
     return () => clearInterval(tipInterval);
-  }, []);
+  }, [TIPS.length]);
 
   useEffect(() => {
     const progressInterval = setInterval(() => {
@@ -62,9 +48,9 @@ export default function PremiumLoadingScreen() {
       <div className="relative z-10 max-w-md w-full mx-4">
         {/* Logo and title */}
         <div className="text-center mb-12">
-          <div className="text-5xl mb-3">🤖</div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">FitFlow Coach</h1>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">Building your personalized plan</p>
+          <div className="text-5xl mb-3">💪</div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{t.loading.title}</h1>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">{t.loading.subtitle}</p>
         </div>
 
         {/* Progress bar */}
@@ -92,11 +78,11 @@ export default function PremiumLoadingScreen() {
           </div>
         </div>
 
-        {/* AI Tips carousel */}
+        {/* Training tips carousel */}
         <div className="bg-slate-100 dark:bg-dark-surface border border-slate-200 dark:border-dark-border rounded-lg p-4 mb-6">
           <div className="relative h-16 flex items-center">
             <p key={currentTip} className="text-slate-700 dark:text-slate-300 text-sm animate-fade-in">
-              {AI_TIPS[currentTip]}
+              {TIPS[currentTip]}
             </p>
           </div>
         </div>
