@@ -3,13 +3,34 @@
 import { useState } from 'react';
 import Card from '../../ui/Card';
 import { useLanguage } from '@/components/layout/LanguageProvider';
+import { getMealOptions } from '../../../utils/generateSmartPlan';
 
-export default function MealPlan({ plan }) {
+export default function MealPlan({ plan, onPlanChange }) {
   const [expandedDay, setExpandedDay] = useState(0);
   const [expandedAlternatives, setExpandedAlternatives] = useState({});
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const s = t.mealPlan;
   const m = t.maps;
+
+  const swapMeal = (dayIdx, mealType) => {
+    if (!onPlanChange) return;
+    const options = getMealOptions(plan.dietaryPreference, plan.allergies || '', lang)[mealType] || [];
+    const current = plan.mealPlan[dayIdx].meals[mealType];
+    const pool = options.filter((o) => o.name !== current.name);
+    if (pool.length === 0) return;
+
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    const next = JSON.parse(JSON.stringify(plan));
+    next.mealPlan[dayIdx].meals[mealType] = {
+      ...current,
+      name: pick.name,
+      description: pick.description,
+      prepTime: pick.prepTime || current.prepTime,
+      difficulty: pick.difficulty || 'Easy',
+      alternatives: pick.alternatives || [],
+    };
+    onPlanChange(next);
+  };
 
   if (!plan || !plan.mealPlan) {
     return <div className="text-center text-slate-500 dark:text-slate-400 py-8">{s.loading}</div>;
@@ -126,6 +147,19 @@ export default function MealPlan({ plan }) {
                         </span>
                       )}
                     </div>
+
+                    {onPlanChange && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          swapMeal(dayIdx, mealType);
+                        }}
+                        className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
+                      >
+                        🔄 {s.swap}
+                      </button>
+                    )}
 
                     {meal.alternatives && meal.alternatives.length > 0 && (
                       <div>

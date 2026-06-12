@@ -1296,36 +1296,54 @@ function generatePerformancePlan(experience, frequency) {
 // MEAL GENERATION
 // ============================================
 
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Deals meals from a shuffled deck so usage stays even across the week
+// (with N options over 7 days, no meal appears more than ceil(7/N) times)
+// and the same meal never lands on two consecutive days.
+function createMealDealer(meals) {
+  let deck = [];
+  let last = null;
+  return () => {
+    if (meals.length === 0) return null;
+    if (meals.length === 1) return meals[0];
+    if (deck.length === 0) {
+      deck = shuffle([...meals]);
+      if (deck[deck.length - 1] === last) {
+        const i = Math.floor(Math.random() * (deck.length - 1));
+        [deck[deck.length - 1], deck[i]] = [deck[i], deck[deck.length - 1]];
+      }
+    }
+    last = deck.pop();
+    return last;
+  };
+}
+
 function generateMealPlan(dailyCalories, macros, dietaryPreference, allergies, frequency, lang = 'en') {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const isHighProtein = macros.protein.percentage >= 35;
+
+  const mealOptions = getMealOptions(dietaryPreference, allergies, lang);
+  const dealers = {
+    breakfast: createMealDealer(mealOptions.breakfast),
+    lunch: createMealDealer(mealOptions.lunch),
+    dinner: createMealDealer(mealOptions.dinner),
+    snack: createMealDealer(mealOptions.snack),
+  };
 
   return days.map((day, idx) => {
     const isWorkoutDay = frequency >= 6 || (frequency === 5 && idx !== 2 && idx !== 6) || (frequency === 4 && idx !== 2 && idx !== 5) || (frequency === 3 && idx !== 2 && idx !== 5);
 
     const meals = {
-      breakfast: generateMealForTimeOfDay(
-        'breakfast',
-        dailyCalories,
-        macros,
-        dietaryPreference,
-        allergies,
-        isWorkoutDay,
-        0.25,
-        lang
-      ),
-      lunch: generateMealForTimeOfDay('lunch', dailyCalories, macros, dietaryPreference, allergies, isWorkoutDay, 0.35, lang),
-      dinner: generateMealForTimeOfDay(
-        'dinner',
-        dailyCalories,
-        macros,
-        dietaryPreference,
-        allergies,
-        isWorkoutDay,
-        0.3,
-        lang
-      ),
-      snack: generateMealForTimeOfDay('snack', dailyCalories, macros, dietaryPreference, allergies, isWorkoutDay, 0.1, lang),
+      breakfast: buildMeal('breakfast', dealers.breakfast(), dailyCalories, isWorkoutDay, 0.25, lang),
+      lunch: buildMeal('lunch', dealers.lunch(), dailyCalories, isWorkoutDay, 0.35, lang),
+      dinner: buildMeal('dinner', dealers.dinner(), dailyCalories, isWorkoutDay, 0.3, lang),
+      snack: buildMeal('snack', dealers.snack(), dailyCalories, isWorkoutDay, 0.1, lang),
     };
 
     return {
@@ -1344,22 +1362,20 @@ function generateMealPlan(dailyCalories, macros, dietaryPreference, allergies, f
   });
 }
 
-function generateMealForTimeOfDay(timeOfDay, dailyCalories, macros, preference, allergies, isWorkoutDay, caloriePercent, lang = 'en') {
+function buildMeal(timeOfDay, selectedMeal, dailyCalories, isWorkoutDay, caloriePercent, lang = 'en') {
   const mealCalories = Math.round(dailyCalories * caloriePercent);
-  const meals = getMealOptions(preference, allergies, lang);
-  const mealList = meals[timeOfDay] || [];
+  const macroSplit = getMacroSplitForMeal(timeOfDay, isWorkoutDay);
 
-  if (mealList.length === 0) {
+  if (!selectedMeal) {
     const fallback = getPlanStrings(lang).fallbackMeal;
-    const fallbackSplit = getMacroSplitForMeal(timeOfDay, isWorkoutDay);
     return {
       name: fallback.name,
       description: fallback.description,
       calories: mealCalories,
       macros: {
-        protein: Math.round((mealCalories * fallbackSplit.protein) / 4),
-        carbs: Math.round((mealCalories * fallbackSplit.carbs) / 4),
-        fat: Math.round((mealCalories * fallbackSplit.fat) / 9),
+        protein: Math.round((mealCalories * macroSplit.protein) / 4),
+        carbs: Math.round((mealCalories * macroSplit.carbs) / 4),
+        fat: Math.round((mealCalories * macroSplit.fat) / 9),
       },
       timing: getTiming(timeOfDay, isWorkoutDay, lang),
       prepTime: '',
@@ -1367,9 +1383,6 @@ function generateMealForTimeOfDay(timeOfDay, dailyCalories, macros, preference, 
       alternatives: [],
     };
   }
-
-  const selectedMeal = mealList[Math.floor(Math.random() * mealList.length)];
-  const macroSplit = getMacroSplitForMeal(timeOfDay, isWorkoutDay);
 
   return {
     name: selectedMeal.name,
@@ -1405,7 +1418,8 @@ function getTiming(timeOfDay, isWorkoutDay, lang = 'en') {
   return timings[timeOfDay] || t.asNeeded;
 }
 
-function getMealOptions(preference, allergies, lang = 'en') {
+// Exported for the meal-swap UI so client-side rerolls honor identical allergy rules.
+export function getMealOptions(preference, allergies, lang = 'en') {
   const strings = getPlanStrings(lang);
   const allMeals = strings.meals;
   const mealBase = allMeals[preference] || allMeals['omnivore'];

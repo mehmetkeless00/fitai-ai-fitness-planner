@@ -6,12 +6,28 @@ import ExerciseDemo from './ExerciseDemo';
 import { getExerciseDemo } from '../../../utils/exerciseMediaMap';
 import { useLanguage } from '@/components/layout/LanguageProvider';
 
-export default function WorkoutPlan({ plan }) {
+export default function WorkoutPlan({ plan, onPlanChange }) {
   const [expandedDay, setExpandedDay] = useState(0);
   const [expandedAlternatives, setExpandedAlternatives] = useState({});
   const { t } = useLanguage();
   const s = t.workoutPlan;
   const m = t.maps;
+
+  // Promotes a random alternative to the main exercise and demotes the
+  // current one into the alternatives list, so swapping is always reversible.
+  const swapExercise = (dayIdx, exIdx) => {
+    if (!onPlanChange) return;
+    const current = plan.workoutPlan[dayIdx].exercises[exIdx];
+    if (!current.alternatives || current.alternatives.length === 0) return;
+
+    const next = JSON.parse(JSON.stringify(plan));
+    const target = next.workoutPlan[dayIdx].exercises[exIdx];
+    const i = Math.floor(Math.random() * target.alternatives.length);
+    const [newName] = target.alternatives.splice(i, 1);
+    target.alternatives.push(target.name);
+    target.name = newName;
+    onPlanChange(next);
+  };
 
   if (!plan || !plan.workoutPlan) {
     return <div className="text-center text-slate-500 dark:text-slate-400 py-8">{s.loading}</div>;
@@ -144,7 +160,19 @@ export default function WorkoutPlan({ plan }) {
                             )}
 
                             {exercise.alternatives && exercise.alternatives.length > 0 && (
-                              <div>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                {onPlanChange && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      swapExercise(dayIdx, exIdx);
+                                    }}
+                                    className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
+                                  >
+                                    🔄 {s.swap}
+                                  </button>
+                                )}
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -155,7 +183,7 @@ export default function WorkoutPlan({ plan }) {
                                   {expandedAlternatives[`${dayIdx}-${exIdx}`] ? s.hideAlternatives : s.showAlternatives}
                                 </button>
                                 {expandedAlternatives[`${dayIdx}-${exIdx}`] && (
-                                  <ul className="mt-1 space-y-1 ml-2">
+                                  <ul className="w-full mt-1 space-y-1 ml-2">
                                     {exercise.alternatives.map((alt, altIdx) => (
                                       <li key={altIdx} className="text-xs text-slate-700 dark:text-slate-400 flex items-start gap-2">
                                         <span className="text-sky-600 dark:text-sky-400">•</span>

@@ -153,6 +153,36 @@ describe('Recovery score', () => {
   });
 });
 
+describe('Meal variety (shuffle-deal)', () => {
+  it('spreads meals evenly: no meal used more than ceil(7/options) times per slot', () => {
+    for (let run = 0; run < 5; run++) {
+      const { mealPlan } = makePlan();
+      for (const slot of ['breakfast', 'lunch', 'dinner', 'snack']) {
+        const names = mealPlan.map((d) => d.meals[slot].name);
+        const counts = {};
+        names.forEach((n) => (counts[n] = (counts[n] || 0) + 1));
+        const max = Math.max(...Object.values(counts));
+        const min = Math.min(...Object.values(counts));
+        // 4 options over 7 days -> every meal appears 1-2 times
+        expect(max, `${slot} run ${run}: ${names.join(', ')}`).toBeLessThanOrEqual(2);
+        expect(max - min).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it('never serves the same meal on consecutive days', () => {
+    for (let run = 0; run < 5; run++) {
+      const { mealPlan } = makePlan();
+      for (const slot of ['breakfast', 'lunch', 'dinner', 'snack']) {
+        const names = mealPlan.map((d) => d.meals[slot].name);
+        for (let i = 1; i < names.length; i++) {
+          expect(names[i], `${slot} day ${i} repeated (run ${run})`).not.toBe(names[i - 1]);
+        }
+      }
+    }
+  });
+});
+
 describe('Allergy filtering', () => {
   it('excludes meals containing the allergen in name or description', () => {
     const { mealPlan } = makePlan({ allergies: 'chicken' });

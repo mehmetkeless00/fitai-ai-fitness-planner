@@ -13,6 +13,7 @@ import GoalsForm from '@/components/features/form/GoalsForm';
 import PreferencesForm from '@/components/features/form/PreferencesForm';
 import PremiumLoadingScreen from '@/components/ui/PremiumLoadingScreen';
 import { useLanguage } from '@/components/layout/LanguageProvider';
+import { savePlan } from '@/utils/planStorage';
 
 export default function CreatePlan() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function CreatePlan() {
         generatedAt: new Date().toISOString(),
       };
 
-      localStorage.setItem('userPlan', JSON.stringify(planData));
+      savePlan(planData);
       track('plan_generated', { goal: formData.fitnessGoal, lang });
       router.push('/result');
     } catch (err) {

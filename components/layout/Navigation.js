@@ -4,10 +4,31 @@ import Link from 'next/link';
 import { useContext } from 'react';
 import { ThemeContext } from '@/components/layout/ThemeProvider';
 import { useLanguage } from '@/components/layout/LanguageProvider';
+import { useAuth } from '@/components/layout/AuthProvider';
 
 export default function Navigation() {
   const themeContext = useContext(ThemeContext);
   const { t, lang, toggleLanguage } = useLanguage();
+  const { user, isCloudEnabled, signOut } = useAuth();
+
+  const authControl = isCloudEnabled ? (
+    user ? (
+      <button
+        onClick={signOut}
+        title={user.email}
+        className="hidden sm:inline text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
+      >
+        {t.auth.signOut}
+      </button>
+    ) : (
+      <Link
+        href="/auth"
+        className="hidden sm:inline text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
+      >
+        {t.auth.signIn}
+      </Link>
+    )
+  ) : null;
 
   const navLinks = (
     <>
@@ -16,6 +37,12 @@ export default function Navigation() {
         className="hidden sm:inline text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
       >
         {t.nav.home}
+      </Link>
+      <Link
+        href="/plans"
+        className="hidden sm:inline text-slate-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors text-sm font-medium"
+      >
+        {t.nav.myPlans}
       </Link>
       <Link
         href="/create-plan"
@@ -55,6 +82,7 @@ export default function Navigation() {
             {logo}
             <div className="flex items-center gap-2 md:gap-4">
               {navLinks}
+              {authControl}
               {langButton}
               <button className="px-4 py-1.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-sm font-medium transition-all">
                 🌙
@@ -74,6 +102,7 @@ export default function Navigation() {
 
           <div className="flex items-center gap-2 md:gap-4">
             {navLinks}
+            {authControl}
             {langButton}
             <button
               className="px-3 md:px-4 py-1.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-sm font-medium transition-all"

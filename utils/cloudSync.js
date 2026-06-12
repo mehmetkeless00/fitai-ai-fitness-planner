@@ -1,0 +1,70 @@
+// Mirrors the local plan store to Supabase for signed-in users.
+// Local storage remains the source of truth; cloud writes are fire-and-forget
+// so a flaky connection never blocks the UI.
+
+import { getSupabase } from '../lib/supabase';
+import { listPlans, importPlans, setSyncHandler } from './planStorage';
+
+function toRow(entry, userId) {
+  return {
+    id: entry.id,
+    user_id: userId,
+    name: entry.name,
+    created_at: entry.createdAt,
+    data: entry.data,
+  };
+}
+
+function toEntry(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    createdAt: row.created_at,
+    data: row.data,
+  };
+}
+
+// Handles a single local mutation. Exported for tests (client injectable).
+export async function mirrorMutation(type, payload, userId, client = getSupabase()) {
+  if (!client || !userId) return;
+  try {
+    if (type === 'save') {
+      await client.from('plans').upsert(toRow(payload, userId));
+    } else if (type === 'delete') {
+      await client.from('plans').delete().eq('id', payload.id);
+    }
+  } catch (err) {
+    console.error('Cloud sync failed:', err);
+  }
+}
+
+// Two-way sync on login: push local plans up, pull cloud plans down, merge.
+export async function fullSync(userId, client = getSupabase()) {
+  if (!client || !userId) return;
+  try {
+    const local = listPlans();
+    if (local.length > 0) {
+      await client.from('plans').upsert(local.map((e) => toRow(e, userId)));
+    }
+    const { data: rows, error } = await client
+      .from('plans')
+      .select('id, name, created_at, data')
+      .order('created_at', { ascending: false });
+    if (!error && Array.isArray(rows)) {
+      importPlans(rows.map(toEntry));
+    }
+  } catch (err) {
+    console.error('Cloud sync failed:', err);
+  }
+}
+
+// Wires local mutations to the cloud for the given user; call with null to stop.
+export function enableCloudSync(userId) {
+  if (!userId) {
+    setSyncHandler(null);
+    return;
+  }
+  setSyncHandler((type, payload) => {
+    mirrorMutation(type, payload, userId);
+  });
+}

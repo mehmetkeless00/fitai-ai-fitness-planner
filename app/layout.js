@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import ThemeProvider from '@/components/layout/ThemeProvider';
 import LanguageProvider from '@/components/layout/LanguageProvider';
+import AuthProvider from '@/components/layout/AuthProvider';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -52,7 +53,9 @@ export default function RootLayout({ children }) {
     <html lang="en" className="dark">
       <body className={inter.className}>
         <ThemeProvider>
-          <LanguageProvider>{children}</LanguageProvider>
+          <LanguageProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
         <Analytics />
       </body>

@@ -12,6 +12,7 @@ import NutritionSummary from '@/components/features/results/NutritionSummary';
 import WorkoutPlan from '@/components/features/results/WorkoutPlan';
 import MealPlan from '@/components/features/results/MealPlan';
 import { generatePlanPDF } from '@/utils/pdf-generator';
+import { getActivePlan, updatePlanData } from '@/utils/planStorage';
 import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function Result() {
@@ -27,16 +28,22 @@ export default function Result() {
     return t.createPlan.goals.goalOptions.find((g) => g.value === goalValue)?.label || goalValue?.replace(/-/g, ' ');
   };
 
+  const [planId, setPlanId] = useState(null);
+
   useEffect(() => {
-    const stored = localStorage.getItem('userPlan');
-    if (stored) {
-      try {
-        setPlanData(JSON.parse(stored));
-      } catch {
-        localStorage.removeItem('userPlan');
-      }
+    const entry = getActivePlan();
+    if (entry) {
+      setPlanData(entry.data);
+      setPlanId(entry.id);
     }
   }, []);
+
+  const handlePlanChange = (next) => {
+    setPlanData(next);
+    if (planId) {
+      updatePlanData(planId, next);
+    }
+  };
 
   const handleDownloadPDF = async () => {
     if (!planData) return;
@@ -177,14 +184,14 @@ export default function Result() {
           {activeTab === 'workout' && (
             <div>
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.workoutHeading}</h2>
-              <WorkoutPlan plan={planData} />
+              <WorkoutPlan plan={planData} onPlanChange={handlePlanChange} />
             </div>
           )}
 
           {activeTab === 'meals' && (
             <div>
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.mealHeading}</h2>
-              <MealPlan plan={planData} />
+              <MealPlan plan={planData} onPlanChange={handlePlanChange} />
             </div>
           )}
 
@@ -220,6 +227,11 @@ export default function Result() {
           )}
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-8 md:mt-12 px-2">
+            <Link href="/plans" className="w-full sm:w-auto">
+              <Button variant="outline" disabled={isDownloading} className="w-full">
+                {t.nav.myPlans}
+              </Button>
+            </Link>
             <Link href="/create-plan" className="w-full sm:w-auto">
               <Button variant="secondary" disabled={isDownloading} className="w-full">
                 {r.createNewPlan}

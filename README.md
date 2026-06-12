@@ -53,7 +53,8 @@ Every number shown to the user is reproducible from the formulas in [`utils/gene
 - **React 18** with custom context providers for theme (dark/light) and language (EN/TR)
 - **Tailwind CSS** — class-strategy dark mode, fully responsive
 - **jsPDF** — client-side PDF export with an embedded Open Sans font for Turkish glyph support, lazy-loaded so it never touches the initial bundle
-- **No database, no external APIs** — plans live in localStorage; the engine runs entirely on the server route
+- **Supabase (optional)** — email/Google auth and cross-device plan sync with Row Level Security; the app is **local-first** and runs fully without it
+- **Local-first storage** — versioned localStorage store behind a single seam (`utils/planStorage.js`); cloud sync mirrors mutations through a listener hook instead of replacing the storage layer
 
 ## Architecture
 
@@ -72,6 +73,12 @@ utils/
   planStrings.js        # Localized meal databases & coach advice (EN/TR)
   translations.js       # Central UI dictionary (EN/TR)
   pdf-generator.js      # Localized PDF export
+  planStorage.js        # Versioned local-first plan store (the only storage seam)
+  cloudSync.js          # Mirrors local mutations to Supabase for signed-in users
+lib/
+  supabase.js           # Client factory; cloud features auto-disable without env vars
+supabase/
+  schema.sql            # plans table + Row Level Security policies
 ```
 
 **Design decision worth noting:** enum-like values (day names, difficulty, intensity, workout focus) are stored as English keys in the plan data and translated only at the display layer — so switching languages re-labels an existing plan without regenerating it.
@@ -85,7 +92,16 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). No environment variables required.
+Open [http://localhost:3000](http://localhost:3000). No environment variables required — the app runs fully local-first.
+
+### Optional: accounts & cross-device sync (Supabase)
+
+1. Create a free project at [supabase.com](https://supabase.com)
+2. Run [`supabase/schema.sql`](supabase/schema.sql) in the SQL Editor (creates the `plans` table with owner-only Row Level Security)
+3. Copy `.env.example` to `.env.local` and fill in your project URL + anon key
+4. (Optional) enable the Google provider under Authentication → Providers
+
+Signed-in users get their local plans uploaded once, then every save/rename/delete/swap is mirrored to the cloud. Signed-out users lose nothing — the UI simply hides the account features.
 
 ## Testing
 
@@ -94,7 +110,7 @@ npm test            # run the suite once
 npm run test:watch  # watch mode
 ```
 
-33 unit tests cover the plan engine (BMR/TDEE/macro math, frequency schedules, risk flags, allergy filtering, localization fallbacks) and EN/TR dictionary parity — every key must exist in both languages or the suite fails. CI runs tests + build on every push.
+54 unit tests cover the plan engine (BMR/TDEE/macro math, frequency schedules, meal variety, risk flags, allergy filtering, localization fallbacks), the versioned plan store (including legacy migration and corruption recovery), the cloud sync adapter (with a stubbed Supabase client), and EN/TR dictionary parity — every key must exist in both languages or the suite fails. CI runs tests + build on every push.
 
 ## Roadmap
 
@@ -102,9 +118,9 @@ npm run test:watch  # watch mode
 - [x] Localized PDF export with Unicode font embedding
 - [x] Honest, science-based product messaging
 - [x] Unit tests for the calculation engine + CI
-- [ ] Meal variety & swap functionality
-- [ ] Saved plan history (local-first, then Supabase)
-- [ ] Authentication & cloud sync
+- [x] Meal variety & swap functionality
+- [x] Saved plan history (local-first, versioned storage with migration)
+- [x] Authentication & cloud sync (Supabase, optional & local-first)
 - [ ] Progress tracking with adaptive calorie targets
 - [ ] AI coach chat (Claude API)
 - [ ] Mobile app (Expo / React Native, sharing the plan engine)
@@ -113,9 +129,10 @@ npm run test:watch  # watch mode
 
 Honest notes on the current state:
 
-- Plans are stored in localStorage only — clearing browser data deletes them (cloud sync is on the roadmap)
+- Without an account, plans live in this browser's localStorage — clearing browser data deletes them
+- Cloud sync is last-write-wins with no conflict resolution (fine for a single user across devices, not for concurrent edits)
 - Generated plan content (meal names, advice) stays in the language active at generation time; UI labels translate live
-- Meal databases are curated but finite (4 options per meal slot per diet), so weekly repetition is possible
+- Meal databases are curated but finite (4 options per meal slot per diet); the shuffle-deal selection guarantees even spread and no consecutive repeats, but a 7-day week still reuses some meals twice
 - The "coach" is rule-based — advice is selected from goal-specific guidance written into the engine, not generated by an LLM
 
 ## License
