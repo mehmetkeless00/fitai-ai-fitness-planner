@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { track } from '@vercel/analytics';
 import Navigation from '@/components/layout/Navigation';
 import Container from '@/components/layout/Container';
 import PageHeader from '@/components/layout/PageHeader';
@@ -17,6 +18,8 @@ export default function Result() {
   const [planData, setPlanData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [pdfError, setPdfError] = useState(false);
+  const tabListRef = useRef(null);
   const { t, lang } = useLanguage();
   const r = t.result;
 
@@ -39,11 +42,13 @@ export default function Result() {
     if (!planData) return;
 
     setIsDownloading(true);
+    setPdfError(false);
     try {
       await generatePlanPDF(planData, lang);
+      track('pdf_downloaded', { lang });
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      setPdfError(true);
     } finally {
       setIsDownloading(false);
     }
@@ -74,6 +79,16 @@ export default function Result() {
     { key: 'advice', label: r.tabs.advice },
   ];
 
+  const handleTabKeyDown = (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault();
+    const idx = tabs.findIndex((tab) => tab.key === activeTab);
+    const next =
+      e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
+    setActiveTab(tabs[next].key);
+    tabListRef.current?.querySelectorAll('[role="tab"]')[next]?.focus();
+  };
+
   return (
     <>
       <Navigation />
@@ -95,6 +110,8 @@ export default function Result() {
           <div className="flex justify-center mb-8 overflow-x-auto pb-2 px-2">
             <div
               role="tablist"
+              ref={tabListRef}
+              onKeyDown={handleTabKeyDown}
               className="inline-flex gap-1 p-1 bg-slate-100 dark:bg-dark-surface border border-slate-200 dark:border-dark-border rounded-xl"
             >
               {tabs.map(({ key, label }) => (
@@ -102,6 +119,7 @@ export default function Result() {
                   key={key}
                   role="tab"
                   aria-selected={activeTab === key}
+                  tabIndex={activeTab === key ? 0 : -1}
                   onClick={() => setActiveTab(key)}
                   className={`px-3 sm:px-5 py-2 rounded-lg font-medium transition-all whitespace-nowrap text-sm sm:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
                     ${
@@ -189,6 +207,15 @@ export default function Result() {
                   </blockquote>
                 </div>
               </Card>
+            </div>
+          )}
+
+          {pdfError && (
+            <div
+              role="alert"
+              className="max-w-xl mx-auto mt-8 p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-center"
+            >
+              <p className="text-sm text-red-700 dark:text-red-400">{r.pdfError}</p>
             </div>
           )}
 

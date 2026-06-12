@@ -9,7 +9,7 @@ export default function NutritionSummary({ plan }) {
   const m = t.maps;
 
   if (!plan) {
-    return <div className="text-center text-slate-400 py-8">{s.loading}</div>;
+    return <div className="text-center text-slate-500 dark:text-slate-400 py-8">{s.loading}</div>;
   }
 
   const stats = [
@@ -154,13 +154,13 @@ export default function NutritionSummary({ plan }) {
                     </span>
                   ))}
                   {items.length > 5 && (
-                    <span className="text-xs text-gray-600 dark:text-slate-400 px-2 py-1">+{items.length - 5} {s.more}</span>
+                    <span className="text-xs text-slate-600 dark:text-slate-400 px-2 py-1">+{items.length - 5} {s.more}</span>
                   )}
                 </div>
               </div>
             ))}
           </div>
-          <p className="text-xs text-gray-600 dark:text-slate-400 mt-3">{s.shoppingTip}</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-3">{s.shoppingTip}</p>
         </Card>
       )}
     </div>

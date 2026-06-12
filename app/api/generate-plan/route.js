@@ -1,8 +1,12 @@
 import { generateSmartPlan } from '@/utils/generateSmartPlan';
+import translations from '@/utils/translations';
 
 export async function POST(request) {
+  let lang = 'en';
   try {
     const userProfile = await request.json();
+    lang = userProfile.lang === 'tr' ? 'tr' : 'en';
+    const errs = (translations[lang] || translations.en).createPlan;
 
     // Validate and parse numeric fields
     const age = parseInt(userProfile.age);
@@ -13,28 +17,28 @@ export async function POST(request) {
     const validationErrors = [];
 
     if (!userProfile.age || isNaN(age) || age < 13 || age > 100) {
-      validationErrors.push('Age must be between 13 and 100');
+      validationErrors.push(errs.personalInfo.errors.age);
     }
     if (!userProfile.gender) {
-      validationErrors.push('Gender is required');
+      validationErrors.push(errs.personalInfo.errors.gender);
     }
     if (!userProfile.height || isNaN(height) || height < 100 || height > 250) {
-      validationErrors.push('Height must be between 100 and 250 cm');
+      validationErrors.push(errs.personalInfo.errors.height);
     }
     if (!userProfile.weight || isNaN(weight) || weight < 30 || weight > 300) {
-      validationErrors.push('Weight must be between 30 and 300 kg');
+      validationErrors.push(errs.personalInfo.errors.weight);
     }
     if (!userProfile.fitnessGoal) {
-      validationErrors.push('Fitness goal is required');
+      validationErrors.push(errs.goals.errors.fitnessGoal);
     }
     if (!userProfile.experience) {
-      validationErrors.push('Experience level is required');
+      validationErrors.push(errs.goals.errors.experience);
     }
     if (!userProfile.frequency || isNaN(frequency) || frequency < 3 || frequency > 7) {
-      validationErrors.push('Workout frequency must be between 3 and 7 days per week');
+      validationErrors.push(errs.goals.errors.frequency);
     }
     if (!userProfile.dietaryPreference) {
-      validationErrors.push('Dietary preference is required');
+      validationErrors.push(errs.preferences.errors.dietaryPreference);
     }
 
     if (validationErrors.length > 0) {
@@ -46,8 +50,6 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-
-    const lang = userProfile.lang === 'tr' ? 'tr' : 'en';
 
     const plan = generateSmartPlan({
       age,
@@ -75,7 +77,7 @@ export async function POST(request) {
     return Response.json(
       {
         success: false,
-        error: 'Failed to generate personalized plan. Please check your inputs and try again.',
+        error: (translations[lang] || translations.en).createPlan.genericError,
       },
       { status: 500 }
     );

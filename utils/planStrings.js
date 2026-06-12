@@ -1723,6 +1723,11 @@ const en = {
     snackRest: 'Mid-afternoon or evening',
     asNeeded: 'As needed',
   },
+  fallbackMeal: {
+    name: 'Flexible meal (your choice)',
+    description:
+      'Your allergy filters exclude all of our options for this meal. Pick any meal you tolerate that roughly matches the calorie and macro targets shown.',
+  },
   advice: {
     'build-muscle': [
       `Focus on progressive overload — add 1-2 reps or 5-10 lbs weekly. Sleep 7-9 hours daily. Consistency beats intensity. Track your lifts.`,
@@ -1766,6 +1771,11 @@ const tr = {
     snackWorkout: 'Antrenman öncesi veya sonrası',
     snackRest: 'Öğleden sonra veya akşam',
     asNeeded: 'Gerektiğinde',
+  },
+  fallbackMeal: {
+    name: 'Esnek öğün (senin seçimin)',
+    description:
+      'Alerji filtrelerin bu öğün için tüm seçeneklerimizi eliyor. Gösterilen kalori ve makro hedeflerine yakın, tolere edebildiğin herhangi bir öğünü seçebilirsin.',
   },
   advice: {
     'build-muscle': [

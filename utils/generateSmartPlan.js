@@ -1350,13 +1350,19 @@ function generateMealForTimeOfDay(timeOfDay, dailyCalories, macros, preference, 
   const mealList = meals[timeOfDay] || [];
 
   if (mealList.length === 0) {
+    const fallback = getPlanStrings(lang).fallbackMeal;
+    const fallbackSplit = getMacroSplitForMeal(timeOfDay, isWorkoutDay);
     return {
-      name: 'Meal',
-      description: 'Unable to generate meal',
+      name: fallback.name,
+      description: fallback.description,
       calories: mealCalories,
-      macros: { protein: 0, carbs: 0, fat: 0 },
-      timing: getTiming(timeOfDay, false, lang),
-      prepTime: '15 minutes',
+      macros: {
+        protein: Math.round((mealCalories * fallbackSplit.protein) / 4),
+        carbs: Math.round((mealCalories * fallbackSplit.carbs) / 4),
+        fat: Math.round((mealCalories * fallbackSplit.fat) / 9),
+      },
+      timing: getTiming(timeOfDay, isWorkoutDay, lang),
+      prepTime: '',
       difficulty: 'Easy',
       alternatives: [],
     };

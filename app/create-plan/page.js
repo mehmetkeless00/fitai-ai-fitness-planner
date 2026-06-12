@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { track } from '@vercel/analytics';
 import Navigation from '@/components/layout/Navigation';
 import Container from '@/components/layout/Container';
 import PageHeader from '@/components/layout/PageHeader';
@@ -28,6 +29,7 @@ export default function CreatePlan() {
   const handleGeneratePlan = async (formData) => {
     setError(null);
     setIsGenerating(true);
+    track('plan_generation_started', { goal: formData.fitnessGoal, lang });
 
     try {
       const response = await fetch('/api/generate-plan', {
@@ -40,13 +42,13 @@ export default function CreatePlan() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate plan');
+        throw new Error(errorData.error || t.createPlan.genericError);
       }
 
       const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.error || 'Failed to generate plan');
+        throw new Error(data.error || t.createPlan.genericError);
       }
 
       const planData = {
@@ -56,9 +58,11 @@ export default function CreatePlan() {
       };
 
       localStorage.setItem('userPlan', JSON.stringify(planData));
+      track('plan_generated', { goal: formData.fitnessGoal, lang });
       router.push('/result');
     } catch (err) {
-      setError(err.message || 'An error occurred while generating your plan. Please try again.');
+      track('plan_generation_failed');
+      setError(err.message || t.createPlan.genericError);
       setIsGenerating(false);
     }
   };

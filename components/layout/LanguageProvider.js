@@ -25,6 +25,11 @@ export default function LanguageProvider({ children }) {
     if (stored === 'tr') setLang('tr');
   }, []);
 
+  // Keep <html lang> in sync so screen readers use the right pronunciation rules
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   const toggleLanguage = () => {
     const newLang = lang === 'en' ? 'tr' : 'en';
     setLang(newLang);

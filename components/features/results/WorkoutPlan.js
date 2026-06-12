@@ -14,7 +14,7 @@ export default function WorkoutPlan({ plan }) {
   const m = t.maps;
 
   if (!plan || !plan.workoutPlan) {
-    return <div className="text-center text-slate-400 py-8">{s.loading}</div>;
+    return <div className="text-center text-slate-500 dark:text-slate-400 py-8">{s.loading}</div>;
   }
 
   const toggleAlternatives = (dayIdx, exIdx) => {
@@ -27,24 +27,29 @@ export default function WorkoutPlan({ plan }) {
       {plan.workoutPlan.map((dayPlan, dayIdx) => (
         <Card
           key={dayIdx}
-          className="hover:border-sky-500/40 hover:shadow-lg hover:shadow-sky-500/5 transition-all cursor-pointer"
-          onClick={() => setExpandedDay(expandedDay === dayIdx ? -1 : dayIdx)}
+          className="hover:border-sky-500/40 hover:shadow-lg hover:shadow-sky-500/5 transition-all"
         >
-          <div className="flex justify-between items-start mb-4">
+          <button
+            type="button"
+            aria-expanded={expandedDay === dayIdx}
+            aria-controls={`workout-day-${dayIdx}`}
+            onClick={() => setExpandedDay(expandedDay === dayIdx ? -1 : dayIdx)}
+            className="w-full flex justify-between items-start text-left bg-transparent rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+          >
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                <span className="text-2xl">💪</span>
+              <span className="text-lg font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                <span className="text-2xl" aria-hidden="true">💪</span>
                 {m.days[dayPlan.day] || dayPlan.day}
                 {dayPlan.focus && (
                   <span className="text-sm bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 px-2 py-1 rounded">
                     {m.workoutFocus[dayPlan.focus] || dayPlan.focus}
                   </span>
                 )}
-              </h3>
+              </span>
               {dayPlan.totalEstimatedTime && (
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <span className="block text-sm text-slate-600 dark:text-slate-400">
                   ⏱ {s.estMins} {dayPlan.totalEstimatedTime} {s.mins} | {dayPlan.exercises?.length || 0} {s.exercises}
-                </p>
+                </span>
               )}
             </div>
             <span
@@ -55,10 +60,10 @@ export default function WorkoutPlan({ plan }) {
             >
               ▼
             </span>
-          </div>
+          </button>
 
           {expandedDay === dayIdx && (
-            <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-dark-border">
+            <div id={`workout-day-${dayIdx}`} className="space-y-4 mt-4 pt-4 border-t border-slate-200 dark:border-dark-border">
               {dayPlan.warmupExercises && dayPlan.warmupExercises.length > 0 && (
                 <div className="bg-blue-50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20 rounded-lg p-3">
                   <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-2">
@@ -196,14 +201,14 @@ export default function WorkoutPlan({ plan }) {
               {dayPlan.recoveryTips && (
                 <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 rounded-lg p-3">
                   <h4 className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">{s.recoveryTipsLabel}</h4>
-                  <p className="text-sm text-gray-700 dark:text-slate-400">{dayPlan.recoveryTips}</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-400">{dayPlan.recoveryTips}</p>
                 </div>
               )}
 
               {dayPlan.progressionGuidance && (
                 <div className="bg-violet-50 dark:bg-violet-500/5 border border-violet-200 dark:border-violet-500/20 rounded-lg p-3">
                   <h4 className="text-sm font-semibold text-violet-700 dark:text-violet-400 mb-1">{s.progressionLabel}</h4>
-                  <p className="text-sm text-gray-700 dark:text-slate-400">{dayPlan.progressionGuidance}</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-400">{dayPlan.progressionGuidance}</p>
                 </div>
               )}
             </div>

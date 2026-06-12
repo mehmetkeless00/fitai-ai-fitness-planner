@@ -12,7 +12,7 @@ export default function MealPlan({ plan }) {
   const m = t.maps;
 
   if (!plan || !plan.mealPlan) {
-    return <div className="text-center text-slate-400 py-8">{s.loading}</div>;
+    return <div className="text-center text-slate-500 dark:text-slate-400 py-8">{s.loading}</div>;
   }
 
   const toggleAlternatives = (dayIdx, mealType) => {
@@ -43,14 +43,19 @@ export default function MealPlan({ plan }) {
       {plan.mealPlan.map((dayPlan, dayIdx) => (
         <Card
           key={dayIdx}
-          className="hover:border-sky-500/40 hover:shadow-lg hover:shadow-sky-500/5 transition-all cursor-pointer"
-          onClick={() => setExpandedDay(expandedDay === dayIdx ? -1 : dayIdx)}
+          className="hover:border-sky-500/40 hover:shadow-lg hover:shadow-sky-500/5 transition-all"
         >
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-              <span className="text-2xl">🥗</span>
+          <button
+            type="button"
+            aria-expanded={expandedDay === dayIdx}
+            aria-controls={`meal-day-${dayIdx}`}
+            onClick={() => setExpandedDay(expandedDay === dayIdx ? -1 : dayIdx)}
+            className="w-full flex justify-between items-center text-left bg-transparent rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+          >
+            <span className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+              <span className="text-2xl" aria-hidden="true">🥗</span>
               {m.days[dayPlan.day] || dayPlan.day}
-            </h3>
+            </span>
             <span
               className={`text-lg transition-transform duration-300 ${
                 expandedDay === dayIdx ? 'rotate-180 text-sky-500' : 'text-slate-400 dark:text-slate-500'
@@ -59,10 +64,10 @@ export default function MealPlan({ plan }) {
             >
               ▼
             </span>
-          </div>
+          </button>
 
           {expandedDay === dayIdx && (
-            <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-dark-border">
+            <div id={`meal-day-${dayIdx}`} className="space-y-4 mt-4 pt-4 border-t border-slate-200 dark:border-dark-border">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {dayPlan.meals && Object.entries(dayPlan.meals).map(([mealType, meal]) => (
                   <div
@@ -110,11 +115,11 @@ export default function MealPlan({ plan }) {
                       </div>
                     )}
 
-                    <p className="text-xs text-gray-600 dark:text-slate-400">{meal.description}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">{meal.description}</p>
 
                     <div className="flex flex-wrap gap-1 text-xs">
-                      {meal.timing && <span className="text-gray-600 dark:text-slate-400">⏰ {meal.timing}</span>}
-                      {meal.prepTime && <span className="text-gray-600 dark:text-slate-400">⏱ {meal.prepTime}</span>}
+                      {meal.timing && <span className="text-slate-600 dark:text-slate-400">⏰ {meal.timing}</span>}
+                      {meal.prepTime && <span className="text-slate-600 dark:text-slate-400">⏱ {meal.prepTime}</span>}
                       {meal.difficulty && (
                         <span className={`px-1.5 py-0.5 rounded ${getDifficultyClasses(meal.difficulty)}`}>
                           {m.difficulty[meal.difficulty] || meal.difficulty}
@@ -134,7 +139,7 @@ export default function MealPlan({ plan }) {
                           {expandedAlternatives[`${dayIdx}-${mealType}`] ? s.hideAlternatives : s.showAlternatives}
                         </button>
                         {expandedAlternatives[`${dayIdx}-${mealType}`] && (
-                          <ul className="mt-1 space-y-1 ml-2 text-xs text-gray-600 dark:text-slate-400">
+                          <ul className="mt-1 space-y-1 ml-2 text-xs text-slate-600 dark:text-slate-400">
                             {meal.alternatives.map((alt, altIdx) => (
                               <li key={altIdx} className="flex items-start gap-2">
                                 <span className="text-sky-600 dark:text-sky-400">•</span>
@@ -154,7 +159,7 @@ export default function MealPlan({ plan }) {
                   <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-2">{s.hydrationReminders}</h4>
                   <ul className="space-y-1">
                     {dayPlan.hydrationReminders.map((reminder, idx) => (
-                      <li key={idx} className="text-sm text-gray-700 dark:text-slate-400 flex items-start gap-2">
+                      <li key={idx} className="text-sm text-slate-700 dark:text-slate-400 flex items-start gap-2">
                         <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
                         <span>{m.hydrationReminders[reminder] || reminder}</span>
                       </li>

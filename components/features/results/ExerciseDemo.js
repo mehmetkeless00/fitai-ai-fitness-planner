@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { getExerciseDemo, getCategoryEmoji, getCategoryLabel } from '../../../utils/exerciseMediaMap';
+import { getExerciseDemo, getCategoryEmoji } from '../../../utils/exerciseMediaMap';
+import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function ExerciseDemo({ exerciseName, muscleGroups = [], exerciseType = '' }) {
   const [showInstructions, setShowInstructions] = useState(false);
+  const { t } = useLanguage();
+  const s = t.exerciseDemo;
   const demo = getExerciseDemo(exerciseName);
 
   let displayDemo = demo;
@@ -18,7 +21,7 @@ export default function ExerciseDemo({ exerciseName, muscleGroups = [], exercise
   }
 
   const categoryEmoji = getCategoryEmoji(displayDemo.category);
-  const categoryLabel = getCategoryLabel(displayDemo.category);
+  const categoryLabel = s.categories[displayDemo.category] || s.categories.exercise;
 
   return (
     <div className="space-y-3">
@@ -56,31 +59,31 @@ export default function ExerciseDemo({ exerciseName, muscleGroups = [], exercise
         >
           ▶
         </span>
-        <span>How to perform</span>
+        <span>{s.howToPerform}</span>
       </button>
 
       {showInstructions && displayDemo.instructions && (
         <div className="bg-sky-50 dark:bg-sky-500/5 border border-sky-200 dark:border-sky-500/20 rounded-lg p-3 space-y-2">
           <div className="space-y-2">
             <div>
-              <div className="text-xs font-semibold text-sky-700 dark:text-sky-300 mb-1">Setup</div>
-              <p className="text-xs text-gray-700 dark:text-gray-300">{displayDemo.instructions.setup}</p>
+              <div className="text-xs font-semibold text-sky-700 dark:text-sky-300 mb-1">{s.setup}</div>
+              <p className="text-xs text-slate-700 dark:text-slate-300">{displayDemo.instructions.setup}</p>
             </div>
             <div>
-              <div className="text-xs font-semibold text-sky-700 dark:text-sky-300 mb-1">Movement</div>
-              <p className="text-xs text-gray-700 dark:text-gray-300">{displayDemo.instructions.movement}</p>
+              <div className="text-xs font-semibold text-sky-700 dark:text-sky-300 mb-1">{s.movement}</div>
+              <p className="text-xs text-slate-700 dark:text-slate-300">{displayDemo.instructions.movement}</p>
             </div>
             <div>
-              <div className="text-xs font-semibold text-sky-700 dark:text-sky-300 mb-1">Breathing</div>
-              <p className="text-xs text-gray-700 dark:text-gray-300">{displayDemo.instructions.breathing}</p>
+              <div className="text-xs font-semibold text-sky-700 dark:text-sky-300 mb-1">{s.breathing}</div>
+              <p className="text-xs text-slate-700 dark:text-slate-300">{displayDemo.instructions.breathing}</p>
             </div>
             <div>
-              <div className="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-1">❌ Common Mistake</div>
-              <p className="text-xs text-gray-700 dark:text-gray-300">{displayDemo.instructions.commonMistake}</p>
+              <div className="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-1">{s.commonMistake}</div>
+              <p className="text-xs text-slate-700 dark:text-slate-300">{displayDemo.instructions.commonMistake}</p>
             </div>
             <div>
-              <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">✓ Safety Tip</div>
-              <p className="text-xs text-gray-700 dark:text-gray-300">{displayDemo.instructions.safety}</p>
+              <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">{s.safetyTip}</div>
+              <p className="text-xs text-slate-700 dark:text-slate-300">{displayDemo.instructions.safety}</p>
             </div>
           </div>
         </div>
