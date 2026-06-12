@@ -2,6 +2,7 @@
 
 **Generate a complete, science-based 7-day workout and meal plan in seconds — free, bilingual (EN/TR), no signup required.**
 
+[![CI](https://github.com/mehmetkeless00/fitai-ai-fitness-planner/actions/workflows/ci.yml/badge.svg)](https://github.com/mehmetkeless00/fitai-ai-fitness-planner/actions/workflows/ci.yml)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-fitflow-0ea5e9?style=flat-square)](https://fitai-ai-fitness-planner.vercel.app/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
@@ -86,12 +87,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). No environment variables required.
 
+## Testing
+
+```bash
+npm test            # run the suite once
+npm run test:watch  # watch mode
+```
+
+33 unit tests cover the plan engine (BMR/TDEE/macro math, frequency schedules, risk flags, allergy filtering, localization fallbacks) and EN/TR dictionary parity — every key must exist in both languages or the suite fails. CI runs tests + build on every push.
+
 ## Roadmap
 
 - [x] Bilingual UI + localized plan generation (EN/TR)
 - [x] Localized PDF export with Unicode font embedding
 - [x] Honest, science-based product messaging
-- [ ] Unit tests for the calculation engine + CI
+- [x] Unit tests for the calculation engine + CI
 - [ ] Meal variety & swap functionality
 - [ ] Saved plan history (local-first, then Supabase)
 - [ ] Authentication & cloud sync
