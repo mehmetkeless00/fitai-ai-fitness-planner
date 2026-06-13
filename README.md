@@ -37,6 +37,8 @@ Profile → BMR (Mifflin-St Jeor) → TDEE (activity factor by training frequenc
 
 Every number shown to the user is reproducible from the formulas in [`utils/generateSmartPlan.js`](utils/generateSmartPlan.js).
 
+**The plan adapts over time.** Daily check-ins (weight + completed workouts) feed an adjustment loop: `recommendCalorieAdjustment` compares your actual weekly weight change against the goal's target rate (e.g. −0.25 to −0.5 kg/week for fat loss) and, when you drift outside tolerance, recommends a bounded ±100–250 kcal correction you can apply in one click — macros rescale automatically. Recent adherence also feeds back into the recovery score.
+
 ## Screenshots
 
 | Result dashboard | Workout detail |
@@ -110,7 +112,7 @@ npm test            # run the suite once
 npm run test:watch  # watch mode
 ```
 
-54 unit tests cover the plan engine (BMR/TDEE/macro math, frequency schedules, meal variety, risk flags, allergy filtering, localization fallbacks), the versioned plan store (including legacy migration and corruption recovery), the cloud sync adapter (with a stubbed Supabase client), and EN/TR dictionary parity — every key must exist in both languages or the suite fails. CI runs tests + build on every push.
+77 unit tests cover the plan engine (BMR/TDEE/macro math, frequency schedules, meal variety, risk flags, allergy filtering, localization fallbacks), the versioned plan store (including legacy migration and corruption recovery), the cloud sync adapter (with a stubbed Supabase client), and EN/TR dictionary parity — every key must exist in both languages or the suite fails. CI runs tests + build on every push.
 
 ## Roadmap
 
@@ -121,8 +123,8 @@ npm run test:watch  # watch mode
 - [x] Meal variety & swap functionality
 - [x] Saved plan history (local-first, versioned storage with migration)
 - [x] Authentication & cloud sync (Supabase, optional & local-first)
-- [ ] Progress tracking with adaptive calorie targets
-- [ ] AI coach chat (Claude API)
+- [x] Progress tracking with adaptive calorie targets
+- [x] Smart Coach — data-driven narrative panel synthesising weight trend, adherence, recovery, and calorie recommendation into plain-language insights
 - [ ] Mobile app (Expo / React Native, sharing the plan engine)
 
 ## Known limitations

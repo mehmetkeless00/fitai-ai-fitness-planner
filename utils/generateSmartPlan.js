@@ -1604,3 +1604,217 @@ function generatePersonalizedAdvice(goal, experience, age, gender, lang = 'en') 
   const adviceList = advicesByGoal[goal] || advicesByGoal['general-fitness'];
   return adviceList[Math.floor(Math.random() * adviceList.length)];
 }
+
+// ============================================
+// ADAPTIVE TARGETS (driven by progress check-ins)
+// ============================================
+
+const WEEKLY_TARGETS_KG = {
+  'lose-weight': -0.375, // midpoint of -0.25..-0.5 kg/week
+  'build-muscle': 0.375, // midpoint of +0.25..+0.5 kg/week
+};
+const TOLERANCE_KG_PER_WEEK = 0.15;
+const KCAL_PER_KG = 7700;
+const MIN_ADJUSTMENT = 100;
+const MAX_ADJUSTMENT = 250;
+
+/**
+ * Compares actual weekly weight change (from check-ins) against the goal's
+ * target rate and recommends a daily calorie adjustment.
+ * Pure function: needs >=2 weigh-ins spanning >=10 days to say anything.
+ */
+export function recommendCalorieAdjustment(planData, checkins) {
+  const weighIns = (checkins || [])
+    .filter((c) => typeof c.weight === 'number' && c.weight > 0)
+    .sort((a, b) => (a.date < b.date ? -1 : 1));
+
+  if (weighIns.length < 2) {
+    return { status: 'insufficient-data' };
+  }
+
+  const first = weighIns[0];
+  const last = weighIns[weighIns.length - 1];
+  const days = (new Date(last.date) - new Date(first.date)) / 86400000;
+  if (days < 10) {
+    return { status: 'insufficient-data' };
+  }
+
+  const weeklyChange = ((last.weight - first.weight) / days) * 7;
+  const target = WEEKLY_TARGETS_KG[planData.fitnessGoal] || 0;
+  const gap = weeklyChange - target; // positive = trending heavier than target
+
+  if (Math.abs(gap) <= TOLERANCE_KG_PER_WEEK) {
+    return { status: 'on-track', weeklyChange: Number(weeklyChange.toFixed(2)) };
+  }
+
+  // Convert the weekly gap into a daily calorie correction, rounded to 50s
+  let delta = Math.round((-gap * KCAL_PER_KG) / 7 / 50) * 50;
+  const sign = delta < 0 ? -1 : 1;
+  delta = sign * Math.min(MAX_ADJUSTMENT, Math.max(MIN_ADJUSTMENT, Math.abs(delta)));
+
+  return {
+    status: 'adjust',
+    deltaCalories: delta,
+    direction: delta < 0 ? 'reduce' : 'increase',
+    weeklyChange: Number(weeklyChange.toFixed(2)),
+  };
+}
+
+/**
+ * Applies a calorie delta to a plan, rescaling macro grams while keeping the
+ * goal's macro percentages. Returns a new planData object.
+ */
+export function applyCalorieAdjustment(planData, deltaCalories) {
+  const newCalories = Math.max(1200, planData.dailyCalories + deltaCalories);
+  const next = JSON.parse(JSON.stringify(planData));
+  next.dailyCalories = newCalories;
+  if (next.macros) {
+    for (const [key, perGram] of [['protein', 4], ['carbs', 4], ['fat', 9]]) {
+      const macro = next.macros[key];
+      if (macro?.percentage) {
+        macro.grams = Math.round((newCalories * macro.percentage) / 100 / perGram);
+      }
+    }
+  }
+  next.calorieAdjustedAt = new Date().toISOString();
+  return next;
+}
+
+/**
+ * Synthesises all stored user data into five human-readable coach sentences.
+ * Pure function — coachT is the t.coach translation namespace so callers control language.
+ */
+export function generateCoachNarrative(planData, checkins, coachT) {
+  const all = checkins || [];
+  const weighIns = all
+    .filter((c) => typeof c.weight === 'number' && c.weight > 0)
+    .sort((a, b) => (a.date < b.date ? -1 : 1));
+
+  const fill = (tpl, vars) =>
+    Object.entries(vars).reduce((s, [k, v]) => s.replace(`{${k}}`, v), tpl);
+
+  // -- HEADLINE --
+  let headline;
+  if (weighIns.length === 0) {
+    headline = coachT.headlineNoData;
+  } else if (weighIns.length === 1) {
+    headline = fill(coachT.headlineFirst, { weight: weighIns[0].weight });
+  } else {
+    const first = weighIns[0];
+    const last = weighIns[weighIns.length - 1];
+    const days = Math.max(1, (new Date(last.date) - new Date(first.date)) / 86400000);
+    const weeks = Math.max(1, Math.round(days / 7));
+    const totalChange = Number((last.weight - first.weight).toFixed(1));
+    const sign = totalChange >= 0 ? '+' : '';
+    const weeklyChange = (totalChange / days) * 7;
+    const target = WEEKLY_TARGETS_KG[planData.fitnessGoal] || 0;
+    const gap = weeklyChange - target;
+    let verdict;
+    if (Math.abs(gap) <= TOLERANCE_KG_PER_WEEK) {
+      verdict = coachT.verdictPace;
+    } else if (target === 0) {
+      verdict = coachT.verdictFast;
+    } else if (target < 0) {
+      verdict = gap > 0 ? coachT.verdictSlow : coachT.verdictFast;
+    } else {
+      verdict = gap < 0 ? coachT.verdictSlow : coachT.verdictFast;
+    }
+    headline = fill(coachT.headlineProgress, { weeks, change: `${sign}${Math.abs(totalChange)}`, verdict });
+  }
+
+  // -- TREND --
+  const rec = recommendCalorieAdjustment(planData, all);
+  let trend;
+  if (rec.status === 'insufficient-data') {
+    trend = coachT.trendNoData;
+  } else {
+    const target = WEEKLY_TARGETS_KG[planData.fitnessGoal] || 0;
+    const targetStr = target === 0 ? '0.00' : target > 0 ? `+${target.toFixed(2)}` : target.toFixed(2);
+    const rateStr = rec.weeklyChange >= 0 ? `+${rec.weeklyChange}` : `${rec.weeklyChange}`;
+    trend = fill(rec.status === 'on-track' ? coachT.trendOnTrack : coachT.trendOff, {
+      rate: rateStr,
+      target: targetStr,
+    });
+  }
+
+  // -- ADHERENCE --
+  const recentWindow = all.filter((c) => {
+    const age = (Date.now() - new Date(c.date)) / 86400000;
+    return age >= 0 && age <= 7;
+  });
+  const monthWindow = all.filter((c) => {
+    const age = (Date.now() - new Date(c.date)) / 86400000;
+    return age >= 0 && age <= 30;
+  });
+  const plannedPerWeek = (planData.workoutPlan || []).filter((d) => d.exercises?.length > 0).length || 1;
+  const done7 = recentWindow.reduce((s, c) => s + (c.workoutsDone?.length || 0), 0);
+  const done30 = monthWindow.reduce((s, c) => s + (c.workoutsDone?.length || 0), 0);
+  const planned30 = Math.round((plannedPerWeek * 30) / 7);
+  const pct7 = Math.min(100, Math.round((done7 / plannedPerWeek) * 100));
+  const pct30 = planned30 > 0 ? Math.min(100, Math.round((done30 / planned30) * 100)) : pct7;
+
+  const adherence =
+    all.length === 0
+      ? coachT.adherenceNone
+      : fill(coachT.adherenceData, {
+          done: Math.min(done7, plannedPerWeek),
+          planned: plannedPerWeek,
+          pct: pct7,
+          monthPct: pct30,
+        });
+
+  // -- RECOVERY --
+  let recovery = '';
+  if (planData.recoveryScore !== undefined) {
+    const base = Math.round(planData.recoveryScore);
+    const blended = Math.round(blendRecoveryScore(planData.recoveryScore, all, planData.workoutPlan));
+    if (recentWindow.length === 0 || blended === base) {
+      recovery = fill(coachT.recoveryBase, { score: blended });
+    } else {
+      const delta = blended - base;
+      const sign = delta > 0 ? '+' : '';
+      recovery = fill(coachT.recoveryLive, { score: blended, sign, delta: Math.abs(delta), base });
+    }
+  }
+
+  // -- RECOMMENDATION --
+  const adjustedDays =
+    planData.calorieAdjustedAt
+      ? Math.round((Date.now() - new Date(planData.calorieAdjustedAt)) / 86400000)
+      : null;
+  const cooldown = adjustedDays !== null && adjustedDays < 7;
+
+  let recommendation;
+  if (cooldown) {
+    recommendation = fill(coachT.recCooldown, { days: adjustedDays });
+  } else if (rec.status === 'insufficient-data') {
+    recommendation = coachT.recNoData;
+  } else if (rec.status === 'on-track') {
+    recommendation = coachT.recOnTrack;
+  } else if (rec.direction === 'reduce') {
+    recommendation = fill(coachT.recReduce, { delta: Math.abs(rec.deltaCalories) });
+  } else {
+    recommendation = fill(coachT.recIncrease, { delta: Math.abs(rec.deltaCalories) });
+  }
+
+  return { headline, trend, adherence, recovery, recommendation };
+}
+
+/**
+ * Blends recent workout adherence into the static recovery score.
+ * No check-ins -> unchanged. High adherence nudges the score up, low pulls down.
+ */
+export function blendRecoveryScore(baseScore, checkins, workoutPlan) {
+  const recent = (checkins || []).filter((c) => {
+    const age = (Date.now() - new Date(c.date)) / 86400000;
+    return age >= 0 && age <= 7;
+  });
+  if (recent.length === 0) return baseScore;
+
+  const plannedPerWeek = (workoutPlan || []).filter((d) => d.exercises?.length > 0).length || 1;
+  const done = recent.reduce((sum, c) => sum + (c.workoutsDone?.length || 0), 0);
+  const adherence = Math.min(1, done / plannedPerWeek);
+
+  const adjusted = baseScore + Math.round((adherence - 0.7) * 20);
+  return Math.max(20, Math.min(100, adjusted));
+}

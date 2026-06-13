@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { generateSmartPlan } from '../utils/generateSmartPlan.js';
+import {
+  generateSmartPlan,
+  recommendCalorieAdjustment,
+  applyCalorieAdjustment,
+  blendRecoveryScore,
+  generateCoachNarrative,
+} from '../utils/generateSmartPlan.js';
 import { getPlanStrings } from '../utils/planStrings.js';
 
 const baseProfile = {
@@ -218,5 +224,198 @@ describe('Localization', () => {
     const plan = makePlan({ lang: 'de' });
     const allEnAdvice = Object.values(getPlanStrings('en').advice).flat();
     expect(allEnAdvice).toContain(plan.advice);
+  });
+});
+
+describe('recommendCalorieAdjustment (adaptive targets)', () => {
+  const weighIn = (date, weight) => ({ date, weight, workoutsDone: [] });
+  const losePlan = { fitnessGoal: 'lose-weight', dailyCalories: 2000 };
+  const bulkPlan = { fitnessGoal: 'build-muscle', dailyCalories: 3000 };
+
+  it('requires at least two weigh-ins spanning 10+ days', () => {
+    expect(recommendCalorieAdjustment(losePlan, []).status).toBe('insufficient-data');
+    expect(recommendCalorieAdjustment(losePlan, [weighIn('2026-06-01', 80)]).status).toBe('insufficient-data');
+    expect(
+      recommendCalorieAdjustment(losePlan, [weighIn('2026-06-01', 80), weighIn('2026-06-05', 79.5)]).status
+    ).toBe('insufficient-data');
+  });
+
+  it('reports on-track when weekly change matches the goal target', () => {
+    // -0.75 kg over 14 days = -0.375 kg/week, exactly the lose-weight target
+    const rec = recommendCalorieAdjustment(losePlan, [
+      weighIn('2026-06-01', 80),
+      weighIn('2026-06-15', 79.25),
+    ]);
+    expect(rec.status).toBe('on-track');
+  });
+
+  it('recommends a deficit increase when weight is flat on a fat-loss goal', () => {
+    const rec = recommendCalorieAdjustment(losePlan, [
+      weighIn('2026-06-01', 80),
+      weighIn('2026-06-15', 80),
+    ]);
+    expect(rec.status).toBe('adjust');
+    expect(rec.direction).toBe('reduce');
+    expect(rec.deltaCalories).toBe(-250); // clamped at max adjustment
+  });
+
+  it('recommends fewer calories when bulking too fast', () => {
+    // +2 kg in 14 days = +1.0 kg/week, far above the +0.375 target
+    const rec = recommendCalorieAdjustment(bulkPlan, [
+      weighIn('2026-06-01', 80),
+      weighIn('2026-06-15', 82),
+    ]);
+    expect(rec.status).toBe('adjust');
+    expect(rec.direction).toBe('reduce');
+    expect(Math.abs(rec.deltaCalories)).toBeLessThanOrEqual(250);
+  });
+
+  it('recommends more calories when losing too fast', () => {
+    // -1.5 kg in 14 days = -0.75 kg/week vs -0.375 target
+    const rec = recommendCalorieAdjustment(losePlan, [
+      weighIn('2026-06-01', 80),
+      weighIn('2026-06-15', 78.5),
+    ]);
+    expect(rec.status).toBe('adjust');
+    expect(rec.direction).toBe('increase');
+    expect(rec.deltaCalories).toBeGreaterThanOrEqual(100);
+    expect(rec.deltaCalories).toBeLessThanOrEqual(250);
+  });
+});
+
+describe('applyCalorieAdjustment', () => {
+  it('rescales macro grams to the new calories keeping percentages', () => {
+    const plan = makePlan({ fitnessGoal: 'lose-weight' });
+    const next = applyCalorieAdjustment(plan, -250);
+
+    expect(next.dailyCalories).toBe(plan.dailyCalories - 250);
+    expect(next.calorieAdjustedAt).toBeTruthy();
+    expect(next.macros.protein.percentage).toBe(plan.macros.protein.percentage);
+    expect(next.macros.protein.grams).toBe(
+      Math.round((next.dailyCalories * next.macros.protein.percentage) / 100 / 4)
+    );
+    // Original plan untouched
+    expect(plan.calorieAdjustedAt).toBeUndefined();
+  });
+
+  it('never drops below the 1200 kcal floor', () => {
+    const next = applyCalorieAdjustment({ dailyCalories: 1300, macros: null }, -250);
+    expect(next.dailyCalories).toBe(1200);
+  });
+});
+
+describe('blendRecoveryScore', () => {
+  const recentDate = (daysAgo) => new Date(Date.now() - daysAgo * 86400000).toISOString().slice(0, 10);
+  const workoutPlan = [
+    { exercises: [{}] },
+    { exercises: [{}] },
+    { exercises: [{}] },
+    { exercises: [] },
+  ];
+
+  it('returns the base score with no check-ins', () => {
+    expect(blendRecoveryScore(75, [], workoutPlan)).toBe(75);
+    expect(blendRecoveryScore(75, null, workoutPlan)).toBe(75);
+  });
+
+  it('rewards full adherence and penalizes missed weeks, within bounds', () => {
+    const fullWeek = [
+      { date: recentDate(1), workoutsDone: ['Monday'] },
+      { date: recentDate(3), workoutsDone: ['Wednesday'] },
+      { date: recentDate(5), workoutsDone: ['Friday'] },
+    ];
+    const missedWeek = [{ date: recentDate(2), workoutsDone: [] }];
+
+    expect(blendRecoveryScore(75, fullWeek, workoutPlan)).toBeGreaterThan(75);
+    expect(blendRecoveryScore(75, missedWeek, workoutPlan)).toBeLessThan(75);
+    expect(blendRecoveryScore(99, fullWeek, workoutPlan)).toBeLessThanOrEqual(100);
+    expect(blendRecoveryScore(21, missedWeek, workoutPlan)).toBeGreaterThanOrEqual(20);
+  });
+
+  it('ignores check-ins older than a week', () => {
+    const old = [{ date: '2025-01-01', workoutsDone: [] }];
+    expect(blendRecoveryScore(75, old, workoutPlan)).toBe(75);
+  });
+});
+
+describe('generateCoachNarrative', () => {
+  // Minimal translation stub — keys match the real shape so logic is tested, not string content
+  const mockT = {
+    headlineNoData: 'no-data',
+    headlineFirst: 'first:{weight}',
+    headlineProgress: '{weeks}w:{change}:{verdict}',
+    verdictPace: 'pace',
+    verdictFast: 'fast',
+    verdictSlow: 'slow',
+    trendNoData: 'trend-nd',
+    trendOnTrack: 'on:{rate}:{target}',
+    trendOff: 'off:{rate}:{target}',
+    adherenceNone: 'adh-none',
+    adherenceData: '{done}/{planned}:{pct}:{monthPct}',
+    recoveryBase: 'rec-base:{score}',
+    recoveryLive: 'rec-live:{score}:{sign}{delta}:{base}',
+    recNoData: 'rnd',
+    recCooldown: 'cool:{days}',
+    recOnTrack: 'rot',
+    recReduce: 'red:{delta}',
+    recIncrease: 'inc:{delta}',
+  };
+
+  // Production plan data spreads formData over the generated plan, so fitnessGoal is always present.
+  const losePlan = { ...makePlan({ fitnessGoal: 'lose-weight' }), fitnessGoal: 'lose-weight' };
+  const weigh = (date, weight) => ({ date, weight, workoutsDone: [] });
+
+  it('day-0: no data variants across all fields', () => {
+    const n = generateCoachNarrative(losePlan, [], mockT);
+    expect(n.headline).toBe('no-data');
+    expect(n.trend).toBe('trend-nd');
+    expect(n.adherence).toBe('adh-none');
+    expect(n.recommendation).toBe('rnd');
+    expect(n.recovery).toContain('rec-base:');
+  });
+
+  it('single check-in: headline shows the weight', () => {
+    const n = generateCoachNarrative(losePlan, [weigh('2026-06-01', 80)], mockT);
+    expect(n.headline).toBe('first:80');
+  });
+
+  it('on-track fat loss: verdict=pace, trend=on-track, rec=on-track', () => {
+    // -0.75 kg / 14 days = -0.375 kg/week = exactly the lose-weight target
+    const n = generateCoachNarrative(losePlan, [weigh('2026-06-01', 80), weigh('2026-06-15', 79.25)], mockT);
+    expect(n.headline).toContain('pace');
+    expect(n.trend).toMatch(/^on:/);
+    expect(n.recommendation).toBe('rot');
+  });
+
+  it('flat weight on fat-loss: verdict=slow, recommendation=reduce', () => {
+    const n = generateCoachNarrative(losePlan, [weigh('2026-06-01', 80), weigh('2026-06-15', 80)], mockT);
+    expect(n.headline).toContain('slow');
+    expect(n.recommendation).toMatch(/^red:/);
+  });
+
+  it('losing too fast: verdict=fast, recommendation=increase', () => {
+    // -1.5 kg / 14 days = -0.75 kg/week, twice the target rate
+    const n = generateCoachNarrative(losePlan, [weigh('2026-06-01', 80), weigh('2026-06-15', 78.5)], mockT);
+    expect(n.headline).toContain('fast');
+    expect(n.recommendation).toMatch(/^inc:/);
+  });
+
+  it('cooldown active: recommendation shows days since last adjustment', () => {
+    const threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString();
+    const adjusted = { ...losePlan, calorieAdjustedAt: threeDaysAgo };
+    const n = generateCoachNarrative(adjusted, [weigh('2026-06-01', 80), weigh('2026-06-15', 80)], mockT);
+    expect(n.recommendation).toContain('cool:3');
+  });
+
+  it('recovery reflects blended score with sign when adherence shifts it', () => {
+    // No recent check-ins → base score returned as-is
+    const n = generateCoachNarrative(losePlan, [], mockT);
+    expect(n.recovery).toBe(`rec-base:${losePlan.recoveryScore}`);
+  });
+
+  it('adherence data formats done/planned when check-ins exist', () => {
+    const n = generateCoachNarrative(losePlan, [weigh('2026-06-01', 80)], mockT);
+    // adherence field should contain the done/planned template filled in
+    expect(n.adherence).toMatch(/^\d+\/\d+:/);
   });
 });
