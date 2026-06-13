@@ -10,7 +10,8 @@ import {
   getActivePlan,
   MAX_PLANS,
 } from '../utils/planStorage.js';
-import { mirrorMutation, fullSync } from '../utils/cloudSync.js';
+import { mirrorMutation, mirrorCheckinMutation, fullSync } from '../utils/cloudSync.js';
+import { saveCheckin, listCheckins, setProgressSyncHandler } from '../utils/progressStorage.js';
 
 class MemoryStorage {
   constructor() {
@@ -60,7 +61,32 @@ const sample = (n = 1) => ({
 beforeEach(() => {
   globalThis.localStorage = new MemoryStorage();
   setSyncHandler(null);
+  setProgressSyncHandler(null);
 });
+
+// Table-aware stub for tests that exercise both plans and checkins.
+function makeTableStub(tables = {}) {
+  const calls = { upserts: [], deletes: [] };
+  const client = {
+    calls,
+    from: (table) => ({
+      upsert: async (payload) => {
+        calls.upserts.push({ table, payload });
+        return { error: null };
+      },
+      delete: () => ({
+        eq: async (_col, id) => {
+          calls.deletes.push({ table, id });
+          return { error: null };
+        },
+      }),
+      select: () => ({
+        order: async () => ({ data: tables[table] || [], error: null }),
+      }),
+    }),
+  };
+  return client;
+}
 
 describe('importPlans (cloud → local merge)', () => {
   it('unions by id, incoming wins, newest first, capped', () => {
@@ -150,5 +176,49 @@ describe('cloud adapter', () => {
   it('does nothing without a client or user', async () => {
     await expect(mirrorMutation('save', { id: 'x' }, null, null)).resolves.toBeUndefined();
     await expect(fullSync(null, null)).resolves.toBeUndefined();
+  });
+});
+
+describe('check-in cloud sync', () => {
+  it('maps check-in saves to upserts on the checkins table', async () => {
+    const client = makeTableStub();
+    const entry = { id: 'c1', date: '2026-06-12', weight: 79.5, workoutsDone: ['Monday'] };
+
+    await mirrorCheckinMutation('save', entry, 'user-1', client);
+    expect(client.calls.upserts).toHaveLength(1);
+    expect(client.calls.upserts[0].table).toBe('checkins');
+    expect(client.calls.upserts[0].payload).toMatchObject({
+      id: 'c1',
+      user_id: 'user-1',
+      date: '2026-06-12',
+      weight: 79.5,
+      workouts_done: ['Monday'],
+    });
+  });
+
+  it('maps check-in deletes to row deletes', async () => {
+    const client = makeTableStub();
+    await mirrorCheckinMutation('delete', { id: 'c-gone' }, 'user-1', client);
+    expect(client.calls.deletes).toEqual([{ table: 'checkins', id: 'c-gone' }]);
+  });
+
+  it('fullSync pushes local check-ins and merges cloud rows down', async () => {
+    saveCheckin({ date: '2026-06-10', weight: 80, workoutsDone: [] });
+    const client = makeTableStub({
+      checkins: [
+        { id: 'cloud-c', date: '2026-06-11', weight: 79.8, workouts_done: ['Tuesday'] },
+      ],
+    });
+
+    await fullSync('user-1', client);
+
+    const checkinUpserts = client.calls.upserts.filter((u) => u.table === 'checkins');
+    expect(checkinUpserts).toHaveLength(1);
+    expect(checkinUpserts[0].payload[0].user_id).toBe('user-1');
+
+    const list = listCheckins();
+    expect(list).toHaveLength(2);
+    expect(list[1].id).toBe('cloud-c');
+    expect(list[1].workoutsDone).toEqual(['Tuesday']);
   });
 });

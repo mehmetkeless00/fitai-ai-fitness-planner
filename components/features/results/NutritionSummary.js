@@ -1,12 +1,26 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Card from '../../ui/Card';
 import { useLanguage } from '@/components/layout/LanguageProvider';
+import { blendRecoveryScore } from '../../../utils/generateSmartPlan';
+import { listCheckins } from '../../../utils/progressStorage';
 
 export default function NutritionSummary({ plan }) {
   const { t } = useLanguage();
   const s = t.nutritionSummary;
   const m = t.maps;
+
+  // Recovery score blends in recent workout adherence when check-ins exist
+  const [checkins, setCheckins] = useState([]);
+  useEffect(() => {
+    setCheckins(listCheckins());
+  }, []);
+
+  const recoveryScore =
+    plan?.recoveryScore !== undefined
+      ? blendRecoveryScore(plan.recoveryScore, checkins, plan.workoutPlan)
+      : undefined;
 
   if (!plan) {
     return <div className="text-center text-slate-500 dark:text-slate-400 py-8">{s.loading}</div>;
@@ -25,7 +39,7 @@ export default function NutritionSummary({ plan }) {
     return { bg: 'bg-red-500/20', border: 'border-red-500/30', text: 'text-red-400' };
   };
 
-  const recoveryColor = getRecoveryScoreColor(plan.recoveryScore || 75);
+  const recoveryColor = getRecoveryScoreColor(recoveryScore ?? 75);
 
   const translateHydration = (hydration) => {
     if (!hydration) return hydration;
@@ -92,20 +106,20 @@ export default function NutritionSummary({ plan }) {
         </Card>
       )}
 
-      {plan.recoveryScore !== undefined && (
+      {recoveryScore !== undefined && (
         <Card className={`mt-4 ${recoveryColor.bg} border ${recoveryColor.border}`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`font-semibold text-sm md:text-base ${recoveryColor.text}`}>{s.recoveryScore}</h3>
-            <span className={`text-2xl md:text-3xl font-bold ${recoveryColor.text}`}>{Math.round(plan.recoveryScore)}</span>
+            <span className={`text-2xl md:text-3xl font-bold ${recoveryColor.text}`}>{Math.round(recoveryScore)}</span>
           </div>
           <div className="w-full bg-slate-300 dark:bg-dark-bg rounded-full h-2 overflow-hidden">
             <div
               className={`h-full ${recoveryColor.text.replace('text-', 'bg-')}`}
-              style={{ width: `${plan.recoveryScore}%` }}
+              style={{ width: `${recoveryScore}%` }}
             />
           </div>
           <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 mt-2">
-            {plan.recoveryScore >= 80 ? s.recoveryGreat : plan.recoveryScore >= 60 ? s.recoveryGood : s.recoveryLow}
+            {recoveryScore >= 80 ? s.recoveryGreat : recoveryScore >= 60 ? s.recoveryGood : s.recoveryLow}
           </p>
         </Card>
       )}

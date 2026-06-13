@@ -11,6 +11,7 @@ import Button from '@/components/ui/Button';
 import NutritionSummary from '@/components/features/results/NutritionSummary';
 import WorkoutPlan from '@/components/features/results/WorkoutPlan';
 import MealPlan from '@/components/features/results/MealPlan';
+import ProgressTracker from '@/components/features/results/ProgressTracker';
 import { generatePlanPDF } from '@/utils/pdf-generator';
 import { getActivePlan, updatePlanData } from '@/utils/planStorage';
 import { useLanguage } from '@/components/layout/LanguageProvider';
@@ -83,6 +84,7 @@ export default function Result() {
     { key: 'overview', label: r.tabs.overview },
     { key: 'workout', label: r.tabs.workout },
     { key: 'meals', label: r.tabs.meals },
+    { key: 'progress', label: r.tabs.progress },
     { key: 'advice', label: r.tabs.advice },
   ];
 
@@ -192,6 +194,13 @@ export default function Result() {
             <div>
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.mealHeading}</h2>
               <MealPlan plan={planData} onPlanChange={handlePlanChange} />
+            </div>
+          )}
+
+          {activeTab === 'progress' && (
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{t.progress.heading}</h2>
+              <ProgressTracker plan={planData} onPlanChange={handlePlanChange} />
             </div>
           )}
 
