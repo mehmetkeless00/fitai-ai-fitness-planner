@@ -1,0 +1,49 @@
+import { View, Text, ScrollView, SafeAreaView } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
+import WorkoutDay from '../../components/features/WorkoutDay';
+import { usePlan } from '../../hooks/usePlan';
+import { useLanguage } from '../../i18n/LanguageContext';
+
+export default function WorkoutTab() {
+  const router = useRouter();
+  const { plan, refreshPlan } = usePlan();
+  const { t } = useLanguage();
+
+  useFocusEffect(useCallback(() => { refreshPlan(); }, [refreshPlan]));
+
+  if (!plan) {
+    return (
+      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900 items-center justify-center">
+        <Text className="text-slate-500">No active plan.</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const workoutPlan = plan.data?.workoutPlan || [];
+
+  function handleExercisePress(exercise) {
+    router.push({ pathname: '/modal/exercise', params: { ex: JSON.stringify(exercise) } });
+  }
+
+  return (
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+      <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
+        <Text className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+          {t.tabs.workout}
+        </Text>
+        {workoutPlan.length === 0 && (
+          <Text className="text-slate-400 text-center">{t.workout.noExercises}</Text>
+        )}
+        {workoutPlan.map((day, i) => (
+          <WorkoutDay
+            key={i}
+            day={day}
+            t={t.workout}
+            onExercisePress={handleExercisePress}
+          />
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}

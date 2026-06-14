@@ -1,0 +1,70 @@
+import { useState, useCallback } from 'react';
+import { View, Text, ScrollView, SafeAreaView, Pressable } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+import MealRow from '../../components/features/MealRow';
+import { usePlan } from '../../hooks/usePlan';
+import { useLanguage } from '../../i18n/LanguageContext';
+
+const MEAL_SLOTS = ['breakfast', 'lunch', 'dinner', 'snack'];
+
+export default function MealsTab() {
+  const { plan, refreshPlan } = usePlan();
+  const { t } = useLanguage();
+  const [dayIndex, setDayIndex] = useState(0);
+
+  useFocusEffect(useCallback(() => {
+    refreshPlan();
+    const today = new Date().getDay();
+    // Map Sunday=0 to index 6, Mon=1 to 0, etc.
+    setDayIndex(today === 0 ? 6 : today - 1);
+  }, [refreshPlan]));
+
+  if (!plan) {
+    return (
+      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900 items-center justify-center">
+        <Text className="text-slate-500">No active plan.</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const mealPlan = plan.data?.mealPlan || [];
+  const dayNames = mealPlan.map((d, i) => d.day?.slice(0, 3) || `D${i + 1}`);
+  const currentDay = mealPlan[dayIndex];
+
+  return (
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+      <View className="px-4 pt-6 pb-2">
+        <Text className="text-xl font-bold text-slate-900 dark:text-white mb-3">{t.tabs.meals}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View className="flex-row gap-2">
+            {dayNames.map((name, i) => (
+              <Pressable
+                key={i}
+                onPress={() => setDayIndex(i)}
+                className={`px-3 py-1.5 rounded-full border ${
+                  i === dayIndex
+                    ? 'bg-sky-500 border-sky-500'
+                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600'
+                }`}
+              >
+                <Text className={`text-xs font-medium ${i === dayIndex ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`}>
+                  {name}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </ScrollView>
+      </View>
+
+      <ScrollView className="flex-1" contentContainerClassName="px-4 pt-2 pb-6">
+        {currentDay ? (
+          MEAL_SLOTS.map((slot) => (
+            <MealRow key={slot} slot={slot} meal={currentDay.meals?.[slot]} t={t} />
+          ))
+        ) : (
+          <Text className="text-slate-400 text-center mt-8">No meal data.</Text>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
