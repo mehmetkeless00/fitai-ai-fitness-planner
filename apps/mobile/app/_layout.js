@@ -1,6 +1,7 @@
 import '../global.css';
 import { useState, useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setStorageAdapter } from '@fitflow/core';
@@ -13,11 +14,16 @@ export default function RootLayout() {
 
   useEffect(() => {
     (async () => {
-      await initStorage();
-      setStorageAdapter(asyncAdapter);
-      const lang = await AsyncStorage.getItem('fitflow.lang');
-      if (lang === 'tr') setInitialLang('tr');
-      setReady(true);
+      try {
+        await initStorage();
+        setStorageAdapter(asyncAdapter);
+        const lang = await AsyncStorage.getItem('fitflow.lang');
+        if (lang === 'tr') setInitialLang('tr');
+      } catch {
+        // Storage init failed — app continues with empty cache
+      } finally {
+        setReady(true);
+      }
     })();
   }, []);
 
@@ -30,8 +36,13 @@ export default function RootLayout() {
   }
 
   return (
-    <LanguageProvider initialLang={initialLang}>
-      <Stack screenOptions={{ headerShown: false }} />
-    </LanguageProvider>
+    <SafeAreaProvider>
+      <LanguageProvider initialLang={initialLang}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="modal/exercise" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="modal/settings" options={{ presentation: 'modal' }} />
+        </Stack>
+      </LanguageProvider>
+    </SafeAreaProvider>
   );
 }

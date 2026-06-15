@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { CreatePlanProvider } from './context';
+import { CreatePlanProvider } from '../../contexts/createPlanContext';
 
 export default function CreateLayout() {
   return (

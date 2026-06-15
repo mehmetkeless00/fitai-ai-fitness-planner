@@ -1,4 +1,5 @@
-import { View, Text, Pressable, SafeAreaView, Image } from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { getActivePlan } from '@fitflow/core';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -31,6 +32,8 @@ export default function WelcomeScreen() {
           <Pressable
             className="w-full bg-sky-500 active:bg-sky-600 py-4 rounded-xl items-center"
             onPress={() => router.push('/create')}
+            accessibilityRole="button"
+            accessibilityLabel={t.welcome.cta}
           >
             <Text className="text-white font-semibold text-base">
               {t.welcome.cta}
@@ -41,6 +44,8 @@ export default function WelcomeScreen() {
             <Pressable
               className="w-full border border-slate-200 dark:border-slate-700 py-4 rounded-xl items-center"
               onPress={() => router.replace('/(tabs)/overview')}
+              accessibilityRole="button"
+              accessibilityLabel={t.welcome.havePlan}
             >
               <Text className="text-slate-700 dark:text-slate-300 font-medium text-base">
                 {t.welcome.havePlan}

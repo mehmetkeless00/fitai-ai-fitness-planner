@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, Modal, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { generateSmartPlan, savePlan, setActivePlan } from '@fitflow/core';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { useCreatePlan } from './context';
+import { useCreatePlan } from '../../contexts/createPlanContext';
+import { formatDate } from '../../utils/formatDate';
 import Toggle from '../../components/ui/Toggle';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
@@ -64,7 +66,13 @@ export default function Step3() {
     const plan = generateSmartPlan(profile);
     const merged = { ...profile, ...plan, generatedAt: new Date().toISOString() };
 
-    const autoName = `${profile.fitnessGoal} — ${new Date().toLocaleDateString()}`;
+    const goalLabels = {
+      'lose-weight': c.loseWeight,
+      'build-muscle': c.buildMuscle,
+      maintenance: c.maintain,
+    };
+    const goalStr = goalLabels[profile.fitnessGoal] || profile.fitnessGoal;
+    const autoName = `${goalStr} — ${formatDate(new Date().toISOString(), uiLang)}`;
     const id = savePlan(merged, autoName);
     setActivePlan(id);
 
@@ -74,6 +82,19 @@ export default function Step3() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+      {/* Full-screen generating overlay */}
+      <Modal visible={loading} transparent animationType="fade">
+        <View className="flex-1 bg-white dark:bg-slate-900 items-center justify-center px-8 gap-6">
+          <ActivityIndicator size="large" color="#0ea5e9" />
+          <Text className="text-lg font-semibold text-slate-900 dark:text-white text-center">
+            {c.generating}
+          </Text>
+          <Text className="text-sm text-slate-500 dark:text-slate-400 text-center leading-relaxed">
+            {c.generatingDetail}
+          </Text>
+        </View>
+      </Modal>
+
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-8 gap-6">
         <View>
           <Text className="text-2xl font-bold text-slate-900 dark:text-white">{c.step3Title}</Text>

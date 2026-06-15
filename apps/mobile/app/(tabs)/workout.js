@@ -1,6 +1,8 @@
-import { View, Text, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
+import { translations } from '@fitflow/core';
 import WorkoutDay from '../../components/features/WorkoutDay';
 import { usePlan } from '../../hooks/usePlan';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -8,9 +10,11 @@ import { useLanguage } from '../../i18n/LanguageContext';
 export default function WorkoutTab() {
   const router = useRouter();
   const { plan, refreshPlan } = usePlan();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   useFocusEffect(useCallback(() => { refreshPlan(); }, [refreshPlan]));
+
+  const maps = (translations[lang] || translations.en).maps;
 
   if (!plan) {
     return (
@@ -40,6 +44,7 @@ export default function WorkoutTab() {
             key={i}
             day={day}
             t={t.workout}
+            maps={maps}
             onExercisePress={handleExercisePress}
           />
         ))}

@@ -1,21 +1,19 @@
 import { useState, useCallback } from 'react';
-import { View, Text, ScrollView, SafeAreaView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import MealRow from '../../components/features/MealRow';
 import { usePlan } from '../../hooks/usePlan';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-const MEAL_SLOTS = ['breakfast', 'lunch', 'dinner', 'snack'];
-
 export default function MealsTab() {
   const { plan, refreshPlan } = usePlan();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [dayIndex, setDayIndex] = useState(0);
 
   useFocusEffect(useCallback(() => {
     refreshPlan();
     const today = new Date().getDay();
-    // Map Sunday=0 to index 6, Mon=1 to 0, etc.
     setDayIndex(today === 0 ? 6 : today - 1);
   }, [refreshPlan]));
 
@@ -28,7 +26,14 @@ export default function MealsTab() {
   }
 
   const mealPlan = plan.data?.mealPlan || [];
-  const dayNames = mealPlan.map((d, i) => d.day?.slice(0, 3) || `D${i + 1}`);
+  const shortDays = t.days?.short || {};
+
+  // Translate the day name; fallback to first 3 chars of whatever is stored
+  const dayNames = mealPlan.map((d, i) => {
+    if (d.day && shortDays[d.day]) return shortDays[d.day];
+    return d.day?.slice(0, 3) || `D${i + 1}`;
+  });
+
   const currentDay = mealPlan[dayIndex];
 
   return (
@@ -46,6 +51,8 @@ export default function MealsTab() {
                     ? 'bg-sky-500 border-sky-500'
                     : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600'
                 }`}
+                accessibilityRole="button"
+                accessibilityState={{ selected: i === dayIndex }}
               >
                 <Text className={`text-xs font-medium ${i === dayIndex ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`}>
                   {name}
@@ -58,7 +65,7 @@ export default function MealsTab() {
 
       <ScrollView className="flex-1" contentContainerClassName="px-4 pt-2 pb-6">
         {currentDay ? (
-          MEAL_SLOTS.map((slot) => (
+          ['breakfast', 'lunch', 'dinner', 'snack'].map((slot) => (
             <MealRow key={slot} slot={slot} meal={currentDay.meals?.[slot]} t={t} />
           ))
         ) : (

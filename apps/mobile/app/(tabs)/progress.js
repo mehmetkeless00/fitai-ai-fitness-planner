@@ -1,7 +1,14 @@
 import { useState, useCallback, useEffect } from 'react';
-import { View, Text, ScrollView, SafeAreaView, Pressable, Alert } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
-import { generateCoachNarrative, translations } from '@fitflow/core';
+import {
+  generateCoachNarrative,
+  translations,
+  recommendCalorieAdjustment,
+  applyCalorieAdjustment,
+  updatePlanData,
+} from '@fitflow/core';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
@@ -19,6 +26,74 @@ function todayDayName() {
   return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()];
 }
 
+function CalorieAdjustCard({ plan, checkins, p, onApplied }) {
+  const rec = recommendCalorieAdjustment(plan.data, checkins);
+
+  if (rec.status === 'insufficient-data') return null;
+
+  // Cooldown: was adjusted in last 7 days
+  const adjustedDays =
+    plan.data.calorieAdjustedAt
+      ? Math.round((Date.now() - new Date(plan.data.calorieAdjustedAt)) / 86400000)
+      : null;
+  const cooldown = adjustedDays !== null && adjustedDays < 7;
+
+  function handleApply() {
+    const newData = applyCalorieAdjustment(plan.data, rec.deltaCalories);
+    updatePlanData(plan.id, newData);
+    onApplied();
+  }
+
+  if (cooldown) {
+    return (
+      <Card>
+        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">
+          {p.adjustTitle}
+        </Text>
+        <Text className="text-sm text-slate-500 dark:text-slate-400">
+          {p.adjustCooldown
+            .replace('{days}', adjustedDays)
+            .replace('{remaining}', 7 - adjustedDays)}
+        </Text>
+      </Card>
+    );
+  }
+
+  if (rec.status === 'on-track') {
+    return (
+      <Card>
+        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">
+          {p.adjustTitle}
+        </Text>
+        <Text className="text-sm text-emerald-600 dark:text-emerald-400">{p.adjustOnTrack}</Text>
+      </Card>
+    );
+  }
+
+  // Suggest adjustment
+  const directionStr = rec.direction === 'reduce' ? p.adjustReduce : p.adjustIncrease;
+  const message = p.adjustSuggest
+    .replace('{direction}', directionStr)
+    .replace('{delta}', Math.abs(rec.deltaCalories));
+
+  return (
+    <Card>
+      <Text className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+        {p.adjustTitle}
+      </Text>
+      <Text className="text-sm text-slate-600 dark:text-slate-300 mb-3">{message}</Text>
+      <View className="flex-row gap-2">
+        <Button onPress={handleApply} className="flex-1">
+          {p.adjustApply}
+        </Button>
+        <Button variant="secondary" onPress={() => {}} className="flex-1">
+          {p.adjustDismiss}
+        </Button>
+      </View>
+    </Card>
+  );
+}
+
 export default function ProgressTab() {
   const { plan, refreshPlan } = usePlan();
   const { checkins, saveCheckin, refresh } = useCheckins();
@@ -30,20 +105,19 @@ export default function ProgressTab() {
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
 
-  // Refresh data when tab is focused
   useFocusEffect(useCallback(() => {
     refreshPlan();
     refresh();
   }, [refreshPlan, refresh]));
 
-  // Sync form fields with today's saved check-in whenever checkins change
   useEffect(() => {
     const today = checkins.find((c) => c.date === todayStr());
     setWeight(today?.weight != null ? String(today.weight) : '');
     setSelectedWorkouts(today?.workoutsDone ?? []);
   }, [checkins]);
 
-  const todayExercises = plan?.data?.workoutPlan?.find((d) => d.day === todayDayName())?.exercises || [];
+  const todayExercises =
+    plan?.data?.workoutPlan?.find((d) => d.day === todayDayName())?.exercises || [];
 
   function toggleWorkout(name) {
     setSelectedWorkouts((prev) =>
@@ -58,11 +132,7 @@ export default function ProgressTab() {
       return;
     }
     setSaving(true);
-    saveCheckin({
-      date: todayStr(),
-      weight: weight ? w : null,
-      workoutsDone: selectedWorkouts,
-    });
+    saveCheckin({ date: todayStr(), weight: weight ? w : null, workoutsDone: selectedWorkouts });
     setSaving(false);
     setJustSaved(true);
     setTimeout(() => setJustSaved(false), 2000);
@@ -74,23 +144,26 @@ export default function ProgressTab() {
   return (
     <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6 gap-4">
-        <Text className="text-xl font-bold text-slate-900 dark:text-white">{t.tabs.progress}</Text>
+        <Text className="text-xl font-bold text-slate-900 dark:text-white" accessibilityRole="header">
+          {t.tabs.progress}
+        </Text>
 
         {/* Check-in form */}
         <Card>
           <Text className="font-semibold text-slate-800 dark:text-white mb-3">{p.todayCheckin}</Text>
-
           <Input
             label={p.weightLabel}
             placeholder={p.weightPlaceholder}
             keyboardType="decimal-pad"
             value={weight}
             onChangeText={setWeight}
+            accessibilityLabel={p.weightLabel}
           />
-
           {todayExercises.length > 0 && (
             <View className="mt-4 gap-2">
-              <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">{p.workoutsDone}</Text>
+              <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                {p.workoutsDone}
+              </Text>
               {todayExercises.map((ex) => {
                 const checked = selectedWorkouts.includes(ex.name);
                 return (
@@ -98,6 +171,9 @@ export default function ProgressTab() {
                     key={ex.name}
                     onPress={() => toggleWorkout(ex.name)}
                     className="flex-row items-center gap-3 py-1"
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked }}
+                    accessibilityLabel={ex.name}
                   >
                     <View
                       className={`w-5 h-5 rounded border-2 items-center justify-center ${
@@ -112,8 +188,12 @@ export default function ProgressTab() {
               })}
             </View>
           )}
-
-          <Button onPress={handleSave} loading={saving} className="mt-4">
+          <Button
+            onPress={handleSave}
+            loading={saving}
+            className="mt-4"
+            accessibilityLabel={p.save}
+          >
             {justSaved ? p.saved : p.save}
           </Button>
         </Card>
@@ -124,6 +204,16 @@ export default function ProgressTab() {
             <Text className="font-semibold text-slate-800 dark:text-white mb-3">{p.trendTitle}</Text>
             <Sparkline checkins={checkins} />
           </Card>
+        )}
+
+        {/* Adaptive calorie adjustment */}
+        {plan && (
+          <CalorieAdjustCard
+            plan={plan}
+            checkins={checkins}
+            p={p}
+            onApplied={refreshPlan}
+          />
         )}
 
         {/* Smart Coach */}

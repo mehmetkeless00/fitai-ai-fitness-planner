@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { useCreatePlan } from './context';
+import { useCreatePlan } from '../../contexts/createPlanContext';
 import Toggle from '../../components/ui/Toggle';
 import Button from '../../components/ui/Button';
 

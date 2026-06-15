@@ -1,24 +1,30 @@
-import { View, Text, ScrollView, SafeAreaView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { getExerciseDemo } from '@fitflow/core';
+import { getExerciseDemo, getCategoryEmoji, translations } from '@fitflow/core';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function ExerciseModal() {
   const { ex } = useLocalSearchParams();
   const router = useRouter();
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
+  const w = t.workout;
 
   let exercise = null;
   try { exercise = JSON.parse(ex); } catch { /* ignore */ }
 
   const demo = exercise ? getExerciseDemo(exercise.name, lang) : null;
+  const categoryEmoji = demo?.category ? getCategoryEmoji(demo.category) : '🏋️';
+
+  // Use core translations for demo section labels
+  const ed = (translations[lang] || translations.en).exerciseDemo;
 
   if (!exercise) {
     return (
       <SafeAreaView className="flex-1 bg-white dark:bg-slate-900 items-center justify-center">
         <Text className="text-slate-500">Exercise not found.</Text>
         <Pressable onPress={() => router.back()} className="mt-4">
-          <Text className="text-sky-500 font-medium">Go back</Text>
+          <Text className="text-sky-500 font-medium">{w.done}</Text>
         </Pressable>
       </SafeAreaView>
     );
@@ -28,11 +34,18 @@ export default function ExerciseModal() {
     <SafeAreaView className="flex-1 bg-white dark:bg-slate-900">
       <ScrollView className="flex-1" contentContainerClassName="px-5 py-6 gap-4">
         <View className="flex-row items-center justify-between">
-          <Text className="text-xl font-bold text-slate-900 dark:text-white flex-1 mr-4">
-            {exercise.name}
-          </Text>
-          <Pressable onPress={() => router.back()}>
-            <Text className="text-sky-500 font-medium">Done</Text>
+          <View className="flex-row items-center gap-3 flex-1 mr-4">
+            <Text style={{ fontSize: 28 }}>{categoryEmoji}</Text>
+            <Text className="text-xl font-bold text-slate-900 dark:text-white flex-1">
+              {exercise.name}
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel={w.done}
+          >
+            <Text className="text-sky-500 font-medium">{w.done}</Text>
           </Pressable>
         </View>
 
@@ -45,22 +58,22 @@ export default function ExerciseModal() {
         </View>
 
         <View className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 gap-1">
-          <Row label="Sets" value={`${exercise.sets}`} />
-          <Row label="Reps" value={`${exercise.reps}`} />
-          {exercise.restTime && <Row label="Rest" value={`${exercise.restTime}s`} />}
-          {exercise.rpe && <Row label="Intensity" value={exercise.rpe} />}
+          <Row label={w.setsLabel} value={`${exercise.sets}`} />
+          <Row label={w.repsLabel} value={`${exercise.reps}`} />
+          {exercise.restTime && <Row label={w.restLabel} value={`${exercise.restTime}s`} />}
+          {exercise.rpe && <Row label={w.intensityLabel} value={exercise.rpe} />}
         </View>
 
         {demo && (
           <>
-            {demo.setup && <Section title="Setup" text={demo.setup} />}
-            {demo.movement && <Section title="Movement" text={demo.movement} />}
-            {demo.breathing && <Section title="Breathing" text={demo.breathing} />}
+            {demo.setup && <Section title={ed.setup} text={demo.setup} />}
+            {demo.movement && <Section title={ed.movement} text={demo.movement} />}
+            {demo.breathing && <Section title={ed.breathing} text={demo.breathing} />}
             {demo.commonMistake && (
-              <Section title="Common Mistake" text={demo.commonMistake} accent="red" />
+              <Section title={ed.commonMistake} text={demo.commonMistake} accent="red" />
             )}
             {demo.safetyTip && (
-              <Section title="Safety Tip" text={demo.safetyTip} accent="green" />
+              <Section title={ed.safetyTip} text={demo.safetyTip} accent="green" />
             )}
           </>
         )}
@@ -68,7 +81,7 @@ export default function ExerciseModal() {
         {(exercise.alternatives || []).length > 0 && (
           <View>
             <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              Alternatives
+              {w.alternativesLabel}
             </Text>
             {exercise.alternatives.map((a) => (
               <Text key={a} className="text-sm text-slate-500 dark:text-slate-400">• {a}</Text>
