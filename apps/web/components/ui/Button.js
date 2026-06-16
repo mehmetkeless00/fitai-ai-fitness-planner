@@ -8,14 +8,14 @@ export default function Button({
   ...props
 }) {
   const baseStyles =
-    'font-semibold rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0';
+    'font-semibold rounded-[12px] transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0';
 
   const variants = {
     primary:
-      'bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white shadow-lg shadow-sky-500/25 hover:shadow-xl hover:shadow-sky-500/30 hover:-translate-y-0.5 active:translate-y-0',
-    secondary: 'bg-slate-200 dark:bg-dark-surface hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-300 dark:border-dark-border',
-    outline: 'bg-transparent border border-slate-300 dark:border-dark-border text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-dark-surface',
-    ghost: 'bg-transparent text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-dark-surface',
+      'bg-accent hover:bg-accent-600 text-[#062815] shadow-[0_6px_16px_-8px_rgba(20,192,106,0.7)] hover:-translate-y-0.5 active:translate-y-0',
+    secondary: 'bg-ink-900 hover:bg-ink-700 text-white',
+    outline: 'bg-paper border border-line text-ink-900 hover:border-accent/40 hover:bg-canvas',
+    ghost: 'bg-transparent text-ink-900 dark:text-white hover:bg-canvas dark:hover:bg-dark-surface',
   };
 
   const sizes = {

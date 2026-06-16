@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const FITFLOW_KEYS = ['fitflow.plans.v2', 'fitflow.progress.v1', 'fitflow.lang'];
+const FITFLOW_KEYS = ['fitflow.plans.v2', 'fitflow.progress.v1', 'fitflow.lang', 'fitflow.units', 'fitflow.notifications'];
 const cache = new Map();
 
 export async function initStorage() {

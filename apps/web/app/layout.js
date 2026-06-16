@@ -1,12 +1,21 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { Schibsted_Grotesk, Hanken_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import ThemeProvider from '@/components/layout/ThemeProvider';
 import LanguageProvider from '@/components/layout/LanguageProvider';
 import AuthProvider from '@/components/layout/AuthProvider';
 
-const inter = Inter({
-  subsets: ['latin', 'latin-ext'],
+const schibsted = Schibsted_Grotesk({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-display',
+  display: 'swap',
+});
+
+const hanken = Hanken_Grotesk({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-sans',
   display: 'swap',
 });
 
@@ -50,8 +59,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="dark">
-      <body className={inter.className}>
+    <html lang="en">
+      <body className={`${schibsted.variable} ${hanken.variable} font-sans`}>
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>{children}</AuthProvider>

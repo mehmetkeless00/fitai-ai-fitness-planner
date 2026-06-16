@@ -66,7 +66,7 @@ export default function Result() {
     return (
       <>
         <Navigation />
-        <main className="min-h-screen pt-20 pb-12 md:pb-20">
+        <main id="main-content" className="min-h-screen pt-20 pb-12 md:pb-20">
           <Container>
             <PageHeader title={r.noPlanTitle} description={r.noPlanDesc} />
             <div className="text-center">
@@ -101,7 +101,7 @@ export default function Result() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen pt-20 pb-20">
+      <main id="main-content" className="min-h-screen pt-20 pb-20">
         <Container>
           <PageHeader
             title={r.pageTitle}

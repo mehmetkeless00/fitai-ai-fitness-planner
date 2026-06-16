@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import {
@@ -97,7 +98,7 @@ function CalorieAdjustCard({ plan, checkins, p, onApplied }) {
 export default function ProgressTab() {
   const { plan, refreshPlan } = usePlan();
   const { checkins, saveCheckin, refresh } = useCheckins();
-  const { t, lang } = useLanguage();
+  const { t, lang, units } = useLanguage();
   const p = t.progress;
 
   const [weight, setWeight] = useState('');
@@ -112,9 +113,16 @@ export default function ProgressTab() {
 
   useEffect(() => {
     const today = checkins.find((c) => c.date === todayStr());
-    setWeight(today?.weight != null ? String(today.weight) : '');
+    if (today?.weight != null) {
+      const displayVal = units === 'lbs'
+        ? String(Math.round((today.weight / 0.453592) * 10) / 10)
+        : String(today.weight);
+      setWeight(displayVal);
+    } else {
+      setWeight('');
+    }
     setSelectedWorkouts(today?.workoutsDone ?? []);
-  }, [checkins]);
+  }, [checkins, units]);
 
   const todayExercises =
     plan?.data?.workoutPlan?.find((d) => d.day === todayDayName())?.exercises || [];
@@ -127,12 +135,18 @@ export default function ProgressTab() {
 
   function handleSave() {
     const w = parseFloat(weight);
-    if (weight && (isNaN(w) || w < 20 || w > 500)) {
-      Alert.alert('Invalid weight', 'Enter a realistic weight in kg.');
+    const [minW, maxW] = units === 'lbs' ? [44, 1100] : [20, 500];
+    if (weight && (isNaN(w) || w < minW || w > maxW)) {
+      Alert.alert(
+        p.invalidWeight,
+        units === 'lbs' ? p.invalidWeightMsgLbs : p.invalidWeightMsgKg,
+      );
       return;
     }
+    const weightKg = weight ? (units === 'lbs' ? w * 0.453592 : w) : null;
     setSaving(true);
-    saveCheckin({ date: todayStr(), weight: weight ? w : null, workoutsDone: selectedWorkouts });
+    saveCheckin({ date: todayStr(), weight: weightKg, workoutsDone: selectedWorkouts });
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setSaving(false);
     setJustSaved(true);
     setTimeout(() => setJustSaved(false), 2000);
@@ -152,12 +166,12 @@ export default function ProgressTab() {
         <Card>
           <Text className="font-semibold text-slate-800 dark:text-white mb-3">{p.todayCheckin}</Text>
           <Input
-            label={p.weightLabel}
-            placeholder={p.weightPlaceholder}
+            label={units === 'lbs' ? p.weightLabelLbs : p.weightLabel}
+            placeholder={units === 'lbs' ? p.weightPlaceholderLbs : p.weightPlaceholder}
             keyboardType="decimal-pad"
             value={weight}
             onChangeText={setWeight}
-            accessibilityLabel={p.weightLabel}
+            accessibilityLabel={units === 'lbs' ? p.weightLabelLbs : p.weightLabel}
           />
           {todayExercises.length > 0 && (
             <View className="mt-4 gap-2">
@@ -202,7 +216,7 @@ export default function ProgressTab() {
         {checkins.length > 0 && (
           <Card>
             <Text className="font-semibold text-slate-800 dark:text-white mb-3">{p.trendTitle}</Text>
-            <Sparkline checkins={checkins} />
+            <Sparkline checkins={checkins} hint={p.trendHint} />
           </Card>
         )}
 

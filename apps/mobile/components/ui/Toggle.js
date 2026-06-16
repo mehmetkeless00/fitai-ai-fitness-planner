@@ -4,7 +4,7 @@ export default function Toggle({ label, options, value, onChange, className = ''
   return (
     <View className={`gap-1 ${className}`}>
       {label && (
-        <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</Text>
+        <Text className="text-sm font-medium text-ink-700 dark:text-slate-300">{label}</Text>
       )}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View className="flex-row gap-2">
@@ -14,15 +14,18 @@ export default function Toggle({ label, options, value, onChange, className = ''
               <Pressable
                 key={opt.value}
                 onPress={() => onChange(opt.value)}
-                className={`px-4 py-2.5 rounded-lg border ${
+                accessibilityRole="radio"
+                accessibilityState={{ checked: active }}
+                accessibilityLabel={opt.label}
+                className={`px-4 py-2.5 rounded-[10px] border ${
                   active
-                    ? 'bg-sky-500 border-sky-500'
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 active:bg-slate-50'
+                    ? 'bg-accent border-accent'
+                    : 'bg-paper dark:bg-slate-800 border-line dark:border-slate-600 active:bg-canvas'
                 }`}
               >
                 <Text
                   className={`text-sm font-medium ${
-                    active ? 'text-white' : 'text-slate-700 dark:text-slate-300'
+                    active ? 'text-[#062815]' : 'text-ink-700 dark:text-slate-300'
                   }`}
                 >
                   {opt.label}

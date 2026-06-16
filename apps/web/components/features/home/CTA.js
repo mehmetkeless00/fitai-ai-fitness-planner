@@ -1,31 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import Card from '../../ui/Card';
-import Button from '../../ui/Button';
 import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function CTA() {
   const { t } = useLanguage();
 
   return (
-    <section className="py-12 md:py-20 px-3">
-      <div className="relative">
-        <div
-          className="absolute -inset-3 bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-purple-500/15 rounded-3xl blur-2xl pointer-events-none"
-          aria-hidden="true"
-        />
-        <Card className="relative bg-gradient-to-br from-sky-500/10 via-transparent to-blue-500/10 border-sky-500/20 text-center py-10 sm:py-14">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3 sm:mb-4 tracking-tight">
-            {t.cta.heading}
-          </h2>
-          <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 mb-6 sm:mb-8 max-w-2xl mx-auto">
-            {t.cta.description}
-          </p>
-          <Link href="/create-plan">
-            <Button size="lg" className="w-full sm:w-auto">{t.cta.button}</Button>
-          </Link>
-        </Card>
+    <section className="py-12 md:py-20">
+      <div className="bg-ink-900 dark:bg-dark-surface rounded-[20px] px-8 py-12 md:py-16 text-center">
+        <p className="text-[11.5px] font-semibold uppercase tracking-overline text-[rgba(246,245,242,0.45)] mb-4">
+          Get started
+        </p>
+        <h2 className="font-display font-extrabold text-[clamp(26px,3.5vw,34px)] text-[#F6F5F2] tracking-tight leading-[1.1] mb-4 max-w-[28ch] mx-auto">
+          {t.cta.heading}
+        </h2>
+        <p className="text-[15px] leading-[1.55] text-[rgba(246,245,242,0.6)] mb-8 max-w-[48ch] mx-auto">
+          {t.cta.description}
+        </p>
+        <Link
+          href="/create-plan"
+          className="inline-flex items-center gap-2 px-7 py-[14px] bg-accent hover:bg-accent-600 text-accent-ink font-bold text-[15px] rounded-[13px] shadow-btn transition-colors"
+        >
+          {t.cta.button}
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </Link>
       </div>
     </section>
   );

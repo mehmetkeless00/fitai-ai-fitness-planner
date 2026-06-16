@@ -71,7 +71,7 @@ export default function CreatePlan() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen pt-20 pb-12 md:pb-20">
+      <main id="main-content" className="min-h-screen pt-20 pb-12 md:pb-20">
         {isGenerating && <PremiumLoadingScreen />}
 
         <Container>

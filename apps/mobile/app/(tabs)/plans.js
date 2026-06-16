@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { View, Text, FlatList, Pressable, Alert, Modal, TextInput } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { listPlans, deletePlan, renamePlan } from '@fitflow/core';
@@ -83,6 +84,7 @@ export default function PlansTab() {
 
   function handleActivate(id) {
     activatePlan(id);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     refresh();
   }
 
@@ -175,7 +177,7 @@ export default function PlansTab() {
                         : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700'
                     }`}
                     accessibilityRole="button"
-                    accessibilityLabel={`${item.name || 'Unnamed plan'}${isActive ? ', active' : ''}`}
+                    accessibilityLabel={`${item.name || pl.unnamed}${isActive ? pl.activeSuffix : ''}`}
                     accessibilityHint={pl.longPressHint}
                   >
                     <View className="flex-row items-center justify-between">
@@ -185,7 +187,7 @@ export default function PlansTab() {
                         }`}
                         numberOfLines={1}
                       >
-                        {item.name || 'Unnamed plan'}
+                        {item.name || pl.unnamed}
                       </Text>
                       {isActive && (
                         <View className="bg-sky-500 rounded-full px-2 py-0.5">

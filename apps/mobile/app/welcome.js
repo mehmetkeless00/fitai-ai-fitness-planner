@@ -28,6 +28,19 @@ export default function WelcomeScreen() {
           </Text>
         </View>
 
+        <View className="w-full gap-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4">
+          {[
+            { icon: '🎯', text: t.welcome.feature1 },
+            { icon: '🍽️', text: t.welcome.feature2 },
+            { icon: '📈', text: t.welcome.feature3 },
+          ].map((f) => (
+            <View key={f.icon} className="flex-row items-center gap-3">
+              <Text style={{ fontSize: 20 }}>{f.icon}</Text>
+              <Text className="text-sm text-slate-600 dark:text-slate-300 flex-1">{f.text}</Text>
+            </View>
+          ))}
+        </View>
+
         <View className="w-full gap-3 mt-4">
           <Pressable
             className="w-full bg-sky-500 active:bg-sky-600 py-4 rounded-xl items-center"

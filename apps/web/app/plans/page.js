@@ -75,7 +75,7 @@ export default function PlansPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen pt-20 pb-12 md:pb-20">
+      <main id="main-content" className="min-h-screen pt-20 pb-12 md:pb-20">
         <Container>
           <PageHeader title={s.pageTitle} description={s.pageDescription} />
 

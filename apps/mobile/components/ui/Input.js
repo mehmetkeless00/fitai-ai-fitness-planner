@@ -10,12 +10,14 @@ export default function Input({
   return (
     <View className={`gap-1 ${className}`}>
       {label && (
-        <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</Text>
+        <Text className="text-sm font-medium text-ink-700 dark:text-slate-300">{label}</Text>
       )}
       <TextInput
-        className={`border rounded-xl px-4 py-3 text-slate-900 dark:text-white bg-white dark:bg-slate-800 text-base
-          ${error ? 'border-red-400' : 'border-slate-200 dark:border-slate-600'} ${inputClassName}`}
-        placeholderTextColor="#94a3b8"
+        className={`border rounded-[10px] px-4 py-3 text-ink-900 dark:text-white bg-paper dark:bg-slate-800 text-base
+          ${error ? 'border-semantic-danger' : 'border-line dark:border-slate-600'} ${inputClassName}`}
+        placeholderTextColor="#A7A8AD"
+        accessibilityLabel={label}
+        accessibilityHint={error || undefined}
         {...props}
       />
       {error && (

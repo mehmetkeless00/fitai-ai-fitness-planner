@@ -22,7 +22,7 @@ export default function ExerciseModal() {
   if (!exercise) {
     return (
       <SafeAreaView className="flex-1 bg-white dark:bg-slate-900 items-center justify-center">
-        <Text className="text-slate-500">Exercise not found.</Text>
+        <Text className="text-slate-500">{w.exerciseNotFound}</Text>
         <Pressable onPress={() => router.back()} className="mt-4">
           <Text className="text-sky-500 font-medium">{w.done}</Text>
         </Pressable>

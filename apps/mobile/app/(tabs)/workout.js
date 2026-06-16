@@ -19,7 +19,7 @@ export default function WorkoutTab() {
   if (!plan) {
     return (
       <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900 items-center justify-center">
-        <Text className="text-slate-500">No active plan.</Text>
+        <Text className="text-slate-500">{t.workout.noActivePlan}</Text>
       </SafeAreaView>
     );
   }
@@ -33,7 +33,10 @@ export default function WorkoutTab() {
   return (
     <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
-        <Text className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+        <Text
+          className="text-xl font-bold text-slate-900 dark:text-white mb-4"
+          accessibilityRole="header"
+        >
           {t.tabs.workout}
         </Text>
         {workoutPlan.length === 0 && (

@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen pt-20">
+      <main id="main-content" className="min-h-screen pt-[60px] bg-canvas dark:bg-dark-bg">
         <Container>
           <Hero />
           <HowItWorks />

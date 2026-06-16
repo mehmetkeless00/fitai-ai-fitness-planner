@@ -3,8 +3,8 @@
 export default function Card({ children, className = '', ...props }) {
   return (
     <div
-      className={`bg-white dark:bg-dark-surface border border-gray-200 dark:border-dark-border rounded-2xl p-4 sm:p-6
-        backdrop-blur-xs bg-opacity-100 dark:bg-opacity-80 shadow-sm transition-shadow duration-200 ${className}`}
+      className={`bg-paper dark:bg-dark-surface border border-line dark:border-dark-border rounded-[20px] p-4 sm:p-6
+        shadow-[0_1px_2px_rgba(20,22,30,0.04),0_10px_26px_-18px_rgba(20,22,30,0.22)] transition-shadow duration-200 ${className}`}
       {...props}
     >
       {children}

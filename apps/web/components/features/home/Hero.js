@@ -1,70 +1,80 @@
 'use client';
 
 import Link from 'next/link';
-import Button from '../../ui/Button';
+import EnergyRing from '@/components/ui/EnergyRing';
 import { useLanguage } from '@/components/layout/LanguageProvider';
 
-function AppPreviewCard({ t }) {
+// Static preview data — purely decorative, not real plan data
+const PREVIEW = {
+  energyEaten: 1690,
+  energyTotal: 2450,
+  protein: { eaten: 186, target: 238 },
+  carbs:   { eaten: 240, target: 300 },
+  fat:     { eaten: 62,  target: 82 },
+};
+
+function PreviewCard({ t }) {
   const p = t.hero.preview;
+  const energyPct = PREVIEW.energyEaten / PREVIEW.energyTotal;
+  const proteinPct = PREVIEW.protein.eaten / PREVIEW.protein.target;
 
   return (
-    <div className="relative max-w-md w-full mx-auto" aria-hidden="true">
-      {/* Glow behind the card */}
-      <div className="absolute -inset-4 bg-gradient-to-r from-sky-500/20 via-blue-500/15 to-purple-500/20 rounded-3xl blur-2xl" />
-
-      <div className="relative bg-white/95 dark:bg-dark-surface/90 backdrop-blur border border-slate-200 dark:border-dark-border rounded-2xl shadow-2xl shadow-slate-900/10 dark:shadow-black/40 p-5 space-y-4">
-        {/* Window chrome */}
-        <div className="flex items-center gap-2 pb-3 border-b border-slate-200 dark:border-dark-border">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
-          <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-          <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
-          <span className="ml-2 text-xs font-medium text-slate-500 dark:text-slate-400">{p.title}</span>
-        </div>
-
-        {/* Calories */}
-        <div className="bg-gradient-to-r from-sky-500/10 to-blue-500/10 border border-sky-500/20 rounded-xl p-4 flex items-center justify-between">
+    <div className="relative w-full max-w-[440px] mx-auto" aria-hidden="true">
+      <div className="bg-ink-900 rounded-[26px] p-6 text-[#F6F5F2] shadow-[0_30px_60px_-24px_rgba(20,22,30,0.5)]">
+        {/* Header */}
+        <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-slate-600 dark:text-slate-400">{p.calories}</p>
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">2,450 <span className="text-sm font-medium text-slate-500 dark:text-slate-400">kcal</span></p>
+            <p className="text-[12px] text-[rgba(246,245,242,0.55)]">Wednesday · Week 3</p>
+            <p className="font-display font-bold text-[17px] mt-0.5">{p.title}</p>
           </div>
-          <span className="text-3xl">🔥</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[rgba(20,192,106,0.16)] text-[#5FE0A0] text-[11.5px] font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+            On track
+          </span>
         </div>
 
-        {/* Macro bars */}
-        <div className="space-y-2.5">
-          {[
-            { label: p.protein, pct: 32, grad: 'from-red-500 to-pink-500', text: 'text-red-600 dark:text-red-400' },
-            { label: p.carbs, pct: 48, grad: 'from-yellow-500 to-orange-500', text: 'text-yellow-600 dark:text-yellow-400' },
-            { label: p.fat, pct: 20, grad: 'from-green-500 to-emerald-500', text: 'text-green-600 dark:text-green-400' },
-          ].map((m) => (
-            <div key={m.label}>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-700 dark:text-slate-300 font-medium">{m.label}</span>
-                <span className={`font-semibold ${m.text}`}>{m.pct}%</span>
-              </div>
-              <div className="h-1.5 bg-slate-200 dark:bg-dark-bg rounded-full overflow-hidden">
-                <div className={`h-full bg-gradient-to-r ${m.grad} rounded-full`} style={{ width: `${m.pct}%` }} />
-              </div>
+        {/* Ring + numbers */}
+        <div className="flex items-center gap-5 mt-5">
+          <EnergyRing size={112} strokeWidth={11} energyProgress={energyPct} proteinProgress={proteinPct} />
+
+          <div>
+            <p className="font-display font-extrabold text-[32px] leading-none tabular-nums tracking-[-0.03em]">
+              {PREVIEW.energyEaten.toLocaleString()}
+            </p>
+            <p className="text-[12px] text-[rgba(246,245,242,0.55)] mt-1">
+              of {PREVIEW.energyTotal.toLocaleString()} kcal
+            </p>
+
+            {/* Macro row */}
+            <div className="flex gap-4 mt-3">
+              {[
+                { label: p.protein, value: `${PREVIEW.protein.eaten}g`, color: '#5FE0A0' },
+                { label: p.carbs,   value: `${PREVIEW.carbs.eaten}g`,   color: '#F5A524' },
+                { label: p.fat,     value: `${PREVIEW.fat.eaten}g`,     color: '#7C8CFF' },
+              ].map(({ label, value, color }) => (
+                <div key={label}>
+                  <p className="text-[11px] text-[rgba(246,245,242,0.5)]">{label}</p>
+                  <p className="font-bold text-[13px] tabular-nums mt-0.5" style={{ color }}>{value}</p>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
 
-        {/* Today's workout + next meal rows */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-3 bg-slate-50 dark:bg-dark-bg/50 border border-slate-200 dark:border-dark-border rounded-xl p-3">
-            <span className="text-xl">💪</span>
-            <div className="min-w-0">
-              <p className="text-xs text-slate-500 dark:text-slate-400">{p.workoutLabel}</p>
-              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{p.workoutValue}</p>
-            </div>
+        {/* Workout row */}
+        <div className="flex items-center gap-3 bg-[rgba(246,245,242,0.06)] rounded-[14px] px-3.5 py-3 mt-4">
+          <div className="w-10 h-10 rounded-[11px] bg-[rgba(20,192,106,0.18)] flex items-center justify-center flex-shrink-0">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5FE0A0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6.5 6.5l11 11M4 9l-2 2 2 2M20 15l2-2-2-2M8 8l8 8"/>
+            </svg>
           </div>
-          <div className="flex items-center gap-3 bg-slate-50 dark:bg-dark-bg/50 border border-slate-200 dark:border-dark-border rounded-xl p-3">
-            <span className="text-xl">🥗</span>
-            <div className="min-w-0">
-              <p className="text-xs text-slate-500 dark:text-slate-400">{p.mealLabel}</p>
-              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{p.mealValue}</p>
-            </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-[13.5px]">{p.workoutValue}</p>
+            <p className="text-[11.5px] text-[rgba(246,245,242,0.55)]">6 exercises · 50 min</p>
           </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(246,245,242,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 6l6 6-6 6"/>
+          </svg>
         </div>
       </div>
     </div>
@@ -75,59 +85,69 @@ export default function Hero() {
   const { t } = useLanguage();
 
   const handleLearnMore = () => {
-    const featuresSection = document.getElementById('features-section');
-    if (featuresSection) {
-      featuresSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  return (
-    <div className="relative py-12 md:py-24">
-      {/* Background glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] bg-sky-500/10 rounded-full blur-3xl" />
-      </div>
+  // Strip leading emoji from badge string
+  const badgeText = t.hero.badge.replace(/^\p{Emoji}+\s*/u, '');
 
-      <div className="relative grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+  return (
+    <div className="py-12 md:py-20">
+      <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-center">
         {/* Copy */}
         <div className="text-center lg:text-left">
-          <div className="inline-block mb-4 px-3 sm:px-4 py-1.5 sm:py-2 bg-sky-500/10 border border-sky-500/20 rounded-full">
-            <p className="text-sky-600 dark:text-sky-400 text-xs sm:text-sm font-medium">{t.hero.badge}</p>
+          {/* Eyebrow chip */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-accent-wash text-accent-600 text-[12.5px] font-semibold rounded-full mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
+            {badgeText}
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-5 leading-[1.1] tracking-tight">
+          {/* Headline */}
+          <h1 className="font-display font-extrabold text-[clamp(40px,5vw,60px)] leading-[0.98] tracking-display text-ink-900 dark:text-white mb-5">
             {t.hero.title1}
             <br />
-            <span className="bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
-              {t.hero.title2}
-            </span>
+            {t.hero.title2}
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-xl mx-auto lg:mx-0 mb-7">
+          {/* Body */}
+          <p className="text-[17px] leading-[1.55] text-ink-500 max-w-[42ch] mx-auto lg:mx-0 mb-7">
             {t.hero.description}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-7">
-            <Link href="/create-plan" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto">{t.hero.cta}</Button>
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-8">
+            <Link
+              href="/create-plan"
+              className="inline-flex items-center justify-center gap-2 px-6 py-[14px] bg-accent hover:bg-accent-600 text-accent-ink font-bold text-[15px] rounded-[13px] shadow-btn transition-colors"
+            >
+              {t.hero.cta}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
             </Link>
-            <Button variant="outline" size="lg" onClick={handleLearnMore} className="w-full sm:w-auto">
+            <button
+              onClick={handleLearnMore}
+              className="inline-flex items-center justify-center px-6 py-[14px] bg-paper border border-line text-ink-900 font-semibold text-[15px] rounded-[13px] hover:border-ink-300 transition-colors"
+            >
               {t.hero.learnMore}
-            </Button>
+            </button>
           </div>
 
-          <ul className="flex flex-wrap gap-x-5 gap-y-2 justify-center lg:justify-start text-sm text-slate-600 dark:text-slate-300">
+          {/* Trust strip */}
+          <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center lg:justify-start">
             {t.hero.trust.map((item) => (
-              <li key={item} className="flex items-center gap-1.5">
-                <span className="text-green-500 font-bold">✓</span>
-                {item}
-              </li>
+              <div key={item} className="flex items-center gap-1.5">
+                <span className="w-4 h-4 rounded-full bg-accent-wash flex items-center justify-center flex-shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                </span>
+                <span className="text-[13px] text-ink-500">{item}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
-        {/* App preview mockup */}
-        <AppPreviewCard t={t} />
+        {/* Preview card */}
+        <PreviewCard t={t} />
       </div>
     </div>
   );

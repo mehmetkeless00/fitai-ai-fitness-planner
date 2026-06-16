@@ -5,15 +5,13 @@ const WIDTH = 280;
 const HEIGHT = 80;
 const PAD = 12;
 
-export default function Sparkline({ checkins, color = '#0ea5e9' }) {
+export default function Sparkline({ checkins, color = '#14C06A', hint = '' }) {
   const withWeight = checkins.filter((c) => c.weight != null);
 
   if (withWeight.length < 2) {
     return (
       <View style={{ height: HEIGHT, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontSize: 12, color: '#94a3b8' }}>
-          Log at least 2 weight entries to see the trend.
-        </Text>
+        <Text style={{ fontSize: 12, color: '#94a3b8' }}>{hint}</Text>
       </View>
     );
   }

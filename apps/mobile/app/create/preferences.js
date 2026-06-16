@@ -98,7 +98,7 @@ export default function Step3() {
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-8 gap-6">
         <View>
           <Text className="text-2xl font-bold text-slate-900 dark:text-white">{c.step3Title}</Text>
-          <Text className="text-sm text-slate-400 mt-1">Step 3 of 3</Text>
+          <Text className="text-sm text-slate-400 mt-1">{c.step3Progress}</Text>
         </View>
 
         <Toggle
