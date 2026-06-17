@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { track } from '@vercel/analytics';
 import Navigation from '@/components/layout/Navigation';
@@ -13,7 +13,7 @@ import WorkoutPlan from '@/components/features/results/WorkoutPlan';
 import MealPlan from '@/components/features/results/MealPlan';
 import ProgressTracker from '@/components/features/results/ProgressTracker';
 import { generatePlanPDF } from '@/utils/pdf-generator';
-import { getActivePlan, updatePlanData } from '@fitflow/core';
+import { getActivePlan, updatePlanData, translateMealPlan } from '@fitflow/core';
 import { useLanguage } from '@/components/layout/LanguageProvider';
 
 export default function Result() {
@@ -39,10 +39,16 @@ export default function Result() {
     }
   }, []);
 
+  // displayPlan is the plan translated to the current UI language for rendering.
+  // planData in state always holds the authoritative stored version.
+  const displayPlan = useMemo(() => translateMealPlan(planData, lang), [planData, lang]);
+
   const handlePlanChange = (next) => {
-    setPlanData(next);
+    // Keep lang consistent with content so round-trip re-translation works correctly.
+    const normalized = { ...next, lang };
+    setPlanData(normalized);
     if (planId) {
-      updatePlanData(planId, next);
+      updatePlanData(planId, normalized);
     }
   };
 
@@ -147,7 +153,7 @@ export default function Result() {
             <div className="space-y-8">
               <div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.nutritionHeading}</h2>
-                <NutritionSummary plan={planData} />
+                <NutritionSummary plan={displayPlan} />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.profileHeading}</h2>
@@ -193,7 +199,7 @@ export default function Result() {
           {activeTab === 'meals' && (
             <div>
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{r.mealHeading}</h2>
-              <MealPlan plan={planData} onPlanChange={handlePlanChange} />
+              <MealPlan plan={displayPlan} onPlanChange={handlePlanChange} />
             </div>
           )}
 
@@ -218,7 +224,7 @@ export default function Result() {
                       aria-hidden="true"
                     />
                     <p className="text-lg text-slate-700 dark:text-slate-200 leading-relaxed md:pl-3">
-                      {planData.advice || r.defaultAdvice}
+                      {displayPlan?.advice || r.defaultAdvice}
                     </p>
                   </blockquote>
                 </div>

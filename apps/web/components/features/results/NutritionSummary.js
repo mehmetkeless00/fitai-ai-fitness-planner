@@ -54,7 +54,7 @@ export default function NutritionSummary({ plan }) {
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {stats.map((stat, idx) => (
-          <Card key={idx} className="text-center p-3 md:p-4 hover:border-sky-500/30">
+          <Card key={idx} className="text-center p-3 md:p-4 hover:border-accent/30">
             <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 mb-2 rounded-xl bg-gradient-to-br from-sky-500/10 to-blue-500/10 border border-sky-500/15 text-xl md:text-2xl">
               {stat.icon}
             </div>
@@ -70,26 +70,26 @@ export default function NutritionSummary({ plan }) {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-xs md:text-sm text-slate-900 dark:text-white">{s.protein}</span>
-              <span className="text-sm md:text-base text-red-600 dark:text-red-400 font-semibold">{plan.macros.protein?.percentage || 28}%</span>
+              <span className="text-sm md:text-base text-accent-600 dark:text-accent font-semibold">{plan.macros.protein?.percentage || 28}%</span>
             </div>
             <div className="w-full bg-slate-300 dark:bg-dark-bg rounded-full h-2 overflow-hidden">
-              <div className="bg-gradient-to-r from-red-500 to-pink-500 h-full" style={{ width: `${plan.macros.protein?.percentage || 28}%` }} />
+              <div className="bg-[#14C06A] h-full" style={{ width: `${plan.macros.protein?.percentage || 28}%` }} />
             </div>
 
             <div className="flex justify-between items-center mt-4">
               <span className="text-xs md:text-sm text-slate-900 dark:text-white">{s.carbs}</span>
-              <span className="text-sm md:text-base text-yellow-600 dark:text-yellow-400 font-semibold">{plan.macros.carbs?.percentage || 48}%</span>
+              <span className="text-sm md:text-base text-[#9A6000] dark:text-[#F5A524] font-semibold">{plan.macros.carbs?.percentage || 48}%</span>
             </div>
             <div className="w-full bg-slate-300 dark:bg-dark-bg rounded-full h-2 overflow-hidden">
-              <div className="bg-gradient-to-r from-yellow-500 to-orange-500 h-full" style={{ width: `${plan.macros.carbs?.percentage || 48}%` }} />
+              <div className="bg-[#F5A524] h-full" style={{ width: `${plan.macros.carbs?.percentage || 48}%` }} />
             </div>
 
             <div className="flex justify-between items-center mt-4">
               <span className="text-xs md:text-sm text-slate-900 dark:text-white">{s.fat}</span>
-              <span className="text-sm md:text-base text-green-600 dark:text-green-400 font-semibold">{plan.macros.fat?.percentage || 24}%</span>
+              <span className="text-sm md:text-base text-[#7C8CFF] font-semibold">{plan.macros.fat?.percentage || 24}%</span>
             </div>
             <div className="w-full bg-slate-300 dark:bg-dark-bg rounded-full h-2 overflow-hidden">
-              <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-full" style={{ width: `${plan.macros.fat?.percentage || 24}%` }} />
+              <div className="bg-[#7C8CFF] h-full" style={{ width: `${plan.macros.fat?.percentage || 24}%` }} />
             </div>
           </div>
         </Card>

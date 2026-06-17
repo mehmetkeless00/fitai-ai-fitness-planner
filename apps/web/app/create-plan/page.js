@@ -55,6 +55,7 @@ export default function CreatePlan() {
       const planData = {
         ...formData,
         ...data.plan,
+        lang,
         generatedAt: new Date().toISOString(),
       };
 

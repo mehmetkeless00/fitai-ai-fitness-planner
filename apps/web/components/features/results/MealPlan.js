@@ -25,6 +25,7 @@ export default function MealPlan({ plan, onPlanChange }) {
       ...current,
       name: pick.name,
       description: pick.description,
+      _srcIdx: pick._srcIdx,
       prepTime: pick.prepTime || current.prepTime,
       difficulty: pick.difficulty || 'Easy',
       alternatives: pick.alternatives || [],

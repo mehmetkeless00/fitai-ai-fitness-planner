@@ -12,8 +12,8 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-slate-900">
       <View className="flex-1 items-center justify-center px-8 gap-6">
-        <View className="w-20 h-20 rounded-2xl bg-sky-500 items-center justify-center">
-          <Text className="text-white text-4xl font-bold">F</Text>
+        <View className="w-20 h-20 rounded-2xl bg-accent items-center justify-center">
+          <Text className="text-[#062815] text-4xl font-bold">F</Text>
         </View>
 
         <View className="items-center gap-2">
@@ -43,12 +43,12 @@ export default function WelcomeScreen() {
 
         <View className="w-full gap-3 mt-4">
           <Pressable
-            className="w-full bg-sky-500 active:bg-sky-600 py-4 rounded-xl items-center"
+            className="w-full bg-accent active:bg-accent-600 py-4 rounded-xl items-center"
             onPress={() => router.push('/create')}
             accessibilityRole="button"
             accessibilityLabel={t.welcome.cta}
           >
-            <Text className="text-white font-semibold text-base">
+            <Text className="text-[#062815] font-semibold text-base">
               {t.welcome.cta}
             </Text>
           </Pressable>

@@ -2,9 +2,27 @@
 
 import Link from 'next/link';
 import { useContext } from 'react';
+import { usePathname } from 'next/navigation';
 import { ThemeContext } from '@/components/layout/ThemeProvider';
 import { useLanguage } from '@/components/layout/LanguageProvider';
 import { useAuth } from '@/components/layout/AuthProvider';
+
+function NavLink({ href, children }) {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+  return (
+    <Link
+      href={href}
+      className={`hidden sm:inline-flex items-center px-3 py-1.5 rounded-full text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
+        isActive
+          ? 'bg-[#F0EFEA] dark:bg-ink-900/60 text-ink-900 dark:text-white font-semibold'
+          : 'text-ink-500 hover:text-ink-900 dark:hover:text-white font-medium hover:bg-[#F0EFEA]/80 dark:hover:bg-ink-900/40'
+      }`}
+    >
+      {children}
+    </Link>
+  );
+}
 
 function LogoIcon() {
   return (
@@ -60,15 +78,9 @@ export default function Navigation() {
 
   const navLinks = (
     <>
-      <Link href="/" className="hidden sm:inline text-sm font-medium text-ink-500 hover:text-ink-900 transition-colors">
-        {t.nav.home}
-      </Link>
-      <Link href="/plans" className="hidden sm:inline text-sm font-medium text-ink-500 hover:text-ink-900 transition-colors">
-        {t.nav.myPlans}
-      </Link>
-      <Link href="/create-plan" className="hidden sm:inline text-sm font-medium text-ink-500 hover:text-ink-900 transition-colors">
-        {t.nav.createPlan}
-      </Link>
+      <NavLink href="/">{t.nav.home}</NavLink>
+      <NavLink href="/plans">{t.nav.myPlans}</NavLink>
+      <NavLink href="/create-plan">{t.nav.createPlan}</NavLink>
     </>
   );
 
@@ -113,7 +125,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-[60px]">
           {logo}
 
-          <div className="flex items-center gap-1 sm:gap-1.5 ml-8">
+          <div className="flex items-center gap-0.5 ml-6">
             {navLinks}
           </div>
 

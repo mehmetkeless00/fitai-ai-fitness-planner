@@ -5,6 +5,7 @@ import {
   applyCalorieAdjustment,
   blendRecoveryScore,
   generateCoachNarrative,
+  translateMealPlan,
 } from '../src/generateSmartPlan.js';
 import { getPlanStrings } from '../src/planStrings.js';
 
@@ -224,6 +225,102 @@ describe('Localization', () => {
     const plan = makePlan({ lang: 'de' });
     const allEnAdvice = Object.values(getPlanStrings('en').advice).flat();
     expect(allEnAdvice).toContain(plan.advice);
+  });
+
+  it('stores _srcIdx on every generated meal', () => {
+    const plan = makePlan({ lang: 'en' });
+    for (const day of plan.mealPlan) {
+      for (const [slot, meal] of Object.entries(day.meals)) {
+        expect(typeof meal._srcIdx, `${slot} on ${day.day} missing _srcIdx`).toBe('number');
+      }
+    }
+  });
+
+  it('stores _timingKey on every generated meal', () => {
+    const validKeys = ['breakfast', 'lunch', 'dinner', 'snackWorkout', 'snackRest'];
+    const plan = makePlan({ lang: 'en' });
+    for (const day of plan.mealPlan) {
+      for (const [slot, meal] of Object.entries(day.meals)) {
+        expect(validKeys, `${slot} on ${day.day} has invalid _timingKey`).toContain(meal._timingKey);
+      }
+    }
+  });
+
+  it('translateMealPlan: translates timing labels using _timingKey', () => {
+    const trPlan = { ...makePlan({ lang: 'tr', dietaryPreference: 'omnivore' }), lang: 'tr', dietaryPreference: 'omnivore' };
+    const enTiming = getPlanStrings('en').timing;
+    const translated = translateMealPlan(trPlan, 'en');
+    const breakfast = translated.mealPlan[0].meals.breakfast;
+    expect(breakfast.timing).toBe(enTiming.breakfast);
+    // Find a snack on a workout day and verify it maps to the workout timing string
+    for (const day of translated.mealPlan) {
+      if (day.meals.snack?._timingKey === 'snackWorkout') {
+        expect(day.meals.snack.timing).toBe(enTiming.snackWorkout);
+        break;
+      }
+    }
+  });
+
+  it('translateMealPlan: TR plan renders English meal names when targetLang=en', () => {
+    const trPlan = { ...makePlan({ lang: 'tr', dietaryPreference: 'omnivore' }), lang: 'tr', dietaryPreference: 'omnivore' };
+    const enStrings = getPlanStrings('en');
+    const enBreakfastNames = enStrings.meals.omnivore.breakfast.map((m) => m.name);
+
+    const translated = translateMealPlan(trPlan, 'en');
+    expect(enBreakfastNames).toContain(translated.mealPlan[0].meals.breakfast.name);
+    // Grocery list regenerated in English (contains English ingredient words)
+    const allGroceryItems = Object.values(translated.groceryList).flat().join(' ').toLowerCase();
+    expect(allGroceryItems).not.toBe('');
+  });
+
+  it('translateMealPlan: same language is a no-op (returns original reference)', () => {
+    const plan = { ...makePlan({ lang: 'en' }), lang: 'en' };
+    expect(translateMealPlan(plan, 'en')).toBe(plan);
+  });
+
+  it('translateMealPlan: legacy plan without _srcIdx falls back to original content', () => {
+    const plan = makePlan({ lang: 'tr', dietaryPreference: 'omnivore' });
+    // Strip _srcIdx to simulate a pre-fix legacy plan
+    const legacy = {
+      ...plan,
+      lang: 'tr',
+      dietaryPreference: 'omnivore',
+      mealPlan: plan.mealPlan.map((day) => ({
+        ...day,
+        meals: Object.fromEntries(
+          Object.entries(day.meals).map(([slot, meal]) => {
+            const { _srcIdx: _removed, ...rest } = meal;
+            return [slot, rest];
+          })
+        ),
+      })),
+    };
+    const translated = translateMealPlan(legacy, 'en');
+    // Content stays Turkish because there's no _srcIdx to look up with
+    expect(translated.mealPlan[0].meals.breakfast.name).toBe(legacy.mealPlan[0].meals.breakfast.name);
+  });
+
+  it('generateSmartPlan includes lang and _adviceIdx in returned plan', () => {
+    const plan = makePlan({ lang: 'tr' });
+    expect(plan.lang).toBe('tr');
+    expect(typeof plan._adviceIdx).toBe('number');
+    expect(plan._adviceIdx).toBeGreaterThanOrEqual(0);
+  });
+
+  it('translateMealPlan: translates advice text using _adviceIdx', () => {
+    // Mirror production: formData.fitnessGoal is merged into the stored plan object.
+    const trPlan = { ...makePlan({ lang: 'tr', fitnessGoal: 'build-muscle' }), fitnessGoal: 'build-muscle' };
+    const enAdviceList = getPlanStrings('en').advice['build-muscle'];
+    const translated = translateMealPlan(trPlan, 'en');
+    expect(translated.advice).toBe(enAdviceList[trPlan._adviceIdx]);
+  });
+
+  it('translateMealPlan: legacy plan without lang field defaults to EN and translates to TR', () => {
+    const plan = makePlan({ lang: 'en', dietaryPreference: 'omnivore' });
+    const { lang: _removedLang, ...legacyPlan } = plan;
+    const translated = translateMealPlan(legacyPlan, 'tr');
+    const trBreakfastNames = getPlanStrings('tr').meals.omnivore.breakfast.map((m) => m.name);
+    expect(trBreakfastNames).toContain(translated.mealPlan[0].meals.breakfast.name);
   });
 });
 

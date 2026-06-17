@@ -1,4 +1,4 @@
-export * from './generateSmartPlan.js';
+export { generateSmartPlan, getMealOptions, translateMealPlan, recommendCalorieAdjustment, applyCalorieAdjustment, blendRecoveryScore, generateCoachNarrative } from './generateSmartPlan.js';
 export * from './planStorage.js';
 export * from './progressStorage.js';
 export { default as translations } from './translations.js';

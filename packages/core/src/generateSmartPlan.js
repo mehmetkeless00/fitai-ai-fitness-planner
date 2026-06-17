@@ -36,15 +36,17 @@ export function generateSmartPlan(userProfile) {
   const riskFlags = generateRiskFlags(frequency, dailyCalories, tdee, age, fitnessGoal);
   const groceryList = generateGroceryList(mealPlan);
 
-  const advice = generatePersonalizedAdvice(fitnessGoal, experience, age, gender, lang);
+  const { text: advice, _adviceIdx } = generatePersonalizedAdvice(fitnessGoal, experience, age, gender, lang);
 
   return {
+    lang,
     dailyCalories,
     macros,
     hydration,
     workoutPlan,
     mealPlan,
     advice,
+    _adviceIdx,
     recoveryScore,
     dailyHabitTips,
     riskFlags,
@@ -1366,6 +1368,8 @@ function buildMeal(timeOfDay, selectedMeal, dailyCalories, isWorkoutDay, calorie
   const mealCalories = Math.round(dailyCalories * caloriePercent);
   const macroSplit = getMacroSplitForMeal(timeOfDay, isWorkoutDay);
 
+  const _timingKey = getTimingKey(timeOfDay, isWorkoutDay);
+
   if (!selectedMeal) {
     const fallback = getPlanStrings(lang).fallbackMeal;
     return {
@@ -1378,6 +1382,7 @@ function buildMeal(timeOfDay, selectedMeal, dailyCalories, isWorkoutDay, calorie
         fat: Math.round((mealCalories * macroSplit.fat) / 9),
       },
       timing: getTiming(timeOfDay, isWorkoutDay, lang),
+      _timingKey,
       prepTime: '',
       difficulty: 'Easy',
       alternatives: [],
@@ -1387,6 +1392,8 @@ function buildMeal(timeOfDay, selectedMeal, dailyCalories, isWorkoutDay, calorie
   return {
     name: selectedMeal.name,
     description: selectedMeal.description,
+    _srcIdx: selectedMeal._srcIdx,
+    _timingKey,
     calories: mealCalories,
     macros: {
       protein: Math.round((mealCalories * macroSplit.protein) / 4),
@@ -1407,31 +1414,35 @@ function getMacroSplitForMeal(timeOfDay, isWorkoutDay) {
   return { protein: 0.4, carbs: 0.4, fat: 0.2 };
 }
 
+function getTimingKey(timeOfDay, isWorkoutDay) {
+  if (timeOfDay === 'snack') return isWorkoutDay ? 'snackWorkout' : 'snackRest';
+  return timeOfDay; // 'breakfast' | 'lunch' | 'dinner' are direct keys in timing object
+}
+
 function getTiming(timeOfDay, isWorkoutDay, lang = 'en') {
   const t = getPlanStrings(lang).timing;
-  const timings = {
-    breakfast: t.breakfast,
-    lunch: t.lunch,
-    dinner: t.dinner,
-    snack: isWorkoutDay ? t.snackWorkout : t.snackRest,
-  };
-  return timings[timeOfDay] || t.asNeeded;
+  const key = getTimingKey(timeOfDay, isWorkoutDay);
+  return t[key] || t.asNeeded;
 }
 
 // Exported for the meal-swap UI so client-side rerolls honor identical allergy rules.
+// Each returned meal carries `_srcIdx` — its position in the full (pre-filter) array — so
+// callers can later look up the same meal in a different language via translateMealPlan.
 export function getMealOptions(preference, allergies, lang = 'en') {
   const strings = getPlanStrings(lang);
   const allMeals = strings.meals;
   const mealBase = allMeals[preference] || allMeals['omnivore'];
 
   const filterAllergies = (meals) => {
-    return meals.filter((meal) => {
-      const allergenList = allergies.toLowerCase().split(',').map((a) => a.trim());
-      return !allergenList.some(
-        (allergen) =>
-          allergen && (meal.name.toLowerCase().includes(allergen) || meal.description.toLowerCase().includes(allergen))
-      );
-    });
+    return meals
+      .map((meal, idx) => ({ ...meal, _srcIdx: idx }))
+      .filter((meal) => {
+        const allergenList = allergies.toLowerCase().split(',').map((a) => a.trim());
+        return !allergenList.some(
+          (allergen) =>
+            allergen && (meal.name.toLowerCase().includes(allergen) || meal.description.toLowerCase().includes(allergen))
+        );
+      });
   };
 
   return {
@@ -1439,6 +1450,65 @@ export function getMealOptions(preference, allergies, lang = 'en') {
     lunch: filterAllergies(mealBase.lunch),
     dinner: filterAllergies(mealBase.dinner),
     snack: filterAllergies(mealBase.snack),
+  };
+}
+
+/**
+ * Re-renders a stored plan's meal content in a different language without
+ * touching any nutrition calculations. Uses `_srcIdx` stored on each meal
+ * to look up the positionally-equivalent meal in the target language's array.
+ * Falls back to the original meal data when `_srcIdx` is absent (legacy plans)
+ * or the target array doesn't have an entry at that position.
+ * Also regenerates the grocery list from the translated descriptions.
+ */
+export function translateMealPlan(plan, targetLang) {
+  if (!plan) return plan;
+  // Default to 'en' for legacy plans that pre-date the lang field.
+  const planLang = plan.lang || plan._metadata?.lang || 'en';
+  if (planLang === targetLang) return plan;
+
+  const pref = plan.dietaryPreference || plan._metadata?.dietaryPreference || 'omnivore';
+  const strings = getPlanStrings(targetLang);
+  const mealBase = strings.meals[pref] || strings.meals['omnivore'];
+
+  const translatedMealPlan = (plan.mealPlan || []).map((day) => ({
+    ...day,
+    meals: Object.fromEntries(
+      Object.entries(day.meals).map(([slot, meal]) => {
+        const idx = meal._srcIdx;
+        const alt = typeof idx === 'number' ? mealBase[slot]?.[idx] : null;
+        if (!alt) return [slot, meal];
+        return [
+          slot,
+          {
+            ...meal,
+            name: alt.name,
+            description: alt.description,
+            prepTime: alt.prepTime || meal.prepTime,
+            alternatives: alt.alternatives || meal.alternatives,
+            timing: strings.timing[meal._timingKey] || meal.timing,
+          },
+        ];
+      })
+    ),
+  }));
+
+  // Re-look up advice in the target language using the stored index.
+  let advice = plan.advice;
+  if (typeof plan._adviceIdx === 'number') {
+    const goalKey = plan.fitnessGoal || 'general-fitness';
+    const adviceList = strings.advice[goalKey] || strings.advice['general-fitness'];
+    if (adviceList && plan._adviceIdx < adviceList.length) {
+      advice = adviceList[plan._adviceIdx];
+    }
+  }
+
+  return {
+    ...plan,
+    lang: targetLang,
+    advice,
+    mealPlan: translatedMealPlan,
+    groceryList: generateGroceryList(translatedMealPlan),
   };
 }
 
@@ -1602,7 +1672,8 @@ function generateHydrationRecommendation(weight, age, frequency) {
 function generatePersonalizedAdvice(goal, experience, age, gender, lang = 'en') {
   const advicesByGoal = getPlanStrings(lang).advice;
   const adviceList = advicesByGoal[goal] || advicesByGoal['general-fitness'];
-  return adviceList[Math.floor(Math.random() * adviceList.length)];
+  const _adviceIdx = Math.floor(Math.random() * adviceList.length);
+  return { text: adviceList[_adviceIdx], _adviceIdx };
 }
 
 // ============================================

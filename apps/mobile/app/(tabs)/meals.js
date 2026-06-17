@@ -5,6 +5,7 @@ import { useFocusEffect } from 'expo-router';
 import MealRow from '../../components/features/MealRow';
 import { usePlan } from '../../hooks/usePlan';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { translateMealPlan } from '@fitflow/core';
 
 export default function MealsTab() {
   const { plan, refreshPlan } = usePlan();
@@ -25,7 +26,7 @@ export default function MealsTab() {
     );
   }
 
-  const mealPlan = plan.data?.mealPlan || [];
+  const mealPlan = (translateMealPlan(plan.data, lang) || plan.data)?.mealPlan || [];
   const shortDays = t.days?.short || {};
 
   // Translate the day name; fallback to first 3 chars of whatever is stored
