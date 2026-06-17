@@ -9,6 +9,7 @@ import { formatDate } from '../../utils/formatDate';
 import Toggle from '../../components/ui/Toggle';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import StepStrip from '../../components/ui/StepStrip';
 
 export default function Step3() {
   const router = useRouter();
@@ -81,11 +82,11 @@ export default function Step3() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+    <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
       {/* Full-screen generating overlay */}
       <Modal visible={loading} transparent animationType="fade">
         <View className="flex-1 bg-white dark:bg-slate-900 items-center justify-center px-8 gap-6">
-          <ActivityIndicator size="large" color="#0ea5e9" />
+          <ActivityIndicator size="large" color="#14C06A" />
           <Text className="text-lg font-semibold text-slate-900 dark:text-white text-center">
             {c.generating}
           </Text>
@@ -96,6 +97,7 @@ export default function Step3() {
       </Modal>
 
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-8 gap-6">
+        <StepStrip current={3} total={3} />
         <View>
           <Text className="text-2xl font-bold text-slate-900 dark:text-white">{c.step3Title}</Text>
           <Text className="text-sm text-slate-400 mt-1">{c.step3Progress}</Text>

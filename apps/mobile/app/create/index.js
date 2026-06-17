@@ -7,6 +7,7 @@ import { useCreatePlan } from '../../contexts/createPlanContext';
 import Input from '../../components/ui/Input';
 import Toggle from '../../components/ui/Toggle';
 import Button from '../../components/ui/Button';
+import StepStrip from '../../components/ui/StepStrip';
 
 export default function Step1() {
   const router = useRouter();
@@ -44,8 +45,9 @@ export default function Step1() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+    <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-8 gap-6">
+        <StepStrip current={1} total={3} />
         <View>
           <Text className="text-2xl font-bold text-slate-900 dark:text-white">{c.step1Title}</Text>
           <Text className="text-sm text-slate-400 mt-1">{c.step1Progress}</Text>

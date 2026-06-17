@@ -6,7 +6,6 @@ import { track } from '@vercel/analytics';
 import Navigation from '@/components/layout/Navigation';
 import Container from '@/components/layout/Container';
 import PageHeader from '@/components/layout/PageHeader';
-import Card from '@/components/ui/Card';
 import FormStepper from '@/components/features/form/FormStepper';
 import PersonalInfoForm from '@/components/features/form/PersonalInfoForm';
 import GoalsForm from '@/components/features/form/GoalsForm';
@@ -93,13 +92,13 @@ export default function CreatePlan() {
             </div>
           )}
 
-          <Card className="max-w-2xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <FormStepper
               steps={steps}
               onComplete={handleGeneratePlan}
               isLoading={isGenerating}
             />
-          </Card>
+          </div>
         </Container>
       </main>
     </>
