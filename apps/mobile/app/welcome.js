@@ -12,8 +12,27 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-slate-900">
       <View className="flex-1 items-center justify-center px-8 gap-6">
-        <View className="w-20 h-20 rounded-2xl bg-accent items-center justify-center">
-          <Text className="text-[#062815] text-4xl font-bold">F</Text>
+        {/* Brand mark: dark navy box with blue + green wave swooshes and leaf */}
+        <View className="w-20 h-20 rounded-2xl bg-[#091220] items-center justify-center overflow-hidden">
+          {/* Blue wave */}
+          <View style={{
+            position: 'absolute', bottom: 32, left: -8, right: -8,
+            height: 26, borderRadius: 13, backgroundColor: '#1ED8FF',
+            transform: [{ rotate: '-10deg' }], opacity: 0.88,
+          }} />
+          {/* Green wave */}
+          <View style={{
+            position: 'absolute', bottom: 10, left: -8, right: -8,
+            height: 18, borderRadius: 9, backgroundColor: '#14C06A',
+            transform: [{ rotate: '-10deg' }], opacity: 0.88,
+          }} />
+          {/* Leaf teardrop */}
+          <View style={{
+            position: 'absolute', top: 10, right: 16,
+            width: 11, height: 17, borderRadius: 7,
+            backgroundColor: '#22E272',
+            transform: [{ rotate: '-15deg' }],
+          }} />
         </View>
 
         <View className="items-center gap-2">

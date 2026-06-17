@@ -26,9 +26,16 @@ function NavLink({ href, children }) {
 
 function LogoIcon() {
   return (
-    <div className="w-7 h-7 rounded-[8px] bg-accent flex items-center justify-center flex-shrink-0">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#062815" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6.5 6.5l11 11M4 9l-2 2 2 2M9 4l2-2 2 2M20 15l2-2-2-2M15 20l-2 2-2-2M8 8l8 8"/>
+    <div className="w-7 h-7 rounded-[8px] bg-ink-900 flex items-center justify-center flex-shrink-0 overflow-hidden">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        {/* Blue swoosh */}
+        <path d="M-1,14 C3,9 9,7 17,8 S23,10 27,10"
+              stroke="#1ED8FF" strokeWidth="5" strokeLinecap="round"/>
+        {/* Green swoosh */}
+        <path d="M-1,19 C3,14 9,12 17,13 S23,15 27,15"
+              stroke="#22E272" strokeWidth="3.5" strokeLinecap="round"/>
+        {/* Leaf teardrop */}
+        <ellipse cx="17" cy="5" rx="2.2" ry="3.5" fill="#22E272" transform="rotate(-18 17 5)"/>
       </svg>
     </div>
   );

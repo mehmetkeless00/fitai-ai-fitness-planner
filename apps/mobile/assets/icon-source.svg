@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  FitFlow App Store Icon — Source SVG
+  Export at 1024×1024 for App Store, 512×512 for Google Play.
+  viewBox is 200×200; scale uniformly when exporting.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0E1E34"/>
+      <stop offset="1" stop-color="#070F1C"/>
+    </linearGradient>
+    <linearGradient id="bl" x1="0" y1="0" x2="200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1ED8FF"/>
+      <stop offset="1" stop-color="#1255C4"/>
+    </linearGradient>
+    <linearGradient id="gr" x1="0" y1="0" x2="200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22E272"/>
+      <stop offset="1" stop-color="#0A9444"/>
+    </linearGradient>
+    <clipPath id="bound">
+      <rect width="200" height="200" rx="44"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="200" height="200" rx="44" fill="url(#bg)"/>
+
+  <g clip-path="url(#bound)">
+
+    <!-- Blue wave band (upper, larger) -->
+    <path d="M-18,140 C22,98 84,72 155,82 C180,86 197,96 222,88"
+          stroke="url(#bl)" stroke-width="54" stroke-linecap="round" fill="none"/>
+
+    <!-- Green wave band (lower, smaller) -->
+    <path d="M-18,176 C20,136 80,108 150,118 C174,123 192,134 222,124"
+          stroke="url(#gr)" stroke-width="37" stroke-linecap="round" fill="none"/>
+
+    <!-- Green leaf teardrop (upper-right corner) -->
+    <ellipse cx="150" cy="40" rx="10" ry="16" fill="#22E272" transform="rotate(-18 150 40)"/>
+    <ellipse cx="152" cy="35" rx="5" ry="8" fill="#64F8A8" opacity="0.45" transform="rotate(-18 152 35)"/>
+
+    <!-- ─── Running figure (dark knockout on wave bands) ─── -->
+
+    <!-- Head -->
+    <circle cx="118" cy="60" r="13" fill="#091220"/>
+    <!-- Faint outline keeps head readable against dark background -->
+    <circle cx="118" cy="60" r="13" fill="none" stroke="rgba(160,210,255,0.15)" stroke-width="2"/>
+
+    <!-- Torso (forward lean, neck to hips) -->
+    <path d="M118,73 C114,86 106,100 95,115"
+          stroke="#091220" stroke-width="13" stroke-linecap="round" fill="none"/>
+
+    <!-- Right arm (swinging forward and up) -->
+    <path d="M113,82 C123,72 137,63 151,59"
+          stroke="#091220" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+    <!-- Left arm (swinging back and down) -->
+    <path d="M113,82 C102,92 91,104 85,117"
+          stroke="#091220" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+    <!-- Right leg (front stride — extending forward) -->
+    <path d="M95,115 C107,129 120,145 129,159"
+          stroke="#091220" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <path d="M129,159 C134,169 131,177 120,175"
+          stroke="#091220" stroke-width="9" stroke-linecap="round" fill="none"/>
+
+    <!-- Left leg (push-off — extending back) -->
+    <path d="M95,115 C82,129 69,143 61,157"
+          stroke="#091220" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <path d="M61,157 C55,167 48,169 45,162"
+          stroke="#091220" stroke-width="9" stroke-linecap="round" fill="none"/>
+
+  </g>
+</svg>
