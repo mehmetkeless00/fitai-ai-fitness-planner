@@ -30,7 +30,7 @@ export default function WorkoutPlan({ plan, onPlanChange }) {
   };
 
   if (!plan || !plan.workoutPlan) {
-    return <div className="text-center text-ink-500 py-8">{s.loading}</div>;
+    return <div className="text-center text-ink-500 dark:text-slate-400 py-8">{s.loading}</div>;
   }
 
   const toggleAlternatives = (dayIdx, exIdx) => {
@@ -53,23 +53,23 @@ export default function WorkoutPlan({ plan, onPlanChange }) {
             className="w-full flex justify-between items-start text-left bg-transparent rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
           >
             <div className="flex-1">
-              <span className="text-base font-bold text-ink-900 mb-2 flex items-center gap-2 flex-wrap">
+              <span className="text-base font-bold text-ink-900 dark:text-white mb-2 flex items-center gap-2 flex-wrap">
                 {m.days[dayPlan.day] || dayPlan.day}
                 {dayPlan.focus && (
-                  <span className="text-xs bg-accent-wash text-accent-600 border border-accent/20 px-2 py-0.5 rounded-full font-semibold">
+                  <span className="text-xs bg-accent-wash dark:bg-accent/10 text-accent-600 border border-accent/20 px-2 py-0.5 rounded-full font-semibold">
                     {m.workoutFocus[dayPlan.focus] || dayPlan.focus}
                   </span>
                 )}
               </span>
               {dayPlan.totalEstimatedTime && (
-                <span className="block text-xs text-ink-500">
+                <span className="block text-xs text-ink-500 dark:text-slate-400">
                   {s.estMins} {dayPlan.totalEstimatedTime} {s.mins} · {dayPlan.exercises?.length || 0} {s.exercises}
                 </span>
               )}
             </div>
             <span
               className={`text-sm transition-transform duration-300 ml-3 flex-shrink-0 ${
-                expandedDay === dayIdx ? 'rotate-180 text-accent' : 'text-ink-300'
+                expandedDay === dayIdx ? 'rotate-180 text-accent' : 'text-ink-300 dark:text-slate-500'
               }`}
               aria-hidden="true"
             >
@@ -78,15 +78,15 @@ export default function WorkoutPlan({ plan, onPlanChange }) {
           </button>
 
           {expandedDay === dayIdx && (
-            <div id={`workout-day-${dayIdx}`} className="space-y-4 mt-4 pt-4 border-t border-line">
+            <div id={`workout-day-${dayIdx}`} className="space-y-4 mt-4 pt-4 border-t border-line dark:border-dark-border">
               {dayPlan.warmupExercises && dayPlan.warmupExercises.length > 0 && (
-                <div className="bg-canvas border border-line rounded-[12px] p-3">
-                  <h4 className="text-sm font-semibold text-ink-700 mb-2">
+                <div className="bg-canvas dark:bg-slate-700/40 border border-line dark:border-slate-600 rounded-[12px] p-3">
+                  <h4 className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-2">
                     {s.warmup} ({dayPlan.warmupMinutes || 5} {s.mins})
                   </h4>
                   <ul className="space-y-1">
                     {dayPlan.warmupExercises.map((ex, idx) => (
-                      <li key={idx} className="text-sm text-ink-700 flex items-start gap-2">
+                      <li key={idx} className="text-sm text-ink-700 dark:text-slate-200 flex items-start gap-2">
                         <span className="text-accent mt-0.5 flex-shrink-0">•</span>
                         <span>{ex}</span>
                       </li>
@@ -100,21 +100,21 @@ export default function WorkoutPlan({ plan, onPlanChange }) {
                   dayPlan.exercises.map((exercise, exIdx) => (
                     <div
                       key={exIdx}
-                      className="bg-canvas border border-line rounded-[12px] p-3"
+                      className="bg-canvas dark:bg-slate-700/40 border border-line dark:border-slate-600 rounded-[12px] p-3"
                     >
                       <div className="flex flex-col lg:flex-row gap-4">
                         <div className="flex-1 space-y-2">
                           <div className="flex justify-between items-start gap-2">
                             <div className="flex-1">
-                              <p className="font-semibold text-ink-900 text-sm">{exercise.name}</p>
+                              <p className="font-semibold text-ink-900 dark:text-white text-sm">{exercise.name}</p>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {exercise.muscleGroups && exercise.muscleGroups.length > 0 && (
-                                  <span className="text-xs bg-accent-wash text-accent-600 border border-accent/20 px-2 py-0.5 rounded-full">
+                                  <span className="text-xs bg-accent-wash dark:bg-accent/10 text-accent-600 border border-accent/20 px-2 py-0.5 rounded-full">
                                     {exercise.muscleGroups.join(', ')}
                                   </span>
                                 )}
                                 {exercise.exerciseType && (
-                                  <span className="text-xs bg-[#FEF3E2] text-[#9A6000] border border-[#F5A524]/20 px-2 py-0.5 rounded-full">
+                                  <span className="text-xs bg-[#FEF3E2] dark:bg-amber-900/30 text-[#9A6000] dark:text-amber-300 border border-[#F5A524]/20 px-2 py-0.5 rounded-full">
                                     {m.exerciseType[exercise.exerciseType] || exercise.exerciseType}
                                   </span>
                                 )}
@@ -122,12 +122,12 @@ export default function WorkoutPlan({ plan, onPlanChange }) {
                                   <span
                                     className={`text-xs px-2 py-0.5 rounded-full border ${
                                       exercise.intensity === 'Very High'
-                                        ? 'bg-[#FDECEA] text-semantic-danger border-semantic-danger/20'
+                                        ? 'bg-[#FDECEA] dark:bg-red-900/30 text-semantic-danger border-semantic-danger/20'
                                         : exercise.intensity === 'High'
-                                          ? 'bg-[#FEF3E2] text-[#9A6000] border-[#F5A524]/20'
+                                          ? 'bg-[#FEF3E2] dark:bg-amber-900/30 text-[#9A6000] dark:text-amber-300 border-[#F5A524]/20'
                                           : exercise.intensity === 'Moderate'
-                                            ? 'bg-[#FEF3E2] text-[#9A6000] border-[#F5A524]/20'
-                                            : 'bg-accent-wash text-accent-600 border-accent/20'
+                                            ? 'bg-[#FEF3E2] dark:bg-amber-900/30 text-[#9A6000] dark:text-amber-300 border-[#F5A524]/20'
+                                            : 'bg-accent-wash dark:bg-accent/10 text-accent-600 border-accent/20'
                                     }`}
                                   >
                                     {m.intensity[exercise.intensity] || exercise.intensity}
@@ -138,22 +138,22 @@ export default function WorkoutPlan({ plan, onPlanChange }) {
                           </div>
 
                           <div className="text-sm space-y-1">
-                            <p className="text-ink-700">
-                              <span className="font-semibold text-ink-900">{exercise.sets}×{exercise.reps}</span>
+                            <p className="text-ink-700 dark:text-slate-200">
+                              <span className="font-semibold text-ink-900 dark:text-white">{exercise.sets}×{exercise.reps}</span>
                               {exercise.restTime && (
-                                <> · {s.rest} <span className="font-medium text-ink-700">{exercise.restTime}s</span></>
+                                <> · {s.rest} <span className="font-medium text-ink-700 dark:text-slate-200">{exercise.restTime}s</span></>
                               )}
                               {exercise.rpe && (
-                                <> · <span className="font-medium text-ink-700">{exercise.rpe}</span></>
+                                <> · <span className="font-medium text-ink-700 dark:text-slate-200">{exercise.rpe}</span></>
                               )}
                             </p>
 
                             {exercise.estimatedDuration && (
-                              <p className="text-xs text-ink-500">⏱ {exercise.estimatedDuration} {s.mins}</p>
+                              <p className="text-xs text-ink-500 dark:text-slate-400">⏱ {exercise.estimatedDuration} {s.mins}</p>
                             )}
 
                             {exercise.warmupSets && exercise.warmupSets.length > 0 && (
-                              <p className="text-xs text-ink-500">
+                              <p className="text-xs text-ink-500 dark:text-slate-400">
                                 {s.warmupLabel} {exercise.warmupSets.map((w) => `${w.reps}×${w.weight}`).join(', ')}
                               </p>
                             )}
@@ -184,7 +184,7 @@ export default function WorkoutPlan({ plan, onPlanChange }) {
                                 {expandedAlternatives[`${dayIdx}-${exIdx}`] && (
                                   <ul className="w-full mt-1 space-y-1 ml-2">
                                     {exercise.alternatives.map((alt, altIdx) => (
-                                      <li key={altIdx} className="text-xs text-ink-500 flex items-start gap-2">
+                                      <li key={altIdx} className="text-xs text-ink-500 dark:text-slate-400 flex items-start gap-2">
                                         <span className="text-accent-600 flex-shrink-0">•</span>
                                         <span>{alt}</span>
                                       </li>
@@ -207,16 +207,16 @@ export default function WorkoutPlan({ plan, onPlanChange }) {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-ink-500">{s.restDay}</p>
+                  <p className="text-sm text-ink-500 dark:text-slate-400">{s.restDay}</p>
                 )}
               </div>
 
               {dayPlan.cooldownExercises && dayPlan.cooldownExercises.length > 0 && (
-                <div className="bg-accent-wash border border-accent/20 rounded-[12px] p-3">
+                <div className="bg-accent-wash dark:bg-accent/10 border border-accent/20 rounded-[12px] p-3">
                   <h4 className="text-sm font-semibold text-accent-600 mb-2">{s.cooldown}</h4>
                   <ul className="space-y-1">
                     {dayPlan.cooldownExercises.map((ex, idx) => (
-                      <li key={idx} className="text-sm text-ink-700 flex items-start gap-2">
+                      <li key={idx} className="text-sm text-ink-700 dark:text-slate-200 flex items-start gap-2">
                         <span className="text-accent mt-0.5 flex-shrink-0">•</span>
                         <span>{ex.name} ({ex.duration} {s.mins})</span>
                       </li>
@@ -226,16 +226,16 @@ export default function WorkoutPlan({ plan, onPlanChange }) {
               )}
 
               {dayPlan.recoveryTips && (
-                <div className="bg-canvas border border-line rounded-[12px] p-3">
-                  <h4 className="text-sm font-semibold text-ink-700 mb-1">{s.recoveryTipsLabel}</h4>
-                  <p className="text-sm text-ink-700">{dayPlan.recoveryTips}</p>
+                <div className="bg-canvas dark:bg-slate-700/40 border border-line dark:border-slate-600 rounded-[12px] p-3">
+                  <h4 className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-1">{s.recoveryTipsLabel}</h4>
+                  <p className="text-sm text-ink-700 dark:text-slate-200">{dayPlan.recoveryTips}</p>
                 </div>
               )}
 
               {dayPlan.progressionGuidance && (
-                <div className="bg-canvas border border-line rounded-[12px] p-3">
-                  <h4 className="text-sm font-semibold text-ink-700 mb-1">{s.progressionLabel}</h4>
-                  <p className="text-sm text-ink-700">{dayPlan.progressionGuidance}</p>
+                <div className="bg-canvas dark:bg-slate-700/40 border border-line dark:border-slate-600 rounded-[12px] p-3">
+                  <h4 className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-1">{s.progressionLabel}</h4>
+                  <p className="text-sm text-ink-700 dark:text-slate-200">{dayPlan.progressionGuidance}</p>
                 </div>
               )}
             </div>

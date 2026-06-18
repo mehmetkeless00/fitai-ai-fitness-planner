@@ -125,8 +125,8 @@ export default function Result() {
           />
 
           {/* Disclaimer */}
-          <div className="max-w-2xl mx-auto mb-8 p-4 bg-[#FEF3E2] border border-[#F5A524]/30 rounded-[14px]">
-            <p className="text-[#9A6000] text-sm">
+          <div className="max-w-2xl mx-auto mb-8 p-4 bg-[#FEF3E2] dark:bg-amber-900/20 border border-[#F5A524]/30 rounded-[14px]">
+            <p className="text-[#9A6000] dark:text-amber-300 text-sm">
               <span className="font-semibold">{r.disclaimerLabel}:</span> {r.disclaimer}
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function Result() {
               role="tablist"
               ref={tabListRef}
               onKeyDown={handleTabKeyDown}
-              className="inline-flex gap-1 p-1 bg-canvas border border-line rounded-[14px]"
+              className="inline-flex gap-1 p-1 bg-canvas dark:bg-slate-800 border border-line dark:border-dark-border rounded-[14px]"
             >
               {tabs.map(({ key, label }) => (
                 <button
@@ -148,8 +148,8 @@ export default function Result() {
                   onClick={() => setActiveTab(key)}
                   className={`px-3 sm:px-5 py-2 rounded-[10px] font-medium transition-all whitespace-nowrap text-sm sm:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1
                     ${activeTab === key
-                      ? 'bg-ink-900 text-white shadow-sm'
-                      : 'text-ink-500 hover:text-ink-900 hover:bg-paper'
+                      ? 'bg-ink-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
+                      : 'text-ink-500 dark:text-slate-400 hover:text-ink-900 dark:hover:text-white hover:bg-paper dark:hover:bg-slate-700'
                     }`}
                 >
                   {label}
@@ -162,7 +162,7 @@ export default function Result() {
             <div className="space-y-6">
               {/* Nutrition heading + EnergyRing hero */}
               <div>
-                <h2 className="text-xl font-bold text-ink-900 mb-4">{r.nutritionHeading}</h2>
+                <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">{r.nutritionHeading}</h2>
                 <NutritionSummary plan={displayPlan} />
               </div>
 
@@ -171,19 +171,19 @@ export default function Result() {
                 <Card>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 mb-1">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 dark:text-slate-400 mb-1">
                         {r.tabs.workout}
                       </p>
-                      <h3 className="text-base font-bold text-ink-900">
+                      <h3 className="text-base font-bold text-ink-900 dark:text-white">
                         {m.days[todayWorkout.day] || todayWorkout.day}
                         {todayWorkout.focus && (
-                          <span className="ml-2 text-sm font-normal text-ink-500">
+                          <span className="ml-2 text-sm font-normal text-ink-500 dark:text-slate-400">
                             · {m.workoutFocus[todayWorkout.focus] || todayWorkout.focus}
                           </span>
                         )}
                       </h3>
                       {todayWorkout.totalEstimatedTime && (
-                        <p className="text-xs text-ink-500 mt-0.5">
+                        <p className="text-xs text-ink-500 dark:text-slate-400 mt-0.5">
                           {todayWorkout.totalEstimatedTime} {wt.mins} · {todayWorkout.exercises?.length} {wt.exercises}
                         </p>
                       )}
@@ -200,48 +200,48 @@ export default function Result() {
 
               {/* Profile card */}
               <div>
-                <h2 className="text-xl font-bold text-ink-900 mb-4">{r.profileHeading}</h2>
+                <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">{r.profileHeading}</h2>
                 <Card>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 mb-1">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 dark:text-slate-400 mb-1">
                         {r.profile.age}
                       </p>
-                      <p className="text-xl font-bold text-ink-900 tabular-nums">{planData.age}</p>
+                      <p className="text-xl font-bold text-ink-900 dark:text-white tabular-nums">{planData.age}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 mb-1">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 dark:text-slate-400 mb-1">
                         {r.profile.height}
                       </p>
-                      <p className="text-xl font-bold text-ink-900 tabular-nums">
+                      <p className="text-xl font-bold text-ink-900 dark:text-white tabular-nums">
                         {planData.height}
-                        <span className="text-sm font-normal text-ink-500">cm</span>
+                        <span className="text-sm font-normal text-ink-500 dark:text-slate-400">cm</span>
                       </p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 mb-1">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 dark:text-slate-400 mb-1">
                         {r.profile.weight}
                       </p>
-                      <p className="text-xl font-bold text-ink-900 tabular-nums">
+                      <p className="text-xl font-bold text-ink-900 dark:text-white tabular-nums">
                         {planData.weight}
-                        <span className="text-sm font-normal text-ink-500">kg</span>
+                        <span className="text-sm font-normal text-ink-500 dark:text-slate-400">kg</span>
                       </p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 mb-1">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 dark:text-slate-400 mb-1">
                         {r.profile.goal}
                       </p>
-                      <p className="text-base font-bold text-ink-900 capitalize">
+                      <p className="text-base font-bold text-ink-900 dark:text-white capitalize">
                         {getGoalLabel(planData.fitnessGoal)}
                       </p>
                     </div>
                   </div>
                   {planData.notes && (
-                    <div className="mt-4 pt-4 border-t border-line text-left">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 mb-1">
+                    <div className="mt-4 pt-4 border-t border-line dark:border-dark-border text-left">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 dark:text-slate-400 mb-1">
                         {r.profile.notes}
                       </p>
-                      <p className="text-sm text-ink-700">{planData.notes}</p>
+                      <p className="text-sm text-ink-700 dark:text-slate-200">{planData.notes}</p>
                     </div>
                   )}
                 </Card>
@@ -251,28 +251,28 @@ export default function Result() {
 
           {activeTab === 'workout' && (
             <div>
-              <h2 className="text-xl font-bold text-ink-900 mb-4">{r.workoutHeading}</h2>
+              <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">{r.workoutHeading}</h2>
               <WorkoutPlan plan={planData} onPlanChange={handlePlanChange} />
             </div>
           )}
 
           {activeTab === 'meals' && (
             <div>
-              <h2 className="text-xl font-bold text-ink-900 mb-4">{r.mealHeading}</h2>
+              <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">{r.mealHeading}</h2>
               <MealPlan plan={displayPlan} onPlanChange={handlePlanChange} />
             </div>
           )}
 
           {activeTab === 'progress' && (
             <div className="max-w-3xl mx-auto">
-              <h2 className="text-xl font-bold text-ink-900 mb-4">{t.progress.heading}</h2>
+              <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">{t.progress.heading}</h2>
               <ProgressTracker plan={planData} onPlanChange={handlePlanChange} />
             </div>
           )}
 
           {activeTab === 'advice' && (
             <div>
-              <h2 className="text-xl font-bold text-ink-900 mb-4">{r.coachHeading}</h2>
+              <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">{r.coachHeading}</h2>
               <Card>
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
                   <div className="flex-shrink-0 w-12 h-12 rounded-[14px] bg-accent flex items-center justify-center text-2xl shadow-[0_4px_12px_-4px_rgba(20,192,106,0.5)]">
@@ -283,7 +283,7 @@ export default function Result() {
                       className="hidden md:block absolute -left-3 top-0 bottom-0 w-0.5 rounded-full bg-accent"
                       aria-hidden="true"
                     />
-                    <p className="text-base text-ink-700 leading-relaxed md:pl-3">
+                    <p className="text-base text-ink-700 dark:text-slate-200 leading-relaxed md:pl-3">
                       {displayPlan?.advice || r.defaultAdvice}
                     </p>
                   </blockquote>
@@ -295,7 +295,7 @@ export default function Result() {
           {pdfError && (
             <div
               role="alert"
-              className="max-w-xl mx-auto mt-8 p-3 bg-[#FDECEA] border border-semantic-danger/30 rounded-[14px] text-center"
+              className="max-w-xl mx-auto mt-8 p-3 bg-[#FDECEA] dark:bg-red-900/20 border border-semantic-danger/30 rounded-[14px] text-center"
             >
               <p className="text-sm text-semantic-danger">{r.pdfError}</p>
             </div>

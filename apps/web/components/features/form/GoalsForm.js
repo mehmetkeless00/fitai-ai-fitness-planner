@@ -50,7 +50,7 @@ export default function GoalsForm({ onNext, formData }) {
 
       <div>
         <p className="text-sm font-semibold text-ink-900 dark:text-white mb-1">{s.goalsLabel}</p>
-        {s.goalsDesc && <p className="text-xs text-ink-500 mb-3">{s.goalsDesc}</p>}
+        {s.goalsDesc && <p className="text-xs text-ink-500 dark:text-slate-400 mb-3">{s.goalsDesc}</p>}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2" role="radiogroup" aria-label={s.primaryGoal}>
           {s.goalOptions.map((opt) => (
             <ChoiceCard
@@ -68,7 +68,7 @@ export default function GoalsForm({ onNext, formData }) {
 
       <div>
         <p className="text-sm font-semibold text-ink-900 dark:text-white mb-1">{s.expLabel}</p>
-        {s.expDesc && <p className="text-xs text-ink-500 mb-3">{s.expDesc}</p>}
+        {s.expDesc && <p className="text-xs text-ink-500 dark:text-slate-400 mb-3">{s.expDesc}</p>}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2" role="radiogroup" aria-label={s.workoutExp}>
           {s.expOptions.map((opt) => (
             <ChoiceCard

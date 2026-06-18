@@ -22,7 +22,7 @@ export default function SmartCoach({ plan, checkins }) {
         <div className="w-8 h-8 rounded-[10px] bg-accent flex items-center justify-center text-base shadow-[0_2px_8px_-2px_rgba(20,192,106,0.4)]">
           🎯
         </div>
-        <h3 className="font-semibold text-ink-900 text-sm">Smart Coach</h3>
+        <h3 className="font-semibold text-ink-900 dark:text-white text-sm">Smart Coach</h3>
       </div>
       <ul className="space-y-3">
         {ROWS.map(({ key, icon }) => {
@@ -33,7 +33,7 @@ export default function SmartCoach({ plan, checkins }) {
               <span className="text-base leading-none mt-0.5 shrink-0" aria-hidden="true">
                 {icon}
               </span>
-              <span className="text-ink-700 leading-relaxed">{text}</span>
+              <span className="text-ink-700 dark:text-slate-200 leading-relaxed">{text}</span>
             </li>
           );
         })}

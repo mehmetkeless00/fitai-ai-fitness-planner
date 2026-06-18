@@ -74,7 +74,7 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
       </div>
 
       {/* RIGHT WARM CANVAS */}
-      <div className="bg-canvas px-6 md:px-10 py-8">
+      <div className="bg-canvas dark:bg-dark-surface px-6 md:px-10 py-8">
 
         {/* Mobile-only: 3-segment strip */}
         <div className="flex gap-1.5 mb-6 md:hidden">
@@ -89,12 +89,12 @@ export default function FormStepper({ steps, onComplete, isLoading }) {
         {/* Desktop: overline + progress bar */}
         <div className="hidden md:block mb-8">
           <div className="flex justify-between mb-2">
-            <span className="text-[11.5px] font-semibold uppercase tracking-[0.12em] text-ink-500">
+            <span className="text-[11.5px] font-semibold uppercase tracking-[0.12em] text-ink-500 dark:text-slate-400">
               {t.createPlan.stepOf} {currentStep + 1} {t.createPlan.of} {steps.length}
             </span>
-            <span className="text-xs text-ink-300">{Math.round(stepProgress)}%</span>
+            <span className="text-xs text-ink-300 dark:text-slate-500">{Math.round(stepProgress)}%</span>
           </div>
-          <div className="h-1 bg-line rounded-full overflow-hidden">
+          <div className="h-1 bg-line dark:bg-slate-600 rounded-full overflow-hidden">
             <div
               className="h-full bg-accent rounded-full transition-all duration-700 ease-out"
               style={{ width: `${stepProgress}%` }}

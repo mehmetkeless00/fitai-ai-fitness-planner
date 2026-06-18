@@ -20,8 +20,13 @@ export default function MealsTab() {
 
   if (!plan) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900 items-center justify-center">
-        <Text className="text-slate-500">{t.meals.noActivePlan}</Text>
+      <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900 items-center justify-center px-8">
+        <View className="items-center gap-3">
+          <Text style={{ fontSize: 40 }}>🥗</Text>
+          <Text className="text-base font-semibold text-ink-900 dark:text-white text-center">
+            {t.meals.noActivePlan}
+          </Text>
+        </View>
       </SafeAreaView>
     );
   }
@@ -38,9 +43,11 @@ export default function MealsTab() {
   const currentDay = mealPlan[dayIndex];
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+    <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
       <View className="px-4 pt-6 pb-2">
-        <Text className="text-xl font-bold text-slate-900 dark:text-white mb-3" accessibilityRole="header">{t.tabs.meals}</Text>
+        <Text className="text-xl font-bold text-ink-900 dark:text-white mb-3" accessibilityRole="header">
+          {t.tabs.meals}
+        </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="flex-row gap-2">
             {dayNames.map((name, i) => (
@@ -49,14 +56,14 @@ export default function MealsTab() {
                 onPress={() => setDayIndex(i)}
                 className={`px-3 py-1.5 rounded-full border ${
                   i === dayIndex
-                    ? 'bg-sky-500 border-sky-500'
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600'
+                    ? 'bg-accent border-accent'
+                    : 'bg-paper dark:bg-slate-800 border-line dark:border-slate-600'
                 }`}
                 accessibilityRole="tab"
                 accessibilityState={{ selected: i === dayIndex }}
                 accessibilityLabel={mealPlan[i]?.day || name}
               >
-                <Text className={`text-xs font-medium ${i === dayIndex ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`}>
+                <Text className={`text-xs font-medium ${i === dayIndex ? 'text-[#062815]' : 'text-ink-500 dark:text-slate-300'}`}>
                   {name}
                 </Text>
               </Pressable>
@@ -71,7 +78,7 @@ export default function MealsTab() {
             <MealRow key={slot} slot={slot} meal={currentDay.meals?.[slot]} t={t} />
           ))
         ) : (
-          <Text className="text-slate-400 text-center mt-8">{t.meals.noMealData}</Text>
+          <Text className="text-ink-300 text-center mt-8">{t.meals.noMealData}</Text>
         )}
       </ScrollView>
     </SafeAreaView>

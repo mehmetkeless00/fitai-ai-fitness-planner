@@ -19,7 +19,7 @@ export default function CoachCard({ narrative }) {
         return (
           <View key={key} className="flex-row items-start gap-3">
             <Text style={{ fontSize: 18, lineHeight: 24 }}>{icon}</Text>
-            <Text className="flex-1 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            <Text className="flex-1 text-sm text-ink-700 dark:text-slate-300 leading-relaxed">
               {text}
             </Text>
           </View>

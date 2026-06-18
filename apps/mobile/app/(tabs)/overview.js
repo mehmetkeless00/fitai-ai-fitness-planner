@@ -16,8 +16,8 @@ function StatCard({ label, value, unit, color }) {
       <Text className={`text-2xl font-bold ${color}`} accessibilityLabel={`${label}: ${value} ${unit}`}>
         {value}
       </Text>
-      <Text className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{unit}</Text>
-      <Text className="text-sm text-slate-600 dark:text-slate-300 mt-1">{label}</Text>
+      <Text className="text-xs text-ink-300 dark:text-slate-400 mt-0.5">{unit}</Text>
+      <Text className="text-sm text-ink-500 dark:text-slate-300 mt-1">{label}</Text>
     </Card>
   );
 }
@@ -35,14 +35,14 @@ function MacroBar({ protein, carbs, fat, labels }) {
         className="flex-row rounded-full overflow-hidden h-3"
         accessibilityLabel={`${labels.protein} ${pPct}%, ${labels.carbs} ${cPct}%, ${labels.fat} ${fPct}%`}
       >
-        <View style={{ flex: pPct }} className="bg-emerald-500" />
-        <View style={{ flex: cPct }} className="bg-amber-400" />
-        <View style={{ flex: fPct }} className="bg-rose-400" />
+        <View style={{ flex: pPct }} className="bg-accent" />
+        <View style={{ flex: cPct }} className="bg-[#F5A524]" />
+        <View style={{ flex: fPct }} className="bg-[#7C8CFF]" />
       </View>
       <View className="flex-row justify-between mt-1.5">
-        <Text className="text-xs text-emerald-600 dark:text-emerald-400">{labels.protein} {pPct}%</Text>
-        <Text className="text-xs text-amber-600 dark:text-amber-400">{labels.carbs} {cPct}%</Text>
-        <Text className="text-xs text-rose-500 dark:text-rose-400">{labels.fat} {fPct}%</Text>
+        <Text className="text-xs text-accent">{labels.protein} {pPct}%</Text>
+        <Text className="text-xs text-[#F5A524]">{labels.carbs} {cPct}%</Text>
+        <Text className="text-xs text-[#7C8CFF]">{labels.fat} {fPct}%</Text>
       </View>
     </View>
   );
@@ -50,13 +50,13 @@ function MacroBar({ protein, carbs, fat, labels }) {
 
 function RecoveryCard({ score, t }) {
   const color =
-    score >= 75 ? 'text-emerald-600' : score >= 50 ? 'text-amber-600' : 'text-rose-600';
+    score >= 75 ? 'text-accent' : score >= 50 ? 'text-[#F5A524]' : 'text-semantic-danger';
   const barColor =
-    score >= 75 ? 'bg-emerald-500' : score >= 50 ? 'bg-amber-400' : 'bg-rose-400';
+    score >= 75 ? 'bg-accent' : score >= 50 ? 'bg-[#F5A524]' : 'bg-semantic-danger';
 
   return (
     <Card>
-      <Text className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+      <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-2">
         {t.recoveryTitle}
       </Text>
       <View className="flex-row items-center gap-3">
@@ -67,10 +67,10 @@ function RecoveryCard({ score, t }) {
           {score}
         </Text>
         <View className="flex-1">
-          <View className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+          <View className="h-2 bg-line dark:bg-slate-700 rounded-full overflow-hidden">
             <View className={`h-full rounded-full ${barColor}`} style={{ width: `${score}%` }} />
           </View>
-          <Text className="text-xs text-slate-400 mt-1">{t.recoveryDesc}</Text>
+          <Text className="text-xs text-ink-300 mt-1">{t.recoveryDesc}</Text>
         </View>
       </View>
     </Card>
@@ -103,8 +103,13 @@ export default function OverviewTab() {
 
   if (!plan) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900 items-center justify-center">
-        <Text className="text-slate-500">{o.noActivePlan}</Text>
+      <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900 items-center justify-center px-8">
+        <View className="items-center gap-3">
+          <Text style={{ fontSize: 40 }}>📊</Text>
+          <Text className="text-base font-semibold text-ink-900 dark:text-white text-center">
+            {o.noActivePlan}
+          </Text>
+        </View>
       </SafeAreaView>
     );
   }
@@ -134,50 +139,50 @@ export default function OverviewTab() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+    <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6 gap-4">
         {/* Plan header + share button */}
         <View className="flex-row items-start justify-between gap-3">
           <View className="flex-1">
             <Text
-              className="text-xl font-bold text-slate-900 dark:text-white"
+              className="text-xl font-bold text-ink-900 dark:text-white"
               numberOfLines={2}
               accessibilityRole="header"
             >
               {plan.name}
             </Text>
-            <Text className="text-xs text-slate-400 mt-0.5">
+            <Text className="text-xs text-ink-300 mt-0.5">
               {o.createdOn} {formatDate(plan.createdAt, lang)}
             </Text>
           </View>
           <Pressable
             onPress={handleShare}
             disabled={sharing}
-            className="bg-sky-500 active:bg-sky-600 px-3 py-2 rounded-xl items-center"
+            className="bg-accent active:bg-accent-600 px-3 py-2 rounded-[12px] items-center"
             accessibilityRole="button"
             accessibilityLabel={o.sharePlan}
           >
-            <Text className="text-white text-xs font-semibold">
+            <Text className="text-[#062815] text-xs font-semibold">
               {sharing ? '…' : '📤'}
             </Text>
-            <Text className="text-white text-xs mt-0.5">{o.sharePlan}</Text>
+            <Text className="text-[#062815] text-xs mt-0.5">{o.sharePlan}</Text>
           </Pressable>
         </View>
 
         {/* Calorie + macro stat cards */}
         <View className="flex-row gap-3">
-          <StatCard label={o.calories} value={data?.dailyCalories ?? '—'} unit={o.perDay} color="text-sky-600" />
-          <StatCard label={o.protein} value={macros?.protein?.grams ?? '—'} unit={o.grams} color="text-emerald-600" />
+          <StatCard label={o.calories} value={data?.dailyCalories ?? '—'} unit={o.perDay} color="text-[#FF6B5E]" />
+          <StatCard label={o.protein} value={macros?.protein?.grams ?? '—'} unit={o.grams} color="text-accent" />
         </View>
         <View className="flex-row gap-3">
-          <StatCard label={o.carbs} value={macros?.carbs?.grams ?? '—'} unit={o.grams} color="text-amber-600" />
-          <StatCard label={o.fat} value={macros?.fat?.grams ?? '—'} unit={o.grams} color="text-rose-600" />
+          <StatCard label={o.carbs} value={macros?.carbs?.grams ?? '—'} unit={o.grams} color="text-[#F5A524]" />
+          <StatCard label={o.fat} value={macros?.fat?.grams ?? '—'} unit={o.grams} color="text-[#7C8CFF]" />
         </View>
 
         {/* Macro percentage breakdown bar */}
         {(macros.protein || macros.carbs || macros.fat) && (
           <Card>
-            <Text className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-0">
+            <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-0">
               {o.macroBreakdown}
             </Text>
             <MacroBar
@@ -195,17 +200,17 @@ export default function OverviewTab() {
         {/* Hydration */}
         {data?.hydration && (
           <Card>
-            <Text className="text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            <Text className="text-sm font-medium text-ink-700 dark:text-slate-200 mb-1">
               {o.hydration}
             </Text>
-            <Text className="text-sm text-slate-500 dark:text-slate-400">
+            <Text className="text-sm text-ink-500 dark:text-slate-400">
               {formatHydration(data.hydration, planLang)}
             </Text>
           </Card>
         )}
 
         {disclaimer && (
-          <Text className="text-xs text-slate-400 italic text-center px-2">
+          <Text className="text-xs text-ink-300 italic text-center px-2">
             {disclaimer}
           </Text>
         )}

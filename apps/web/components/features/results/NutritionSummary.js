@@ -23,7 +23,7 @@ export default function NutritionSummary({ plan }) {
       : undefined;
 
   if (!plan) {
-    return <div className="text-center text-ink-500 py-8">{s.loading}</div>;
+    return <div className="text-center text-ink-500 dark:text-slate-400 py-8">{s.loading}</div>;
   }
 
   const totalGrams =
@@ -32,9 +32,9 @@ export default function NutritionSummary({ plan }) {
     (plan.macros?.fat?.grams || 0);
 
   const getRecoveryColor = (score) => {
-    if (score >= 80) return { card: 'bg-accent-wash border-accent/20', text: 'text-accent', bar: 'bg-accent' };
-    if (score >= 60) return { card: 'bg-[#FEF3E2] border-[#F5A524]/20', text: 'text-[#9A6000]', bar: 'bg-[#F5A524]' };
-    return { card: 'bg-[#FDECEA] border-semantic-danger/20', text: 'text-semantic-danger', bar: 'bg-semantic-danger' };
+    if (score >= 80) return { card: 'bg-accent-wash dark:bg-accent/10 border-accent/20', text: 'text-accent', bar: 'bg-accent' };
+    if (score >= 60) return { card: 'bg-[#FEF3E2] dark:bg-amber-900/20 border-[#F5A524]/20', text: 'text-[#9A6000] dark:text-amber-300', bar: 'bg-[#F5A524]' };
+    return { card: 'bg-[#FDECEA] dark:bg-red-900/20 border-semantic-danger/20', text: 'text-semantic-danger', bar: 'bg-semantic-danger' };
   };
 
   const translateHydration = (hydration) => {
@@ -53,18 +53,18 @@ export default function NutritionSummary({ plan }) {
       {/* Hero card: EnergyRing + MacroBar rows */}
       <Card className="p-0 overflow-hidden">
         <div className="flex flex-col sm:flex-row">
-          <div className="flex flex-col items-center justify-center gap-3 p-6 sm:border-r border-line">
+          <div className="flex flex-col items-center justify-center gap-3 p-6 sm:border-r border-line dark:border-dark-border">
             <EnergyRing
               energyProgress={Math.min((plan.dailyCalories || 2000) / 3000, 1)}
               proteinProgress={(plan.macros?.protein?.percentage || 28) / 100}
               size={152}
             >
-              <span className="text-[22px] font-bold text-ink-900 tabular-nums leading-none">
+              <span className="text-[22px] font-bold text-ink-900 dark:text-white tabular-nums leading-none">
                 {(plan.dailyCalories || 0).toLocaleString()}
               </span>
-              <span className="text-[10px] text-ink-500 uppercase tracking-[0.1em]">kcal</span>
+              <span className="text-[10px] text-ink-500 dark:text-slate-400 uppercase tracking-[0.1em]">kcal</span>
             </EnergyRing>
-            <div className="flex gap-4 text-xs text-ink-500">
+            <div className="flex gap-4 text-xs text-ink-500 dark:text-slate-400">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-[#FF6B5E] flex-shrink-0" />
                 {s.dailyCalories}
@@ -103,7 +103,7 @@ export default function NutritionSummary({ plan }) {
 
       {plan.hydration && (
         <Card>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 mb-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 dark:text-slate-400 mb-2">
             {s.hydrationGoal}
           </p>
           <p className="text-lg font-semibold text-[#21C7C7]">
@@ -120,7 +120,7 @@ export default function NutritionSummary({ plan }) {
               {Math.round(recoveryScore)}
             </span>
           </div>
-          <div className="w-full bg-line rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-line dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
             <div
               className={`h-full ${recoveryColor.bar} rounded-full transition-all duration-500`}
               style={{ width: `${recoveryScore}%` }}
@@ -134,10 +134,10 @@ export default function NutritionSummary({ plan }) {
 
       {plan.dailyHabitTips && plan.dailyHabitTips.length > 0 && (
         <Card>
-          <h3 className="font-semibold text-ink-700 mb-3">{s.dailyHabitTips}</h3>
+          <h3 className="font-semibold text-ink-700 dark:text-slate-200 mb-3">{s.dailyHabitTips}</h3>
           <ul className="space-y-2">
             {plan.dailyHabitTips.map((tip, idx) => (
-              <li key={idx} className="text-sm text-ink-700 flex items-start gap-2">
+              <li key={idx} className="text-sm text-ink-700 dark:text-slate-200 flex items-start gap-2">
                 <span className="text-accent mt-0.5 flex-shrink-0">•</span>
                 <span>{m.habitTips[tip] || tip}</span>
               </li>
@@ -147,11 +147,11 @@ export default function NutritionSummary({ plan }) {
       )}
 
       {plan.riskFlags && plan.riskFlags.length > 0 && (
-        <Card className="bg-[#FDECEA] border-semantic-danger/20">
+        <Card className="bg-[#FDECEA] dark:bg-red-900/20 border-semantic-danger/20">
           <h3 className="font-semibold text-semantic-danger mb-3">{s.importantNotes}</h3>
           <ul className="space-y-2">
             {plan.riskFlags.map((flag, idx) => (
-              <li key={idx} className="text-sm text-ink-700 flex items-start gap-2">
+              <li key={idx} className="text-sm text-ink-700 dark:text-slate-200 flex items-start gap-2">
                 <span className="text-semantic-danger mt-0.5 flex-shrink-0">•</span>
                 <span>{m.riskFlags[flag] || flag}</span>
               </li>
@@ -173,13 +173,13 @@ export default function NutritionSummary({ plan }) {
                   {items.slice(0, 5).map((item, idx) => (
                     <span
                       key={idx}
-                      className="text-xs bg-accent-wash text-accent-600 border border-accent/20 px-2 py-1 rounded-[6px]"
+                      className="text-xs bg-accent-wash dark:bg-accent/10 text-accent-600 border border-accent/20 px-2 py-1 rounded-[6px]"
                     >
                       {item}
                     </span>
                   ))}
                   {items.length > 5 && (
-                    <span className="text-xs text-ink-500 px-2 py-1">
+                    <span className="text-xs text-ink-500 dark:text-slate-400 px-2 py-1">
                       +{items.length - 5} {s.more}
                     </span>
                   )}
@@ -187,7 +187,7 @@ export default function NutritionSummary({ plan }) {
               </div>
             ))}
           </div>
-          <p className="text-xs text-ink-500 mt-3">{s.shoppingTip}</p>
+          <p className="text-xs text-ink-500 dark:text-slate-400 mt-3">{s.shoppingTip}</p>
         </Card>
       )}
     </div>
