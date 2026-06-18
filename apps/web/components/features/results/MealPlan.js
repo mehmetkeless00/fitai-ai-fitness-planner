@@ -34,7 +34,7 @@ export default function MealPlan({ plan, onPlanChange }) {
   };
 
   if (!plan || !plan.mealPlan) {
-    return <div className="text-center text-slate-500 dark:text-slate-400 py-8">{s.loading}</div>;
+    return <div className="text-center text-ink-500 py-8">{s.loading}</div>;
   }
 
   const toggleAlternatives = (dayIdx, mealType) => {
@@ -49,15 +49,15 @@ export default function MealPlan({ plan, onPlanChange }) {
 
   const getCalorieColor = (calories, isSnack = false) => {
     if (isSnack) {
-      return calories < 200 ? 'text-green-400' : calories < 300 ? 'text-yellow-400' : 'text-orange-400';
+      return calories < 200 ? 'text-accent' : calories < 300 ? 'text-[#F5A524]' : 'text-[#FF6B5E]';
     }
-    return calories < 400 ? 'text-red-400' : calories < 700 ? 'text-yellow-400' : 'text-orange-400';
+    return calories < 400 ? 'text-semantic-danger' : calories < 700 ? 'text-ink-700' : 'text-[#FF6B5E]';
   };
 
   const getDifficultyClasses = (difficulty) => {
-    if (difficulty === 'Easy') return 'bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300';
-    if (difficulty === 'Medium') return 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300';
-    return 'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300';
+    if (difficulty === 'Easy') return 'bg-accent-wash text-accent-600 border border-accent/20';
+    if (difficulty === 'Medium') return 'bg-[#FEF3E2] text-[#9A6000] border border-[#F5A524]/20';
+    return 'bg-[#FDECEA] text-semantic-danger border border-semantic-danger/20';
   };
 
   return (
@@ -65,22 +65,22 @@ export default function MealPlan({ plan, onPlanChange }) {
       {plan.mealPlan.map((dayPlan, dayIdx) => (
         <Card
           key={dayIdx}
-          className="hover:border-sky-500/40 hover:shadow-lg hover:shadow-sky-500/5 transition-all"
+          className="hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5 transition-all"
         >
           <button
             type="button"
             aria-expanded={expandedDay === dayIdx}
             aria-controls={`meal-day-${dayIdx}`}
             onClick={() => setExpandedDay(expandedDay === dayIdx ? -1 : dayIdx)}
-            className="w-full flex justify-between items-center text-left bg-transparent rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="w-full flex justify-between items-center text-left bg-transparent rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
           >
-            <span className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-              <span className="text-2xl" aria-hidden="true">🥗</span>
+            <span className="text-base font-bold text-ink-900 flex items-center gap-2">
+              <span aria-hidden="true">🥗</span>
               {m.days[dayPlan.day] || dayPlan.day}
             </span>
             <span
-              className={`text-lg transition-transform duration-300 ${
-                expandedDay === dayIdx ? 'rotate-180 text-sky-500' : 'text-slate-400 dark:text-slate-500'
+              className={`text-sm transition-transform duration-300 flex-shrink-0 ml-3 ${
+                expandedDay === dayIdx ? 'rotate-180 text-accent' : 'text-ink-300'
               }`}
               aria-hidden="true"
             >
@@ -89,61 +89,61 @@ export default function MealPlan({ plan, onPlanChange }) {
           </button>
 
           {expandedDay === dayIdx && (
-            <div id={`meal-day-${dayIdx}`} className="space-y-4 mt-4 pt-4 border-t border-slate-200 dark:border-dark-border">
+            <div id={`meal-day-${dayIdx}`} className="space-y-4 mt-4 pt-4 border-t border-line">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {dayPlan.meals && Object.entries(dayPlan.meals).map(([mealType, meal]) => (
                   <div
                     key={mealType}
-                    className="bg-white dark:bg-dark-surface/50 border border-slate-200 dark:border-dark-border rounded-lg p-3 space-y-2"
+                    className="bg-paper border border-line rounded-[14px] p-3 space-y-2"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="text-xs uppercase tracking-wide text-sky-600 dark:text-sky-400 font-semibold mb-1">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-600 mb-1">
                           {getMealIcon(mealType)} {m.mealTypes[mealType] || mealType}
                         </p>
-                        <p className="font-semibold text-slate-900 dark:text-white text-sm">{meal.name}</p>
+                        <p className="font-semibold text-ink-900 text-sm leading-snug">{meal.name}</p>
                       </div>
                       {meal.calories && (
-                        <span className={`text-lg font-bold ${getCalorieColor(meal.calories, mealType === 'snack')}`}>
+                        <span className={`text-lg font-bold tabular-nums flex-shrink-0 ${getCalorieColor(meal.calories, mealType === 'snack')}`}>
                           {meal.calories}
                         </span>
                       )}
                     </div>
 
                     {meal.macros && (
-                      <div className="bg-slate-100 dark:bg-dark-bg/50 rounded p-2 space-y-1">
+                      <div className="bg-canvas rounded-[8px] p-2 space-y-1.5">
                         <div className="flex justify-between text-xs">
-                          <span className="text-slate-600 dark:text-slate-400">P</span>
-                          <span className="font-medium text-red-600 dark:text-red-400">{meal.macros.protein}g</span>
-                          <span className="text-slate-600 dark:text-slate-400">C</span>
-                          <span className="font-medium text-yellow-600 dark:text-yellow-400">{meal.macros.carbs}g</span>
-                          <span className="text-slate-600 dark:text-slate-400">F</span>
-                          <span className="font-medium text-green-600 dark:text-green-400">{meal.macros.fat}g</span>
+                          <span className="text-ink-500 font-medium">P</span>
+                          <span className="font-semibold text-[#14C06A] tabular-nums">{meal.macros.protein}g</span>
+                          <span className="text-ink-500 font-medium">C</span>
+                          <span className="font-semibold text-[#9A6000] tabular-nums">{meal.macros.carbs}g</span>
+                          <span className="text-ink-500 font-medium">F</span>
+                          <span className="font-semibold text-[#7C8CFF] tabular-nums">{meal.macros.fat}g</span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-dark-border rounded-full h-1 overflow-hidden flex gap-0.5">
+                        <div className="w-full bg-line rounded-full h-1 overflow-hidden flex gap-0.5">
                           <div
-                            className="bg-red-500"
+                            className="bg-[#14C06A]"
                             style={{ width: `${(meal.macros.protein / (meal.macros.protein + meal.macros.carbs + meal.macros.fat)) * 100}%` }}
                           />
                           <div
-                            className="bg-yellow-500"
+                            className="bg-[#F5A524]"
                             style={{ width: `${(meal.macros.carbs / (meal.macros.protein + meal.macros.carbs + meal.macros.fat)) * 100}%` }}
                           />
                           <div
-                            className="bg-green-500"
+                            className="bg-[#7C8CFF]"
                             style={{ width: `${(meal.macros.fat / (meal.macros.protein + meal.macros.carbs + meal.macros.fat)) * 100}%` }}
                           />
                         </div>
                       </div>
                     )}
 
-                    <p className="text-xs text-slate-600 dark:text-slate-400">{meal.description}</p>
+                    <p className="text-xs text-ink-500 leading-relaxed">{meal.description}</p>
 
-                    <div className="flex flex-wrap gap-1 text-xs">
-                      {meal.timing && <span className="text-slate-600 dark:text-slate-400">⏰ {meal.timing}</span>}
-                      {meal.prepTime && <span className="text-slate-600 dark:text-slate-400">⏱ {meal.prepTime}</span>}
+                    <div className="flex flex-wrap gap-1.5 text-xs">
+                      {meal.timing && <span className="text-ink-500">⏰ {meal.timing}</span>}
+                      {meal.prepTime && <span className="text-ink-500">⏱ {meal.prepTime}</span>}
                       {meal.difficulty && (
-                        <span className={`px-1.5 py-0.5 rounded ${getDifficultyClasses(meal.difficulty)}`}>
+                        <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${getDifficultyClasses(meal.difficulty)}`}>
                           {m.difficulty[meal.difficulty] || meal.difficulty}
                         </span>
                       )}
@@ -156,7 +156,7 @@ export default function MealPlan({ plan, onPlanChange }) {
                           e.stopPropagation();
                           swapMeal(dayIdx, mealType);
                         }}
-                        className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
+                        className="text-xs text-accent-600 hover:text-accent transition-colors font-medium"
                       >
                         🔄 {s.swap}
                       </button>
@@ -169,15 +169,15 @@ export default function MealPlan({ plan, onPlanChange }) {
                             e.stopPropagation();
                             toggleAlternatives(dayIdx, mealType);
                           }}
-                          className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
+                          className="text-xs text-accent-600 hover:text-accent transition-colors font-medium"
                         >
                           {expandedAlternatives[`${dayIdx}-${mealType}`] ? s.hideAlternatives : s.showAlternatives}
                         </button>
                         {expandedAlternatives[`${dayIdx}-${mealType}`] && (
-                          <ul className="mt-1 space-y-1 ml-2 text-xs text-slate-600 dark:text-slate-400">
+                          <ul className="mt-1.5 space-y-1 ml-2 text-xs text-ink-500">
                             {meal.alternatives.map((alt, altIdx) => (
                               <li key={altIdx} className="flex items-start gap-2">
-                                <span className="text-sky-600 dark:text-sky-400">•</span>
+                                <span className="text-accent-600 flex-shrink-0">•</span>
                                 <span>{alt}</span>
                               </li>
                             ))}
@@ -190,12 +190,12 @@ export default function MealPlan({ plan, onPlanChange }) {
               </div>
 
               {dayPlan.hydrationReminders && dayPlan.hydrationReminders.length > 0 && (
-                <div className="bg-blue-50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20 rounded-lg p-3">
-                  <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-2">{s.hydrationReminders}</h4>
+                <div className="bg-canvas border border-line rounded-[12px] p-3">
+                  <h4 className="text-sm font-semibold text-[#21C7C7] mb-2">{s.hydrationReminders}</h4>
                   <ul className="space-y-1">
                     {dayPlan.hydrationReminders.map((reminder, idx) => (
-                      <li key={idx} className="text-sm text-slate-700 dark:text-slate-400 flex items-start gap-2">
-                        <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+                      <li key={idx} className="text-sm text-ink-700 flex items-start gap-2">
+                        <span className="text-[#21C7C7] mt-0.5 flex-shrink-0">•</span>
                         <span>{m.hydrationReminders[reminder] || reminder}</span>
                       </li>
                     ))}

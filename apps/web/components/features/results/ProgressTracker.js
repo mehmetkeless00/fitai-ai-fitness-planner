@@ -33,13 +33,13 @@ function Sparkline({ weights }) {
       <polyline
         points={coords}
         fill="none"
-        stroke="#0ea5e9"
+        stroke="#14C06A"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
       />
-      <circle cx={lastX} cy={lastY} r="2" fill="#0ea5e9" />
+      <circle cx={lastX} cy={lastY} r="2" fill="#14C06A" />
     </svg>
   );
 }
@@ -106,12 +106,12 @@ export default function ProgressTracker({ plan, onPlanChange }) {
 
   return (
     <div className="space-y-4">
-      {/* Smart Coach narrative — reads same checkins state, updates on every save */}
+      {/* Smart Coach narrative */}
       <SmartCoach plan={plan} checkins={checkins} />
 
       {/* Today's check-in */}
       <Card>
-        <h3 className="font-semibold text-slate-900 dark:text-white mb-4">{s.checkInTitle}</h3>
+        <h3 className="font-semibold text-ink-900 mb-4">{s.checkInTitle}</h3>
         <form onSubmit={handleSave} className="space-y-4">
           <div className="max-w-xs">
             <Input
@@ -131,23 +131,23 @@ export default function ProgressTracker({ plan, onPlanChange }) {
 
           {workoutDays.length > 0 && (
             <fieldset>
-              <legend className="text-xs sm:text-sm font-medium text-slate-700 dark:text-white mb-2">
+              <legend className="text-xs sm:text-sm font-medium text-ink-700 mb-2">
                 {s.workoutsLabel}
               </legend>
               <div className="flex flex-wrap gap-2">
                 {workoutDays.map((day) => (
                   <label
                     key={day.day}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer text-sm transition-all
+                    className={`flex items-center gap-2 px-3 py-2 rounded-[10px] border cursor-pointer text-sm transition-all
                       ${
                         doneToday.includes(day.day)
-                          ? 'bg-sky-500/10 border-sky-500/50 text-sky-700 dark:text-sky-300'
-                          : 'bg-slate-50 dark:bg-dark-surface border-slate-200 dark:border-dark-border text-slate-700 dark:text-slate-300 hover:border-sky-500/40'
+                          ? 'bg-accent-wash border-accent/50 text-accent-600'
+                          : 'bg-canvas border-line text-ink-700 hover:border-accent/40'
                       }`}
                   >
                     <input
                       type="checkbox"
-                      className="accent-sky-500"
+                      className="accent-[#14C06A]"
                       checked={doneToday.includes(day.day)}
                       onChange={() => toggleDone(day.day)}
                     />
@@ -164,7 +164,7 @@ export default function ProgressTracker({ plan, onPlanChange }) {
           <div className="flex items-center gap-3">
             <Button type="submit" size="sm">{s.saveBtn}</Button>
             {saved && (
-              <span role="status" className="text-sm text-green-600 dark:text-green-400">
+              <span role="status" className="text-sm text-accent font-medium">
                 {s.savedNote}
               </span>
             )}
@@ -173,19 +173,19 @@ export default function ProgressTracker({ plan, onPlanChange }) {
       </Card>
 
       {/* Coach recommendation */}
-      <Card className="bg-gradient-to-br from-sky-50 via-white dark:via-transparent to-blue-50 dark:from-sky-500/10 dark:to-blue-500/10 border-sky-200 dark:border-sky-500/20">
-        <h3 className="font-semibold text-slate-900 dark:text-white mb-2">{s.recTitle}</h3>
+      <Card>
+        <h3 className="font-semibold text-ink-900 mb-2">{s.recTitle}</h3>
         {adjustedRecently ? (
-          <p className="text-sm text-slate-600 dark:text-slate-300">{s.recentlyAdjusted}</p>
+          <p className="text-sm text-ink-700">{s.recentlyAdjusted}</p>
         ) : rec.status === 'insufficient-data' ? (
-          <p className="text-sm text-slate-600 dark:text-slate-300">{s.recInsufficient}</p>
+          <p className="text-sm text-ink-700">{s.recInsufficient}</p>
         ) : rec.status === 'on-track' ? (
-          <p className="text-sm text-slate-700 dark:text-slate-200">
+          <p className="text-sm text-ink-700">
             {fmt(s.recOnTrack, { rate: rec.weeklyChange.toLocaleString(locale) })}
           </p>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-slate-700 dark:text-slate-200">
+            <p className="text-sm text-ink-700">
               {fmt(rec.direction === 'reduce' ? s.recReduce : s.recIncrease, {
                 rate: rec.weeklyChange.toLocaleString(locale),
                 delta: Math.abs(rec.deltaCalories),
@@ -199,9 +199,9 @@ export default function ProgressTracker({ plan, onPlanChange }) {
       {/* Weight trend */}
       <Card>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-slate-900 dark:text-white">{s.trendTitle}</h3>
+          <h3 className="font-semibold text-ink-900">{s.trendTitle}</h3>
           {weighIns.length > 0 && (
-            <span className="text-sm font-semibold text-sky-600 dark:text-sky-400">
+            <span className="text-sm font-semibold text-accent tabular-nums">
               {weighIns[weighIns.length - 1].weight.toLocaleString(locale)} kg
             </span>
           )}
@@ -209,26 +209,26 @@ export default function ProgressTracker({ plan, onPlanChange }) {
         {weighIns.length >= 2 ? (
           <>
             <Sparkline weights={weighIns.map((c) => c.weight)} />
-            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <div className="flex justify-between text-xs text-ink-500 mt-1">
               <span>{new Date(weighIns[0].date).toLocaleDateString(locale)}</span>
               <span>{new Date(weighIns[weighIns.length - 1].date).toLocaleDateString(locale)}</span>
             </div>
           </>
         ) : (
-          <p className="text-sm text-slate-500 dark:text-slate-400">{s.noWeighIns}</p>
+          <p className="text-sm text-ink-500">{s.noWeighIns}</p>
         )}
       </Card>
 
       {/* Weekly adherence */}
       <Card>
-        <h3 className="font-semibold text-slate-900 dark:text-white mb-2">{s.adherenceTitle}</h3>
-        <div className="w-full bg-slate-200 dark:bg-dark-bg rounded-full h-2 overflow-hidden mb-2">
+        <h3 className="font-semibold text-ink-900 mb-2">{s.adherenceTitle}</h3>
+        <div className="w-full bg-line rounded-full h-1.5 overflow-hidden mb-2">
           <div
-            className="h-full bg-gradient-to-r from-sky-500 to-blue-600 rounded-full transition-all duration-500"
+            className="h-full bg-accent rounded-full transition-all duration-500"
             style={{ width: `${adherencePct}%` }}
           />
         </div>
-        <p className="text-sm text-slate-600 dark:text-slate-300">
+        <p className="text-sm text-ink-700">
           {fmt(s.adherenceNote, { done: Math.min(done7, planned), planned })}
         </p>
       </Card>
@@ -236,24 +236,24 @@ export default function ProgressTracker({ plan, onPlanChange }) {
       {/* Recent check-ins */}
       {checkins.length > 0 && (
         <Card>
-          <h3 className="font-semibold text-slate-900 dark:text-white mb-3">{s.historyTitle}</h3>
+          <h3 className="font-semibold text-ink-900 mb-3">{s.historyTitle}</h3>
           <ul className="space-y-2">
             {[...checkins].reverse().slice(0, 10).map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between text-sm border-b border-slate-100 dark:border-dark-border/50 last:border-0 pb-2 last:pb-0"
+                className="flex items-center justify-between text-sm border-b border-line last:border-0 pb-2 last:pb-0"
               >
-                <span className="text-slate-600 dark:text-slate-300">
+                <span className="text-ink-500">
                   {new Date(c.date).toLocaleDateString(locale)}
                 </span>
                 <span className="flex items-center gap-3">
                   {typeof c.weight === 'number' && (
-                    <span className="font-medium text-slate-900 dark:text-white">
+                    <span className="font-semibold text-ink-900 tabular-nums">
                       {c.weight.toLocaleString(locale)} kg
                     </span>
                   )}
                   {c.workoutsDone?.length > 0 && (
-                    <span className="text-green-600 dark:text-green-400">
+                    <span className="text-accent font-semibold">
                       ✓ {c.workoutsDone.length}
                     </span>
                   )}

@@ -17,12 +17,12 @@ export default function SmartCoach({ plan, checkins }) {
   const narrative = generateCoachNarrative(plan, checkins, t.coach);
 
   return (
-    <Card className="bg-gradient-to-br from-sky-50 via-white dark:via-transparent to-blue-50 dark:from-sky-500/10 dark:to-blue-500/10 border-sky-200 dark:border-sky-500/20">
+    <Card>
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-base shadow shadow-sky-500/30">
+        <div className="w-8 h-8 rounded-[10px] bg-accent flex items-center justify-center text-base shadow-[0_2px_8px_-2px_rgba(20,192,106,0.4)]">
           🎯
         </div>
-        <h3 className="font-semibold text-slate-900 dark:text-white text-sm">Smart Coach</h3>
+        <h3 className="font-semibold text-ink-900 text-sm">Smart Coach</h3>
       </div>
       <ul className="space-y-3">
         {ROWS.map(({ key, icon }) => {
@@ -33,7 +33,7 @@ export default function SmartCoach({ plan, checkins }) {
               <span className="text-base leading-none mt-0.5 shrink-0" aria-hidden="true">
                 {icon}
               </span>
-              <span className="text-slate-700 dark:text-slate-300 leading-relaxed">{text}</span>
+              <span className="text-ink-700 leading-relaxed">{text}</span>
             </li>
           );
         })}

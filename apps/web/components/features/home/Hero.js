@@ -24,12 +24,12 @@ function PreviewCard({ t }) {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[12px] text-[rgba(246,245,242,0.55)]">Wednesday · Week 3</p>
+            <p className="text-[12px] text-[rgba(246,245,242,0.55)]">{p.today}</p>
             <p className="font-display font-bold text-[17px] mt-0.5">{p.title}</p>
           </div>
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[rgba(20,192,106,0.16)] text-[#5FE0A0] text-[11.5px] font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-            On track
+            {p.onTrack}
           </span>
         </div>
 
