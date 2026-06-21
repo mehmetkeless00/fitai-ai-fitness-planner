@@ -184,6 +184,7 @@ export default function ProgressTab() {
                     key={ex.name}
                     onPress={() => toggleWorkout(ex.name)}
                     className="flex-row items-center gap-3 py-1"
+                    style={{ minHeight: 44 }}
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked }}
                     accessibilityLabel={ex.name}

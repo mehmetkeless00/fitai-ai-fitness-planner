@@ -1,9 +1,10 @@
-import { Text, useColorScheme } from 'react-native';
+import { useColorScheme } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-function TabIcon({ emoji }) {
-  return <Text style={{ fontSize: 20 }}>{emoji}</Text>;
+function TabIcon({ name, color, focused }) {
+  return <Ionicons name={focused ? name : `${name}-outline`} size={24} color={color} />;
 }
 
 export default function TabLayout() {
@@ -24,23 +25,38 @@ export default function TabLayout() {
     >
       <Tabs.Screen
         name="overview"
-        options={{ title: t.tabs.overview, tabBarIcon: ({ color }) => <TabIcon emoji="📊" color={color} /> }}
+        options={{
+          title: t.tabs.overview,
+          tabBarIcon: ({ color, focused }) => <TabIcon name="stats-chart" color={color} focused={focused} />,
+        }}
       />
       <Tabs.Screen
         name="workout"
-        options={{ title: t.tabs.workout, tabBarIcon: ({ color }) => <TabIcon emoji="💪" color={color} /> }}
+        options={{
+          title: t.tabs.workout,
+          tabBarIcon: ({ color, focused }) => <TabIcon name="barbell" color={color} focused={focused} />,
+        }}
       />
       <Tabs.Screen
         name="meals"
-        options={{ title: t.tabs.meals, tabBarIcon: ({ color }) => <TabIcon emoji="🥗" color={color} /> }}
+        options={{
+          title: t.tabs.meals,
+          tabBarIcon: ({ color, focused }) => <TabIcon name="restaurant" color={color} focused={focused} />,
+        }}
       />
       <Tabs.Screen
         name="progress"
-        options={{ title: t.tabs.progress, tabBarIcon: ({ color }) => <TabIcon emoji="📈" color={color} /> }}
+        options={{
+          title: t.tabs.progress,
+          tabBarIcon: ({ color, focused }) => <TabIcon name="trending-up" color={color} focused={focused} />,
+        }}
       />
       <Tabs.Screen
         name="plans"
-        options={{ title: t.tabs.plans, tabBarIcon: ({ color }) => <TabIcon emoji="📋" color={color} /> }}
+        options={{
+          title: t.tabs.plans,
+          tabBarIcon: ({ color, focused }) => <TabIcon name="documents" color={color} focused={focused} />,
+        }}
       />
     </Tabs>
   );

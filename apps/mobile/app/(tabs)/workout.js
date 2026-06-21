@@ -7,6 +7,10 @@ import WorkoutDay from '../../components/features/WorkoutDay';
 import { usePlan } from '../../hooks/usePlan';
 import { useLanguage } from '../../i18n/LanguageContext';
 
+function todayDayName() {
+  return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()];
+}
+
 export default function WorkoutTab() {
   const router = useRouter();
   const { plan, refreshPlan } = usePlan();
@@ -18,7 +22,7 @@ export default function WorkoutTab() {
 
   if (!plan) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900 items-center justify-center">
+      <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900 items-center justify-center">
         <Text className="text-slate-500">{t.workout.noActivePlan}</Text>
       </SafeAreaView>
     );
@@ -31,7 +35,7 @@ export default function WorkoutTab() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+    <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
         <Text
           className="text-xl font-bold text-slate-900 dark:text-white mb-4"
@@ -49,6 +53,7 @@ export default function WorkoutTab() {
             t={t.workout}
             maps={maps}
             onExercisePress={handleExercisePress}
+            isToday={day.day === todayDayName()}
           />
         ))}
       </ScrollView>

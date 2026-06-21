@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { View, Text, FlatList, Pressable, Alert, Modal, TextInput } from 'react-native';
+import { View, Text, FlatList, Pressable, Alert, Modal, TextInput, useColorScheme } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -72,6 +73,7 @@ export default function PlansTab() {
   const { t, lang } = useLanguage();
   const pl = t.plans;
 
+  const isDark = useColorScheme() === 'dark';
   const [plans, setPlans] = useState([]);
   const [renameTarget, setRenameTarget] = useState(null);
 
@@ -137,11 +139,11 @@ export default function PlansTab() {
           <View className="flex-row gap-2 items-center">
             <Pressable
               onPress={() => router.push('/modal/settings')}
-              className="w-9 h-9 items-center justify-center rounded-full bg-paper border border-line dark:bg-slate-800 dark:border-slate-700"
+              className="w-11 h-11 items-center justify-center rounded-full bg-paper border border-line dark:bg-slate-800 dark:border-slate-700"
               accessibilityRole="button"
               accessibilityLabel={t.settings.title}
             >
-              <Text style={{ fontSize: 18 }}>⚙️</Text>
+              <Ionicons name="settings-outline" size={20} color={isDark ? '#94a3b8' : '#64748b'} />
             </Pressable>
             <Pressable
               onPress={() => router.push('/create')}
@@ -173,7 +175,7 @@ export default function PlansTab() {
                   <Pressable
                     onPress={() => handleActivate(item.id)}
                     onLongPress={() => handleLongPress(item)}
-                    className={`mb-3 rounded-[14px] p-4 border ${
+                    className={`mb-3 rounded-[20px] p-4 border ${
                       isActive
                         ? 'bg-accent-wash dark:bg-accent/10 border-accent dark:border-accent/50'
                         : 'bg-paper dark:bg-slate-800 border-line dark:border-slate-700'

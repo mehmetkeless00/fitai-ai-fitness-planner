@@ -60,12 +60,15 @@ function RecoveryCard({ score, t }) {
         {t.recoveryTitle}
       </Text>
       <View className="flex-row items-center gap-3">
-        <Text
-          className={`text-3xl font-bold ${color}`}
-          accessibilityLabel={`${t.recoveryTitle}: ${score}`}
-        >
-          {score}
-        </Text>
+        <View className="flex-row items-baseline gap-0.5">
+          <Text
+            className={`text-3xl font-bold ${color}`}
+            accessibilityLabel={`${t.recoveryTitle}: ${score}`}
+          >
+            {score}
+          </Text>
+          <Text className="text-xs text-ink-300 dark:text-slate-500">/ 100</Text>
+        </View>
         <View className="flex-1">
           <View className="h-2 bg-line dark:bg-slate-700 rounded-full overflow-hidden">
             <View className={`h-full rounded-full ${barColor}`} style={{ width: `${score}%` }} />
@@ -119,10 +122,12 @@ export default function OverviewTab() {
   const planLang = data?.lang || lang;
 
   const checkins = listCheckins();
-  const recoveryScore =
-    data?.recoveryScore != null
-      ? Math.round(blendRecoveryScore(data.recoveryScore, checkins, data.workoutPlan))
-      : null;
+  let recoveryScore = null;
+  if (data?.recoveryScore != null) {
+    try {
+      recoveryScore = Math.round(blendRecoveryScore(data.recoveryScore, checkins, data.workoutPlan));
+    } catch {}
+  }
 
   // Disclaimer from core translations in the current UI language, not plan creation language.
   const disclaimer = (translations[lang] || translations.en).result.disclaimer;
@@ -159,6 +164,7 @@ export default function OverviewTab() {
             onPress={handleShare}
             disabled={sharing}
             className="bg-accent active:bg-accent-600 px-3 py-2 rounded-[12px] items-center"
+            style={{ minHeight: 44, justifyContent: 'center' }}
             accessibilityRole="button"
             accessibilityLabel={o.sharePlan}
           >

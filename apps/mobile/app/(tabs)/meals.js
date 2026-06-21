@@ -54,7 +54,7 @@ export default function MealsTab() {
               <Pressable
                 key={i}
                 onPress={() => setDayIndex(i)}
-                className={`px-3 py-1.5 rounded-full border ${
+                className={`px-3 py-2.5 rounded-full border ${
                   i === dayIndex
                     ? 'bg-accent border-accent'
                     : 'bg-paper dark:bg-slate-800 border-line dark:border-slate-600'

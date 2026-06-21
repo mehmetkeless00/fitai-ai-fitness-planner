@@ -1,16 +1,25 @@
 import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import Card from '../ui/Card';
 
-export default function WorkoutDay({ day, t, maps, onExercisePress }) {
-  const [open, setOpen] = useState(false);
+const REST_FOCUSES = new Set([
+  'Active Recovery',
+  'Active Recovery & Mobility',
+  'Rest or Active Recovery',
+  'Complete Rest',
+]);
+
+export default function WorkoutDay({ day, t, maps, onExercisePress, isToday }) {
+  const [open, setOpen] = useState(() => !!isToday);
   const isRest = !day.exercises || day.exercises.length === 0;
+  const isRestType = REST_FOCUSES.has(day.focus);
 
   const dayLabel = maps?.days?.[day.day] || day.day;
   const focusLabel = maps?.workoutFocus?.[day.focus] || day.focus;
 
   return (
-    <Card className="mb-3">
+    <Card className={`mb-3${isToday ? ' border-accent dark:border-accent' : ''}`}>
       <Pressable
         onPress={() => !isRest && setOpen((v) => !v)}
         className="flex-row items-center justify-between"
@@ -18,8 +27,11 @@ export default function WorkoutDay({ day, t, maps, onExercisePress }) {
         accessibilityLabel={`${dayLabel}${focusLabel ? ', ' + focusLabel : ''}`}
         accessibilityState={{ expanded: open }}
       >
-        <View>
-          <Text className="font-semibold text-slate-900 dark:text-white">{dayLabel}</Text>
+        <View className="flex-1 mr-2">
+          <View className="flex-row items-center gap-1.5">
+            {isToday && <View className="w-1.5 h-1.5 rounded-full bg-accent" />}
+            <Text className="font-semibold text-slate-900 dark:text-white">{dayLabel}</Text>
+          </View>
           {focusLabel && (
             <Text className="text-xs text-slate-400 mt-0.5">{focusLabel}</Text>
           )}
@@ -27,12 +39,14 @@ export default function WorkoutDay({ day, t, maps, onExercisePress }) {
         <View className="flex-row items-center gap-2">
           {isRest ? (
             <Text className="text-xs text-slate-400">{t.rest}</Text>
+          ) : isRestType ? (
+            <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={16} color="#A7A8AD" />
           ) : (
             <>
               <Text className="text-xs text-slate-400">
                 {day.exercises.length} {t.exercises}
               </Text>
-              <Text className="text-slate-400">{open ? '▲' : '▼'}</Text>
+              <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={16} color="#A7A8AD" />
             </>
           )}
         </View>
@@ -54,7 +68,7 @@ export default function WorkoutDay({ day, t, maps, onExercisePress }) {
                   {ex.sets} {t.sets} × {ex.reps} {t.reps}
                 </Text>
               </View>
-              <Text className="text-slate-300 text-xs">›</Text>
+              <Ionicons name="chevron-forward" size={14} color="#CBD5E1" />
             </Pressable>
           ))}
         </View>
