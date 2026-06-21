@@ -82,10 +82,10 @@ export default function PlansPage() {
           {mounted && plans.length === 0 && (
             <div className="text-center max-w-md mx-auto py-12">
               <div className="text-6xl mb-6" aria-hidden="true">📋</div>
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
+              <h2 className="text-xl font-semibold text-ink-900 dark:text-white mb-2">
                 {s.emptyTitle}
               </h2>
-              <p className="text-slate-600 dark:text-slate-300 mb-8">{s.emptyDesc}</p>
+              <p className="text-ink-500 dark:text-slate-300 mb-8">{s.emptyDesc}</p>
               <Link href="/create-plan">
                 <Button size="lg">{s.emptyCta}</Button>
               </Link>
@@ -101,7 +101,7 @@ export default function PlansPage() {
               </div>
 
               {plans.map((plan) => (
-                <Card key={plan.id} className="hover:border-sky-500/40 transition-all">
+                <Card key={plan.id} className="hover:border-accent/40 transition-all">
                   {editingId === plan.id ? (
                     <form onSubmit={submitRename} className="flex flex-col sm:flex-row gap-3 sm:items-end">
                       <div className="flex-1">
@@ -123,15 +123,15 @@ export default function PlansPage() {
                   ) : (
                     <div className="flex flex-col md:flex-row md:items-center gap-3">
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-slate-900 dark:text-white truncate flex items-center gap-2">
+                        <p className="font-semibold text-ink-900 dark:text-white truncate flex items-center gap-2">
                           {displayName(plan)}
                           {plan.id === activeId && (
-                            <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300">
+                            <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-accent-wash dark:bg-accent/10 text-accent-600 dark:text-accent">
                               {s.active}
                             </span>
                           )}
                         </p>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                        <p className="text-sm text-ink-500 dark:text-slate-400 mt-1">
                           {goalLabel(plan.data?.fitnessGoal)}
                           {plan.data?.dailyCalories ? ` · ${plan.data.dailyCalories.toLocaleString(lang === 'tr' ? 'tr-TR' : 'en-US')} kcal` : ''}
                           {` · ${s.created}: ${new Date(plan.createdAt).toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-US')}`}
@@ -159,7 +159,7 @@ export default function PlansPage() {
                 </Card>
               ))}
 
-              <p className="text-xs text-slate-500 dark:text-slate-400 text-center">{s.limitNote}</p>
+              <p className="text-xs text-ink-500 dark:text-slate-400 text-center">{s.limitNote}</p>
             </div>
           )}
         </Container>

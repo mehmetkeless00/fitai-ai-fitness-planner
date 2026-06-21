@@ -74,8 +74,8 @@ export default function PrivacyPage() {
             </div>
 
             {/* Highlight box */}
-            <div className="bg-sky-50 dark:bg-sky-900/20 border border-sky-100 dark:border-sky-800 rounded-xl p-5 mb-10">
-              <p className="text-sm text-sky-800 dark:text-sky-200 leading-relaxed font-medium">
+            <div className="bg-accent-wash dark:bg-accent/10 border border-accent/20 dark:border-accent/20 rounded-xl p-5 mb-10">
+              <p className="text-sm text-accent-600 dark:text-accent leading-relaxed font-medium">
                 FitFlow is local-first. Your data stays on your device. No account required.
                 No personal information collected.
               </p>
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
                             key={item}
                             className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300"
                           >
-                            <span className="text-sky-500 mt-0.5 shrink-0">•</span>
+                            <span className="text-accent mt-0.5 shrink-0">•</span>
                             {item}
                           </li>
                         ))}
@@ -121,7 +121,7 @@ export default function PrivacyPage() {
                       Questions about this policy? Email us at{' '}
                       <a
                         href={`mailto:${section.contact}`}
-                        className="text-sky-500 hover:underline"
+                        className="text-accent hover:underline"
                       >
                         {section.contact}
                       </a>

@@ -11,7 +11,6 @@ import { formatDate } from '../../utils/formatDate';
 function RenameModal({ visible, currentName, onSave, onCancel, pl }) {
   const [name, setName] = useState(currentName || '');
 
-  // Sync when opened with a different plan
   const handleOpen = () => setName(currentName || '');
 
   return (
@@ -28,37 +27,37 @@ function RenameModal({ visible, currentName, onSave, onCancel, pl }) {
         onPress={onCancel}
       >
         <Pressable
-          className="bg-white dark:bg-slate-800 rounded-2xl p-5 w-full"
+          className="bg-paper dark:bg-slate-800 rounded-[14px] p-5 w-full"
           onPress={() => {}}
         >
-          <Text className="text-base font-semibold text-slate-900 dark:text-white mb-3">
+          <Text className="text-base font-semibold text-ink-900 dark:text-white mb-3">
             {pl.renameTitle}
           </Text>
           <TextInput
-            className="border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-3 text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-700 text-sm"
+            className="border border-line dark:border-slate-600 rounded-[10px] px-3 py-3 text-ink-900 dark:text-white bg-canvas dark:bg-slate-700 text-sm"
             value={name}
             onChangeText={setName}
             placeholder={pl.renamePlaceholder}
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor="#A7A8AD"
             autoFocus
             accessibilityLabel={pl.renamePlaceholder}
           />
           <View className="flex-row gap-2 mt-4">
             <Pressable
-              className="flex-1 border border-slate-200 dark:border-slate-600 py-3 rounded-xl items-center"
+              className="flex-1 border border-line dark:border-slate-600 py-3 rounded-[10px] items-center"
               onPress={onCancel}
               accessibilityRole="button"
               accessibilityLabel={pl.cancel}
             >
-              <Text className="text-slate-600 dark:text-slate-300 font-medium">{pl.cancel}</Text>
+              <Text className="text-ink-500 dark:text-slate-300 font-medium">{pl.cancel}</Text>
             </Pressable>
             <Pressable
-              className="flex-1 bg-sky-500 py-3 rounded-xl items-center"
+              className="flex-1 bg-accent active:bg-accent-600 py-3 rounded-[10px] items-center"
               onPress={() => onSave(name.trim())}
               accessibilityRole="button"
               accessibilityLabel={pl.renameSave}
             >
-              <Text className="text-white font-semibold">{pl.renameSave}</Text>
+              <Text className="text-[#062815] font-semibold">{pl.renameSave}</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -74,7 +73,7 @@ export default function PlansTab() {
   const pl = t.plans;
 
   const [plans, setPlans] = useState([]);
-  const [renameTarget, setRenameTarget] = useState(null); // { id, name }
+  const [renameTarget, setRenameTarget] = useState(null);
 
   function refresh() {
     setPlans(listPlans());
@@ -125,12 +124,12 @@ export default function PlansTab() {
   const activeId = activePlan?.id;
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+    <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
       <View className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 pt-6 pb-3">
           <Text
-            className="text-xl font-bold text-slate-900 dark:text-white"
+            className="text-xl font-bold text-ink-900 dark:text-white"
             accessibilityRole="header"
           >
             {pl.title}
@@ -138,7 +137,7 @@ export default function PlansTab() {
           <View className="flex-row gap-2 items-center">
             <Pressable
               onPress={() => router.push('/modal/settings')}
-              className="w-9 h-9 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700"
+              className="w-9 h-9 items-center justify-center rounded-full bg-paper border border-line dark:bg-slate-800 dark:border-slate-700"
               accessibilityRole="button"
               accessibilityLabel={t.settings.title}
             >
@@ -146,18 +145,21 @@ export default function PlansTab() {
             </Pressable>
             <Pressable
               onPress={() => router.push('/create')}
-              className="bg-sky-500 active:bg-sky-600 px-4 py-2 rounded-full"
+              className="bg-accent active:bg-accent-600 px-4 py-2 rounded-full"
               accessibilityRole="button"
               accessibilityLabel={pl.newPlan}
             >
-              <Text className="text-white text-sm font-medium">{pl.newPlan}</Text>
+              <Text className="text-[#062815] text-sm font-semibold">{pl.newPlan}</Text>
             </Pressable>
           </View>
         </View>
 
         {plans.length === 0 ? (
-          <View className="flex-1 items-center justify-center px-8">
-            <Text className="text-slate-400 text-center">{pl.noPlan}</Text>
+          <View className="flex-1 items-center justify-center px-8 gap-3">
+            <View className="w-16 h-16 rounded-[20px] bg-paper border border-line dark:bg-slate-800 dark:border-slate-700 items-center justify-center">
+              <Text style={{ fontSize: 28 }}>📋</Text>
+            </View>
+            <Text className="text-ink-500 dark:text-slate-400 text-center text-sm">{pl.noPlan}</Text>
           </View>
         ) : (
           <>
@@ -171,10 +173,10 @@ export default function PlansTab() {
                   <Pressable
                     onPress={() => handleActivate(item.id)}
                     onLongPress={() => handleLongPress(item)}
-                    className={`mb-3 rounded-xl p-4 border ${
+                    className={`mb-3 rounded-[14px] p-4 border ${
                       isActive
-                        ? 'bg-sky-50 dark:bg-sky-900/30 border-sky-300 dark:border-sky-700'
-                        : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700'
+                        ? 'bg-accent-wash dark:bg-accent/10 border-accent dark:border-accent/50'
+                        : 'bg-paper dark:bg-slate-800 border-line dark:border-slate-700'
                     }`}
                     accessibilityRole="button"
                     accessibilityLabel={`${item.name || pl.unnamed}${isActive ? pl.activeSuffix : ''}`}
@@ -183,26 +185,26 @@ export default function PlansTab() {
                     <View className="flex-row items-center justify-between">
                       <Text
                         className={`font-semibold flex-1 mr-2 ${
-                          isActive ? 'text-sky-700 dark:text-sky-300' : 'text-slate-800 dark:text-white'
+                          isActive ? 'text-accent-600 dark:text-accent' : 'text-ink-900 dark:text-white'
                         }`}
                         numberOfLines={1}
                       >
                         {item.name || pl.unnamed}
                       </Text>
                       {isActive && (
-                        <View className="bg-sky-500 rounded-full px-2 py-0.5">
-                          <Text className="text-white text-xs font-medium">{pl.active}</Text>
+                        <View className="bg-accent rounded-full px-2 py-0.5">
+                          <Text className="text-[#062815] text-xs font-semibold">{pl.active}</Text>
                         </View>
                       )}
                     </View>
-                    <Text className="text-xs text-slate-400 mt-1">
+                    <Text className="text-xs text-ink-300 dark:text-slate-500 mt-1">
                       {pl.created} {formatDate(item.createdAt, lang)}
                     </Text>
                   </Pressable>
                 );
               }}
             />
-            <Text className="text-xs text-slate-400 text-center pb-3">{pl.longPressHint}</Text>
+            <Text className="text-xs text-ink-300 dark:text-slate-500 text-center pb-3">{pl.longPressHint}</Text>
           </>
         )}
       </View>

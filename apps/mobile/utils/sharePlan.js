@@ -1,6 +1,6 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { translations } from '@fitflow/core';
+import { translations, translateMealPlan } from '@fitflow/core';
 import { formatDate } from './formatDate';
 
 const GOAL_LABELS = {
@@ -17,7 +17,10 @@ const GOAL_LABELS = {
 };
 
 function buildHTML(plan, lang) {
-  const data = plan.data || {};
+  const rawData = plan.data || {};
+  // Translate meal names, advice, and grocery list to the current UI language.
+  // Falls back gracefully for legacy plans without _srcIdx metadata.
+  const data = translateMealPlan(rawData, lang) || rawData;
   const coreTr = translations[lang] || translations.en;
   const pdf = coreTr.pdf;
   const maps = coreTr.maps;
@@ -49,8 +52,8 @@ function buildHTML(plan, lang) {
       const slotLabel = maps.mealTypes[slot] || slot;
       return `<tr><td>${slotLabel}</td><td>${meal.name || ''}</td><td style="text-align:right">${meal.calories || ''}kcal</td></tr>`;
     }).join('');
-    return `<h3 style="margin:16px 0 6px;color:#475569">${dayLabel}</h3>
-      <table><thead><tr><th>Type</th><th>Meal</th><th>Kcal</th></tr></thead><tbody>${rows}</tbody></table>`;
+    return `<div class="day-block"><h3 style="margin:16px 0 6px;color:#475569">${dayLabel}</h3>
+      <table><thead><tr><th>${pdf.type}</th><th>${pdf.meal}</th><th>${pdf.kcal}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }).join('');
 
   return `<!DOCTYPE html>
@@ -64,12 +67,14 @@ function buildHTML(plan, lang) {
   h3{font-size:13px;margin:16px 0 4px;color:#475569}
   table{width:100%;border-collapse:collapse;margin-top:6px}
   th{background:#f1f5f9;text-align:left;padding:7px 10px;font-size:11px;color:#475569}
-  td{padding:7px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+  td{padding:7px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top;word-wrap:break-word;overflow-wrap:break-word}
+  .page-break{page-break-before:always}
+  .day-block{page-break-inside:avoid}
   .stats{display:flex;gap:24px;flex-wrap:wrap;margin:12px 0}
   .stat b{display:block;font-size:22px;color:#0ea5e9}
   .stat span{font-size:11px;color:#64748b}
-  footer{margin-top:40px;font-size:10px;color:#94a3b8;text-align:center;border-top:1px solid #f1f5f9;padding-top:12px}
-  .disclaimer{font-size:11px;color:#94a3b8;margin-top:24px;font-style:italic}
+  footer{margin-top:40px;font-size:10px;color:#64748b;text-align:center;border-top:1px solid #f1f5f9;padding-top:12px}
+  .disclaimer{font-size:11px;color:#475569;margin-top:24px;font-style:italic}
 </style>
 </head>
 <body>
@@ -86,11 +91,11 @@ function buildHTML(plan, lang) {
 
   <h2>${pdf.workoutPlan}</h2>
   <table>
-    <thead><tr><th style="width:30%">Day</th><th>Exercises</th></tr></thead>
+    <thead><tr><th style="width:30%">${pdf.day}</th><th>${pdf.exercises}</th></tr></thead>
     <tbody>${workoutRows}</tbody>
   </table>
 
-  <h2>${pdf.mealPlan}</h2>
+  <h2 class="page-break">${pdf.mealPlan}</h2>
   ${mealSection}
 
   <p class="disclaimer">${disclaimer}</p>

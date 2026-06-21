@@ -75,21 +75,21 @@ export default function AuthPage() {
 
           <Card className="max-w-md mx-auto">
             {!isCloudEnabled ? (
-              <p className="text-sm text-slate-600 dark:text-slate-300 text-center py-4">
+              <p className="text-sm text-ink-500 dark:text-slate-300 text-center py-4">
                 {s.cloudDisabled}
               </p>
             ) : (
               <>
-                <div className="flex gap-1 p-1 mb-6 bg-slate-100 dark:bg-dark-bg/50 border border-slate-200 dark:border-dark-border rounded-xl">
+                <div className="flex gap-1 p-1 mb-6 bg-canvas dark:bg-slate-800 border border-line dark:border-dark-border rounded-xl">
                   {['signin', 'signup'].map((m) => (
                     <button
                       key={m}
                       type="button"
                       onClick={() => { setMode(m); setError(null); setNotice(null); }}
-                      className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
+                      className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent
                         ${mode === m
-                          ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/25'
-                          : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
+                          ? 'bg-ink-900 text-white shadow-sm'
+                          : 'text-ink-500 dark:text-slate-300 hover:text-ink-900 dark:hover:text-white'}`}
                     >
                       {m === 'signin' ? s.signIn : s.signUp}
                     </button>
@@ -128,21 +128,21 @@ export default function AuthPage() {
                 </form>
 
                 <div className="flex items-center gap-3 my-5" aria-hidden="true">
-                  <span className="flex-1 h-px bg-slate-200 dark:bg-dark-border" />
-                  <span className="text-xs text-slate-500 dark:text-slate-400">{s.or}</span>
-                  <span className="flex-1 h-px bg-slate-200 dark:bg-dark-border" />
+                  <span className="flex-1 h-px bg-line dark:bg-dark-border" />
+                  <span className="text-xs text-ink-500 dark:text-slate-400">{s.or}</span>
+                  <span className="flex-1 h-px bg-line dark:bg-dark-border" />
                 </div>
 
                 <Button variant="outline" onClick={handleGoogle} className="w-full">
                   {s.google}
                 </Button>
 
-                <p className="text-xs text-slate-500 dark:text-slate-400 text-center mt-5">
+                <p className="text-xs text-ink-500 dark:text-slate-400 text-center mt-5">
                   {mode === 'signin' ? s.noAccount : s.haveAccount}{' '}
                   <button
                     type="button"
                     onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-                    className="text-sky-600 dark:text-sky-400 hover:underline"
+                    className="text-accent dark:text-accent hover:underline"
                   >
                     {mode === 'signin' ? s.signUp : s.signIn}
                   </button>

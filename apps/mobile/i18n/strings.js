@@ -58,6 +58,7 @@ const en = {
       experience: 'Please select an experience level.',
       frequency: 'Workouts per week must be between 3 and 7.',
       diet: 'Please select a dietary preference.',
+      generateError: 'Could not generate your plan. Please try again.',
     },
   },
   tabs: {
@@ -250,6 +251,7 @@ const tr = {
       experience: 'Lütfen deneyim seviyesi seçin.',
       frequency: 'Haftada antrenman sayısı 3 ile 7 arasında olmalıdır.',
       diet: 'Lütfen beslenme tercihi seçin.',
+      generateError: 'Planınız oluşturulamadı. Lütfen tekrar deneyin.',
     },
   },
   tabs: {

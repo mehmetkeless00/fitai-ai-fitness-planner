@@ -1,4 +1,4 @@
-import { Text } from 'react-native';
+import { Text, useColorScheme } from 'react-native';
 import { Tabs } from 'expo-router';
 import { useLanguage } from '../../i18n/LanguageContext';
 
@@ -8,6 +8,7 @@ function TabIcon({ emoji }) {
 
 export default function TabLayout() {
   const { t } = useLanguage();
+  const isDark = useColorScheme() === 'dark';
 
   return (
     <Tabs
@@ -16,8 +17,8 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#14C06A',
         tabBarInactiveTintColor: '#A7A8AD',
         tabBarStyle: {
-          backgroundColor: 'white',
-          borderTopColor: '#E7E6E1',
+          backgroundColor: isDark ? '#0f172a' : '#FFFFFF',
+          borderTopColor: isDark ? '#1e293b' : '#E7E6E1',
         },
       }}
     >

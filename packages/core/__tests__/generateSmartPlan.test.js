@@ -322,6 +322,19 @@ describe('Localization', () => {
     const trBreakfastNames = getPlanStrings('tr').meals.omnivore.breakfast.map((m) => m.name);
     expect(trBreakfastNames).toContain(translated.mealPlan[0].meals.breakfast.name);
   });
+
+  it('translateMealPlan: EN plan translates to TR meal names (PDF share regression)', () => {
+    // Regression: plan created in EN, user switches app to TR, share PDF must show TR content.
+    // The fix passes lang (current UI lang) not planLang (plan creation lang) to sharePlan.
+    const enPlan = { ...makePlan({ lang: 'en', dietaryPreference: 'omnivore' }), lang: 'en', dietaryPreference: 'omnivore' };
+    const trBreakfastNames = getPlanStrings('tr').meals.omnivore.breakfast.map((m) => m.name);
+    const enBreakfastNames = getPlanStrings('en').meals.omnivore.breakfast.map((m) => m.name);
+
+    const translated = translateMealPlan(enPlan, 'tr');
+    expect(translated.lang).toBe('tr');
+    expect(trBreakfastNames).toContain(translated.mealPlan[0].meals.breakfast.name);
+    expect(enBreakfastNames).not.toContain(translated.mealPlan[0].meals.breakfast.name);
+  });
 });
 
 describe('recommendCalorieAdjustment (adaptive targets)', () => {

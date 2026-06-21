@@ -27,12 +27,11 @@ function todayDayName() {
   return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()];
 }
 
-function CalorieAdjustCard({ plan, checkins, p, onApplied }) {
+function CalorieAdjustCard({ plan, checkins, p, onApplied, onDismiss }) {
   const rec = recommendCalorieAdjustment(plan.data, checkins);
 
   if (rec.status === 'insufficient-data') return null;
 
-  // Cooldown: was adjusted in last 7 days
   const adjustedDays =
     plan.data.calorieAdjustedAt
       ? Math.round((Date.now() - new Date(plan.data.calorieAdjustedAt)) / 86400000)
@@ -48,10 +47,10 @@ function CalorieAdjustCard({ plan, checkins, p, onApplied }) {
   if (cooldown) {
     return (
       <Card>
-        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">
+        <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-1">
           {p.adjustTitle}
         </Text>
-        <Text className="text-sm text-slate-500 dark:text-slate-400">
+        <Text className="text-sm text-ink-500 dark:text-slate-400">
           {p.adjustCooldown
             .replace('{days}', adjustedDays)
             .replace('{remaining}', 7 - adjustedDays)}
@@ -63,15 +62,14 @@ function CalorieAdjustCard({ plan, checkins, p, onApplied }) {
   if (rec.status === 'on-track') {
     return (
       <Card>
-        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">
+        <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-1">
           {p.adjustTitle}
         </Text>
-        <Text className="text-sm text-emerald-600 dark:text-emerald-400">{p.adjustOnTrack}</Text>
+        <Text className="text-sm text-accent dark:text-accent">{p.adjustOnTrack}</Text>
       </Card>
     );
   }
 
-  // Suggest adjustment
   const directionStr = rec.direction === 'reduce' ? p.adjustReduce : p.adjustIncrease;
   const message = p.adjustSuggest
     .replace('{direction}', directionStr)
@@ -79,15 +77,15 @@ function CalorieAdjustCard({ plan, checkins, p, onApplied }) {
 
   return (
     <Card>
-      <Text className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+      <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-2">
         {p.adjustTitle}
       </Text>
-      <Text className="text-sm text-slate-600 dark:text-slate-300 mb-3">{message}</Text>
+      <Text className="text-sm text-ink-500 dark:text-slate-300 mb-3">{message}</Text>
       <View className="flex-row gap-2">
         <Button onPress={handleApply} className="flex-1">
           {p.adjustApply}
         </Button>
-        <Button variant="secondary" onPress={() => {}} className="flex-1">
+        <Button variant="secondary" onPress={onDismiss} className="flex-1">
           {p.adjustDismiss}
         </Button>
       </View>
@@ -105,6 +103,7 @@ export default function ProgressTab() {
   const [selectedWorkouts, setSelectedWorkouts] = useState([]);
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
+  const [adjustDismissed, setAdjustDismissed] = useState(false);
 
   useFocusEffect(useCallback(() => {
     refreshPlan();
@@ -156,15 +155,15 @@ export default function ProgressTab() {
   const narrative = plan ? generateCoachNarrative(plan.data, checkins, coachT) : null;
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
+    <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6 gap-4">
-        <Text className="text-xl font-bold text-slate-900 dark:text-white" accessibilityRole="header">
+        <Text className="text-xl font-bold text-ink-900 dark:text-white" accessibilityRole="header">
           {t.tabs.progress}
         </Text>
 
         {/* Check-in form */}
         <Card>
-          <Text className="font-semibold text-slate-800 dark:text-white mb-3">{p.todayCheckin}</Text>
+          <Text className="font-semibold text-ink-900 dark:text-white mb-3">{p.todayCheckin}</Text>
           <Input
             label={units === 'lbs' ? p.weightLabelLbs : p.weightLabel}
             placeholder={units === 'lbs' ? p.weightPlaceholderLbs : p.weightPlaceholder}
@@ -175,7 +174,7 @@ export default function ProgressTab() {
           />
           {todayExercises.length > 0 && (
             <View className="mt-4 gap-2">
-              <Text className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <Text className="text-sm font-medium text-ink-700 dark:text-slate-300">
                 {p.workoutsDone}
               </Text>
               {todayExercises.map((ex) => {
@@ -191,12 +190,12 @@ export default function ProgressTab() {
                   >
                     <View
                       className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                        checked ? 'bg-sky-500 border-sky-500' : 'border-slate-300 dark:border-slate-600'
+                        checked ? 'bg-accent border-accent' : 'border-line dark:border-slate-600'
                       }`}
                     >
-                      {checked && <Text className="text-white text-xs font-bold">✓</Text>}
+                      {checked && <Text className="text-[#062815] text-xs font-bold">✓</Text>}
                     </View>
-                    <Text className="text-sm text-slate-700 dark:text-slate-300">{ex.name}</Text>
+                    <Text className="text-sm text-ink-700 dark:text-slate-300">{ex.name}</Text>
                   </Pressable>
                 );
               })}
@@ -215,18 +214,19 @@ export default function ProgressTab() {
         {/* Weight sparkline */}
         {checkins.length > 0 && (
           <Card>
-            <Text className="font-semibold text-slate-800 dark:text-white mb-3">{p.trendTitle}</Text>
+            <Text className="font-semibold text-ink-900 dark:text-white mb-3">{p.trendTitle}</Text>
             <Sparkline checkins={checkins} hint={p.trendHint} />
           </Card>
         )}
 
         {/* Adaptive calorie adjustment */}
-        {plan && (
+        {plan && !adjustDismissed && (
           <CalorieAdjustCard
             plan={plan}
             checkins={checkins}
             p={p}
             onApplied={refreshPlan}
+            onDismiss={() => setAdjustDismissed(true)}
           />
         )}
 
@@ -234,10 +234,10 @@ export default function ProgressTab() {
         {narrative && (
           <Card>
             <View className="flex-row items-center gap-2 mb-4">
-              <View className="w-8 h-8 rounded-lg bg-sky-500 items-center justify-center">
-                <Text className="text-white text-base">🎯</Text>
+              <View className="w-8 h-8 rounded-lg bg-accent items-center justify-center">
+                <Text className="text-[#062815] text-base">🎯</Text>
               </View>
-              <Text className="font-semibold text-slate-800 dark:text-white">{p.coachTitle}</Text>
+              <Text className="font-semibold text-ink-900 dark:text-white">{p.coachTitle}</Text>
             </View>
             <CoachCard narrative={narrative} />
           </Card>

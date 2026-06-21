@@ -124,13 +124,13 @@ export default function OverviewTab() {
       ? Math.round(blendRecoveryScore(data.recoveryScore, checkins, data.workoutPlan))
       : null;
 
-  // Disclaimer from core translations in the plan's language
-  const disclaimer = (translations[planLang] || translations.en).result.disclaimer;
+  // Disclaimer from core translations in the current UI language, not plan creation language.
+  const disclaimer = (translations[lang] || translations.en).result.disclaimer;
 
   async function handleShare() {
     setSharing(true);
     try {
-      await sharePlan(plan, planLang);
+      await sharePlan(plan, lang);
     } catch {
       Alert.alert('', o.shareError);
     } finally {
@@ -204,7 +204,7 @@ export default function OverviewTab() {
               {o.hydration}
             </Text>
             <Text className="text-sm text-ink-500 dark:text-slate-400">
-              {formatHydration(data.hydration, planLang)}
+              {formatHydration(data.hydration, lang)}
             </Text>
           </Card>
         )}

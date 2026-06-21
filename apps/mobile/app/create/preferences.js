@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Modal, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { generateSmartPlan, savePlan, setActivePlan } from '@fitflow/core';
@@ -13,7 +13,7 @@ import StepStrip from '../../components/ui/StepStrip';
 
 export default function Step3() {
   const router = useRouter();
-  const { t, lang: uiLang, setLang } = useLanguage();
+  const { t, lang: uiLang } = useLanguage();
   const { formData, update } = useCreatePlan();
   const c = t.create;
 
@@ -49,7 +49,6 @@ export default function Step3() {
     setLoading(true);
 
     const planLang = formData.lang || 'en';
-    if (planLang !== uiLang) setLang(planLang);
 
     const profile = {
       age: parseInt(formData.age),
@@ -64,21 +63,25 @@ export default function Step3() {
       lang: planLang,
     };
 
-    const plan = generateSmartPlan(profile);
-    const merged = { ...profile, ...plan, generatedAt: new Date().toISOString() };
+    try {
+      const plan = generateSmartPlan(profile);
+      const merged = { ...profile, ...plan, generatedAt: new Date().toISOString() };
 
-    const goalLabels = {
-      'lose-weight': c.loseWeight,
-      'build-muscle': c.buildMuscle,
-      maintenance: c.maintain,
-    };
-    const goalStr = goalLabels[profile.fitnessGoal] || profile.fitnessGoal;
-    const autoName = `${goalStr} — ${formatDate(new Date().toISOString(), uiLang)}`;
-    const id = savePlan(merged, autoName);
-    setActivePlan(id);
-
-    setLoading(false);
-    router.replace('/(tabs)/overview');
+      const goalLabels = {
+        'lose-weight': c.loseWeight,
+        'build-muscle': c.buildMuscle,
+        maintenance: c.maintain,
+      };
+      const goalStr = goalLabels[profile.fitnessGoal] || profile.fitnessGoal;
+      const autoName = `${goalStr} — ${formatDate(new Date().toISOString(), uiLang)}`;
+      const id = savePlan(merged, autoName);
+      setActivePlan(id);
+      router.replace('/(tabs)/overview');
+    } catch {
+      Alert.alert('', c.errors.generateError);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
