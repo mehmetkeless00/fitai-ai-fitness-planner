@@ -18,6 +18,7 @@ import CoachCard from '../../components/features/CoachCard';
 import { usePlan } from '../../hooks/usePlan';
 import { useCheckins } from '../../hooks/useCheckins';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { formatDate } from '../../utils/formatDate';
 
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
@@ -154,6 +155,15 @@ export default function ProgressTab() {
   const coachT = (translations[lang] || translations.en).coach;
   const narrative = plan ? generateCoachNarrative(plan.data, checkins, coachT) : null;
 
+  const lastCheckin = checkins
+    .filter((c) => c.date !== todayStr() && c.weight != null)
+    .sort((a, b) => b.date.localeCompare(a.date))[0];
+  const prevDisplay = lastCheckin
+    ? units === 'lbs'
+      ? `${Math.round((lastCheckin.weight / 0.453592) * 10) / 10} lbs`
+      : `${lastCheckin.weight} kg`
+    : null;
+
   return (
     <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6 gap-4">
@@ -172,6 +182,11 @@ export default function ProgressTab() {
             onChangeText={setWeight}
             accessibilityLabel={units === 'lbs' ? p.weightLabelLbs : p.weightLabel}
           />
+          {prevDisplay && (
+            <Text className="text-xs text-ink-300 dark:text-slate-500 mt-1.5">
+              {p.previous}: {prevDisplay} · {formatDate(lastCheckin.date, lang)}
+            </Text>
+          )}
           {todayExercises.length > 0 && (
             <View className="mt-4 gap-2">
               <Text className="text-sm font-medium text-ink-700 dark:text-slate-300">

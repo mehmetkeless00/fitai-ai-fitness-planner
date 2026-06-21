@@ -10,8 +10,8 @@ const REST_FOCUSES = new Set([
   'Complete Rest',
 ]);
 
-export default function WorkoutDay({ day, t, maps, onExercisePress, isToday }) {
-  const [open, setOpen] = useState(() => !!isToday);
+export default function WorkoutDay({ day, t, maps, onExercisePress, isToday, defaultOpen }) {
+  const [open, setOpen] = useState(() => defaultOpen ?? !!isToday);
   const isRest = !day.exercises || day.exercises.length === 0;
   const isRestType = REST_FOCUSES.has(day.focus);
 
@@ -63,8 +63,8 @@ export default function WorkoutDay({ day, t, maps, onExercisePress, isToday }) {
               accessibilityLabel={ex.name}
             >
               <View className="flex-1 mr-2">
-                <Text className="text-sm font-medium text-slate-800 dark:text-white">{ex.name}</Text>
-                <Text className="text-xs text-slate-400 mt-0.5">
+                <Text className="text-sm font-semibold text-slate-900 dark:text-white">{ex.name}</Text>
+                <Text className="text-sm text-ink-500 dark:text-slate-400 mt-0.5">
                   {ex.sets} {t.sets} × {ex.reps} {t.reps}
                 </Text>
               </View>

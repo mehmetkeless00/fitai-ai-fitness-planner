@@ -29,6 +29,9 @@ export default function WorkoutTab() {
   }
 
   const workoutPlan = plan.data?.workoutPlan || [];
+  const todayName = todayDayName();
+  const todayDay = workoutPlan.find((d) => d.day === todayName);
+  const restOfWeek = workoutPlan.filter((d) => d.day !== todayName);
 
   function handleExercisePress(exercise) {
     router.push({ pathname: '/modal/exercise', params: { ex: JSON.stringify(exercise) } });
@@ -38,24 +41,52 @@ export default function WorkoutTab() {
     <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
       <ScrollView className="flex-1" contentContainerClassName="px-4 py-6">
         <Text
-          className="text-xl font-bold text-slate-900 dark:text-white mb-4"
+          className="text-xl font-bold text-slate-900 dark:text-white mb-5"
           accessibilityRole="header"
         >
           {t.tabs.workout}
         </Text>
+
+        {/* Today's workout — pinned at top */}
+        {todayDay && (
+          <>
+            <Text className="text-xs font-semibold text-ink-300 dark:text-slate-500 uppercase tracking-widest mb-2">
+              {t.workout.today}
+            </Text>
+            <WorkoutDay
+              day={todayDay}
+              t={t.workout}
+              maps={maps}
+              onExercisePress={handleExercisePress}
+              isToday={true}
+              defaultOpen={true}
+            />
+          </>
+        )}
+
+        {/* Rest of the week */}
+        {restOfWeek.length > 0 && (
+          <>
+            <Text className="text-xs font-semibold text-ink-300 dark:text-slate-500 uppercase tracking-widest mt-3 mb-2">
+              {t.workout.thisWeek}
+            </Text>
+            {restOfWeek.map((day, i) => (
+              <WorkoutDay
+                key={i}
+                day={day}
+                t={t.workout}
+                maps={maps}
+                onExercisePress={handleExercisePress}
+                isToday={false}
+                defaultOpen={false}
+              />
+            ))}
+          </>
+        )}
+
         {workoutPlan.length === 0 && (
           <Text className="text-slate-400 text-center">{t.workout.noExercises}</Text>
         )}
-        {workoutPlan.map((day, i) => (
-          <WorkoutDay
-            key={i}
-            day={day}
-            t={t.workout}
-            maps={maps}
-            onExercisePress={handleExercisePress}
-            isToday={day.day === todayDayName()}
-          />
-        ))}
       </ScrollView>
     </SafeAreaView>
   );

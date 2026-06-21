@@ -105,6 +105,8 @@ const en = {
     done: 'Done',
     noActivePlan: 'No active plan.',
     exerciseNotFound: 'Exercise not found.',
+    today: 'Today',
+    thisWeek: 'This week',
   },
   meals: {
     breakfast: 'Breakfast',
@@ -145,6 +147,7 @@ const en = {
     adjustApplied: 'Calorie target updated.',
     adjustCooldown: 'Adjustment applied {days}d ago — check back in {remaining}d.',
     trendHint: 'Log at least 2 weight entries to see the trend.',
+    previous: 'Previous',
   },
   plans: {
     title: 'My plans',
@@ -298,6 +301,8 @@ const tr = {
     done: 'Tamam',
     noActivePlan: 'Aktif plan yok.',
     exerciseNotFound: 'Egzersiz bulunamadı.',
+    today: 'Bugün',
+    thisWeek: 'Bu hafta',
   },
   meals: {
     breakfast: 'Kahvaltı',
@@ -338,6 +343,7 @@ const tr = {
     adjustApplied: 'Kalori hedefi güncellendi.',
     adjustCooldown: 'Ayar {days}g önce uygulandı — {remaining}g sonra tekrar kontrol et.',
     trendHint: 'Trendi görmek için en az 2 kilo kaydı girin.',
+    previous: 'Önceki',
   },
   plans: {
     title: 'Planlarım',
