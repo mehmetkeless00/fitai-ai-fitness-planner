@@ -21,6 +21,7 @@ export default function TabLayout() {
           backgroundColor: isDark ? '#0f172a' : '#FFFFFF',
           borderTopColor: isDark ? '#1e293b' : '#E7E6E1',
         },
+        tabBarLabelStyle: { fontFamily: 'SchibstedGrotesk-Regular', fontSize: 11 },
       }}
     >
       <Tabs.Screen

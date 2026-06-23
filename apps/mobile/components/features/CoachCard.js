@@ -1,11 +1,12 @@
 import { View, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 const ROWS = [
-  { key: 'headline', icon: '🏁' },
-  { key: 'trend', icon: '📈' },
-  { key: 'adherence', icon: '📅' },
-  { key: 'recovery', icon: '❤️' },
-  { key: 'recommendation', icon: '💡' },
+  { key: 'headline',       icon: 'flag-outline',         color: '#14C06A' },
+  { key: 'trend',          icon: 'trending-up-outline',  color: '#7C8CFF' },
+  { key: 'adherence',      icon: 'calendar-outline',     color: '#F5A524' },
+  { key: 'recovery',       icon: 'heart-outline',        color: '#FF6B6B' },
+  { key: 'recommendation', icon: 'bulb-outline',         color: '#F5A524' },
 ];
 
 export default function CoachCard({ narrative }) {
@@ -13,12 +14,14 @@ export default function CoachCard({ narrative }) {
 
   return (
     <View className="gap-3">
-      {ROWS.map(({ key, icon }) => {
+      {ROWS.map(({ key, icon, color }) => {
         const text = narrative[key];
         if (!text) return null;
         return (
           <View key={key} className="flex-row items-start gap-3">
-            <Text style={{ fontSize: 18, lineHeight: 24 }}>{icon}</Text>
+            <View style={{ width: 22, alignItems: 'center', marginTop: 2 }}>
+              <Ionicons name={icon} size={16} color={color} />
+            </View>
             <Text className="flex-1 text-sm text-ink-700 dark:text-slate-300 leading-relaxed">
               {text}
             </Text>

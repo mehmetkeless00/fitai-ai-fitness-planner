@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
@@ -30,7 +31,6 @@ function todayDayName() {
 
 function CalorieAdjustCard({ plan, checkins, p, onApplied, onDismiss }) {
   const rec = recommendCalorieAdjustment(plan.data, checkins);
-
   if (rec.status === 'insufficient-data') return null;
 
   const adjustedDays =
@@ -48,13 +48,9 @@ function CalorieAdjustCard({ plan, checkins, p, onApplied, onDismiss }) {
   if (cooldown) {
     return (
       <Card>
-        <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-1">
-          {p.adjustTitle}
-        </Text>
+        <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-1">{p.adjustTitle}</Text>
         <Text className="text-sm text-ink-500 dark:text-slate-400">
-          {p.adjustCooldown
-            .replace('{days}', adjustedDays)
-            .replace('{remaining}', 7 - adjustedDays)}
+          {p.adjustCooldown.replace('{days}', adjustedDays).replace('{remaining}', 7 - adjustedDays)}
         </Text>
       </Card>
     );
@@ -63,9 +59,7 @@ function CalorieAdjustCard({ plan, checkins, p, onApplied, onDismiss }) {
   if (rec.status === 'on-track') {
     return (
       <Card>
-        <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-1">
-          {p.adjustTitle}
-        </Text>
+        <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-1">{p.adjustTitle}</Text>
         <Text className="text-sm text-accent dark:text-accent">{p.adjustOnTrack}</Text>
       </Card>
     );
@@ -78,17 +72,11 @@ function CalorieAdjustCard({ plan, checkins, p, onApplied, onDismiss }) {
 
   return (
     <Card>
-      <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-2">
-        {p.adjustTitle}
-      </Text>
+      <Text className="text-sm font-semibold text-ink-700 dark:text-slate-200 mb-2">{p.adjustTitle}</Text>
       <Text className="text-sm text-ink-500 dark:text-slate-300 mb-3">{message}</Text>
       <View className="flex-row gap-2">
-        <Button onPress={handleApply} className="flex-1">
-          {p.adjustApply}
-        </Button>
-        <Button variant="secondary" onPress={onDismiss} className="flex-1">
-          {p.adjustDismiss}
-        </Button>
+        <Button onPress={handleApply} className="flex-1">{p.adjustApply}</Button>
+        <Button variant="secondary" onPress={onDismiss} className="flex-1">{p.adjustDismiss}</Button>
       </View>
     </Card>
   );
@@ -137,10 +125,7 @@ export default function ProgressTab() {
     const w = parseFloat(weight);
     const [minW, maxW] = units === 'lbs' ? [44, 1100] : [20, 500];
     if (weight && (isNaN(w) || w < minW || w > maxW)) {
-      Alert.alert(
-        p.invalidWeight,
-        units === 'lbs' ? p.invalidWeightMsgLbs : p.invalidWeightMsgKg,
-      );
+      Alert.alert(p.invalidWeight, units === 'lbs' ? p.invalidWeightMsgLbs : p.invalidWeightMsgKg);
       return;
     }
     const weightKg = weight ? (units === 'lbs' ? w * 0.453592 : w) : null;
@@ -155,6 +140,7 @@ export default function ProgressTab() {
   const coachT = (translations[lang] || translations.en).coach;
   const narrative = plan ? generateCoachNarrative(plan.data, checkins, coachT) : null;
 
+  // Previous check-in reference
   const lastCheckin = checkins
     .filter((c) => c.date !== todayStr() && c.weight != null)
     .sort((a, b) => b.date.localeCompare(a.date))[0];
@@ -163,6 +149,32 @@ export default function ProgressTab() {
       ? `${Math.round((lastCheckin.weight / 0.453592) * 10) / 10} lbs`
       : `${lastCheckin.weight} kg`
     : null;
+
+  // Weight trend for sparkline header
+  const sortedWithWeight = checkins
+    .filter((c) => c.weight != null)
+    .sort((a, b) => b.date.localeCompare(a.date));
+  const latestCheckin = sortedWithWeight[0];
+  const fourWeeksAgo = new Date();
+  fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+  const oldCheckin = sortedWithWeight.find((c) => c.date <= fourWeeksAgo.toISOString().slice(0, 10));
+  const currentWeightKg = latestCheckin?.weight ?? null;
+  const deltaKg = currentWeightKg != null && oldCheckin?.weight != null
+    ? currentWeightKg - oldCheckin.weight
+    : null;
+
+  function weightToDisplay(kg) {
+    if (kg == null) return null;
+    const val = units === 'lbs' ? Math.round((kg / 0.453592) * 10) / 10 : kg;
+    return { val: String(val), unit: units === 'lbs' ? 'lbs' : 'kg' };
+  }
+  const currentW = weightToDisplay(currentWeightKg);
+  const deltaTrend = deltaKg != null ? {
+    up: deltaKg >= 0,
+    text: units === 'lbs'
+      ? `${deltaKg >= 0 ? '+' : ''}${Math.round((deltaKg / 0.453592) * 10) / 10} lbs`
+      : `${deltaKg >= 0 ? '+' : ''}${Math.round(deltaKg * 10) / 10} kg`,
+  } : null;
 
   return (
     <SafeAreaView className="flex-1 bg-canvas dark:bg-slate-900">
@@ -189,9 +201,7 @@ export default function ProgressTab() {
           )}
           {todayExercises.length > 0 && (
             <View className="mt-4 gap-2">
-              <Text className="text-sm font-medium text-ink-700 dark:text-slate-300">
-                {p.workoutsDone}
-              </Text>
+              <Text className="text-sm font-medium text-ink-700 dark:text-slate-300">{p.workoutsDone}</Text>
               {todayExercises.map((ex) => {
                 const checked = selectedWorkouts.includes(ex.name);
                 return (
@@ -204,11 +214,9 @@ export default function ProgressTab() {
                     accessibilityState={{ checked }}
                     accessibilityLabel={ex.name}
                   >
-                    <View
-                      className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                        checked ? 'bg-accent border-accent' : 'border-line dark:border-slate-600'
-                      }`}
-                    >
+                    <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
+                      checked ? 'bg-accent border-accent' : 'border-line dark:border-slate-600'
+                    }`}>
                       {checked && <Text className="text-[#062815] text-xs font-bold">✓</Text>}
                     </View>
                     <Text className="text-sm text-ink-700 dark:text-slate-300">{ex.name}</Text>
@@ -217,20 +225,73 @@ export default function ProgressTab() {
               })}
             </View>
           )}
-          <Button
-            onPress={handleSave}
-            loading={saving}
-            className="mt-4"
-            accessibilityLabel={p.save}
-          >
+          <Button onPress={handleSave} loading={saving} className="mt-4" accessibilityLabel={p.save}>
             {justSaved ? p.saved : p.save}
           </Button>
         </Card>
 
-        {/* Weight sparkline */}
+        {/* Smart Coach — above sparkline */}
+        {narrative && (
+          <Card>
+            <View className="flex-row items-center gap-2 mb-4">
+              <View className="w-8 h-8 rounded-lg bg-accent-wash items-center justify-center">
+                <Ionicons name="disc-outline" size={18} color="#0E8A4C" />
+              </View>
+              <Text className="font-semibold text-ink-900 dark:text-white">{p.coachTitle}</Text>
+            </View>
+            <CoachCard narrative={narrative} />
+          </Card>
+        )}
+
+        {/* Weight sparkline — empty state when no check-ins yet */}
+        {checkins.length === 0 && (
+          <Card>
+            <Text
+              className="text-ink-300 dark:text-slate-500 mb-3"
+              style={{ fontSize: 11.5, fontWeight: '600', letterSpacing: 1, textTransform: 'uppercase' }}
+            >
+              {p.trendTitle}
+            </Text>
+            <View className="items-center gap-2 py-3">
+              <Ionicons name="scale-outline" size={26} color="#A7A8AD" />
+              <Text className="text-sm text-ink-300 dark:text-slate-500 text-center">{p.trendEmpty}</Text>
+            </View>
+          </Card>
+        )}
+
+        {/* Weight sparkline with trend header */}
         {checkins.length > 0 && (
           <Card>
-            <Text className="font-semibold text-ink-900 dark:text-white mb-3">{p.trendTitle}</Text>
+            <View className="flex-row items-end justify-between mb-3">
+              <View>
+                <Text
+                  className="text-ink-300 dark:text-slate-500 mb-1"
+                  style={{ fontSize: 11.5, fontWeight: '600', letterSpacing: 1, textTransform: 'uppercase' }}
+                >
+                  {p.trendTitle}
+                </Text>
+                {currentW && (
+                  <View className="flex-row items-baseline gap-1">
+                    <Text className="text-3xl font-bold text-ink-900 dark:text-white" style={{ letterSpacing: -0.5 }}>
+                      {currentW.val}
+                    </Text>
+                    <Text className="text-sm text-ink-300">{currentW.unit}</Text>
+                  </View>
+                )}
+              </View>
+              {deltaTrend && (
+                <View style={{
+                  flexDirection: 'row', alignItems: 'center', gap: 4,
+                  paddingHorizontal: 10, paddingVertical: 5,
+                  borderRadius: 999, backgroundColor: '#E8F8EF',
+                }}>
+                  <Ionicons name={deltaTrend.up ? 'arrow-up' : 'arrow-down'} size={12} color="#0E8A4C" />
+                  <Text style={{ fontSize: 12, fontWeight: '700', color: '#0E8A4C' }}>
+                    {deltaTrend.text} · 4 {p.weekAbbr}
+                  </Text>
+                </View>
+              )}
+            </View>
             <Sparkline checkins={checkins} hint={p.trendHint} />
           </Card>
         )}
@@ -244,19 +305,6 @@ export default function ProgressTab() {
             onApplied={refreshPlan}
             onDismiss={() => setAdjustDismissed(true)}
           />
-        )}
-
-        {/* Smart Coach */}
-        {narrative && (
-          <Card>
-            <View className="flex-row items-center gap-2 mb-4">
-              <View className="w-8 h-8 rounded-lg bg-accent items-center justify-center">
-                <Text className="text-[#062815] text-base">🎯</Text>
-              </View>
-              <Text className="font-semibold text-ink-900 dark:text-white">{p.coachTitle}</Text>
-            </View>
-            <CoachCard narrative={narrative} />
-          </Card>
         )}
       </ScrollView>
     </SafeAreaView>

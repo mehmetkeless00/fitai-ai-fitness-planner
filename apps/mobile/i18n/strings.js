@@ -83,6 +83,9 @@ const en = {
     sharePlan: 'Share Plan',
     shareError: 'Could not generate PDF.',
     noActivePlan: 'No active plan.',
+    dailyTarget: 'Daily target',
+    todayWorkout: "Today's workout",
+    startWorkout: 'Start workout',
   },
   days: {
     short: {
@@ -107,6 +110,7 @@ const en = {
     exerciseNotFound: 'Exercise not found.',
     today: 'Today',
     thisWeek: 'This week',
+    doneThisWeek: 'workouts done this week',
   },
   meals: {
     breakfast: 'Breakfast',
@@ -121,6 +125,7 @@ const en = {
     noAlternatives: 'No alternatives available.',
     noActivePlan: 'No active plan.',
     noMealData: 'No meal data.',
+    dayTotal: 'Total',
   },
   progress: {
     todayCheckin: "Today's check-in",
@@ -147,7 +152,9 @@ const en = {
     adjustApplied: 'Calorie target updated.',
     adjustCooldown: 'Adjustment applied {days}d ago — check back in {remaining}d.',
     trendHint: 'Log at least 2 weight entries to see the trend.',
+    trendEmpty: 'Log your first weight to start tracking your trend.',
     previous: 'Previous',
+    weekAbbr: 'wks',
   },
   plans: {
     title: 'My plans',
@@ -279,6 +286,9 @@ const tr = {
     sharePlan: 'Planı Paylaş',
     shareError: 'PDF oluşturulamadı.',
     noActivePlan: 'Aktif plan yok.',
+    dailyTarget: 'Günlük hedef',
+    todayWorkout: 'Bugünün antrenmanı',
+    startWorkout: 'Antrenmanı başlat',
   },
   days: {
     short: {
@@ -303,6 +313,7 @@ const tr = {
     exerciseNotFound: 'Egzersiz bulunamadı.',
     today: 'Bugün',
     thisWeek: 'Bu hafta',
+    doneThisWeek: 'antrenman bu hafta tamamlandı',
   },
   meals: {
     breakfast: 'Kahvaltı',
@@ -317,6 +328,7 @@ const tr = {
     noAlternatives: 'Alternatif bulunamadı.',
     noActivePlan: 'Aktif plan yok.',
     noMealData: 'Öğün verisi yok.',
+    dayTotal: 'Toplam',
   },
   progress: {
     todayCheckin: 'Bugünkü takip',
@@ -343,7 +355,9 @@ const tr = {
     adjustApplied: 'Kalori hedefi güncellendi.',
     adjustCooldown: 'Ayar {days}g önce uygulandı — {remaining}g sonra tekrar kontrol et.',
     trendHint: 'Trendi görmek için en az 2 kilo kaydı girin.',
+    trendEmpty: 'Trendinizi takip etmek için ilk kilonuzu kaydedin.',
     previous: 'Önceki',
+    weekAbbr: 'hf',
   },
   plans: {
     title: 'Planlarım',

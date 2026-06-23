@@ -147,7 +147,8 @@ export default function PlansTab() {
             </Pressable>
             <Pressable
               onPress={() => router.push('/create')}
-              className="bg-accent active:bg-accent-600 px-4 py-2 rounded-full"
+              className="bg-accent active:bg-accent-600 px-4 rounded-full items-center justify-center"
+              style={{ minHeight: 44 }}
               accessibilityRole="button"
               accessibilityLabel={pl.newPlan}
             >
@@ -159,7 +160,7 @@ export default function PlansTab() {
         {plans.length === 0 ? (
           <View className="flex-1 items-center justify-center px-8 gap-3">
             <View className="w-16 h-16 rounded-[20px] bg-paper border border-line dark:bg-slate-800 dark:border-slate-700 items-center justify-center">
-              <Text style={{ fontSize: 28 }}>📋</Text>
+              <Ionicons name="documents-outline" size={28} color="#A7A8AD" />
             </View>
             <Text className="text-ink-500 dark:text-slate-400 text-center text-sm">{pl.noPlan}</Text>
           </View>
@@ -199,9 +200,16 @@ export default function PlansTab() {
                         </View>
                       )}
                     </View>
-                    <Text className="text-xs text-ink-300 dark:text-slate-500 mt-1">
-                      {pl.created} {formatDate(item.createdAt, lang)}
-                    </Text>
+                    <View className="flex-row items-center gap-2 mt-1 flex-wrap">
+                      <Text className="text-xs text-ink-300 dark:text-slate-500">
+                        {pl.created} {formatDate(item.createdAt, lang)}
+                      </Text>
+                      {item.data?.goal && (
+                        <View className="px-1.5 py-0.5 rounded-full bg-canvas dark:bg-slate-700">
+                          <Text className="text-xs text-ink-300 dark:text-slate-400">{item.data.goal}</Text>
+                        </View>
+                      )}
+                    </View>
                   </Pressable>
                 );
               }}

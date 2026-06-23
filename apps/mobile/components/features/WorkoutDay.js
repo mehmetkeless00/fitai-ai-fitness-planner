@@ -30,20 +30,20 @@ export default function WorkoutDay({ day, t, maps, onExercisePress, isToday, def
         <View className="flex-1 mr-2">
           <View className="flex-row items-center gap-1.5">
             {isToday && <View className="w-1.5 h-1.5 rounded-full bg-accent" />}
-            <Text className="font-semibold text-slate-900 dark:text-white">{dayLabel}</Text>
+            <Text className="font-semibold text-ink-900 dark:text-white">{dayLabel}</Text>
           </View>
           {focusLabel && (
-            <Text className="text-xs text-slate-400 mt-0.5">{focusLabel}</Text>
+            <Text className="text-xs text-ink-300 dark:text-slate-500 mt-0.5">{focusLabel}</Text>
           )}
         </View>
         <View className="flex-row items-center gap-2">
           {isRest ? (
-            <Text className="text-xs text-slate-400">{t.rest}</Text>
+            <Text className="text-xs text-ink-300 dark:text-slate-500">{t.rest}</Text>
           ) : isRestType ? (
             <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={16} color="#A7A8AD" />
           ) : (
             <>
-              <Text className="text-xs text-slate-400">
+              <Text className="text-xs text-ink-300 dark:text-slate-500">
                 {day.exercises.length} {t.exercises}
               </Text>
               <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={16} color="#A7A8AD" />
@@ -58,12 +58,12 @@ export default function WorkoutDay({ day, t, maps, onExercisePress, isToday, def
             <Pressable
               key={i}
               onPress={() => onExercisePress && onExercisePress(ex)}
-              className="bg-slate-50 dark:bg-slate-700 rounded-lg px-3 py-2.5 flex-row items-center justify-between active:bg-slate-100"
+              className="bg-canvas dark:bg-slate-700 rounded-[11px] px-3 py-2.5 flex-row items-center justify-between active:opacity-80"
               accessibilityRole="button"
               accessibilityLabel={ex.name}
             >
               <View className="flex-1 mr-2">
-                <Text className="text-sm font-semibold text-slate-900 dark:text-white">{ex.name}</Text>
+                <Text className="text-sm font-semibold text-ink-900 dark:text-white">{ex.name}</Text>
                 <Text className="text-sm text-ink-500 dark:text-slate-400 mt-0.5">
                   {ex.sets} {t.sets} × {ex.reps} {t.reps}
                 </Text>
